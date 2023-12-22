@@ -1,0 +1,55 @@
+*{
+  margin:0;
+  padding: 0;
+  box-sizing: border-box;
+}
+section a{
+  text-decoration: none;
+  color: black;
+}
+section ul{
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+section h1{
+  margin-bottom: 2rem;
+}
+section{
+  position: relative;
+}
+.form-label{
+  text-transform: capitalize;
+}
+input::-webkit-input-placeholder {
+  opacity: 0.1; 
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{
+  appearance: none;
+}
+@media (min-width:576px){
+  section .form-navigation{
+    position: absolute;
+  }
+  section .login-col{
+    margin-top: 8rem;
+    padding-left: 2rem;
+  }
+}
+@media (min-width:768px){
+  section .login-col{
+    margin-top: 8rem;
+    padding-left: 4rem;
+  }
+}
+@media (max-width:576px){
+  .signup-form{
+    padding: 0.5rem;
+  }
+  .form-navigation{
+    padding-left: 0.5rem !important;
+    margin-bottom: 2rem;
+  }
+  
+}

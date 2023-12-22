@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TimeGaze</title>
+  <link rel="icon" href="android-chrome-512x512.png" type="image/png" alt="Site Icon">
+
+  <!-- boostrap css cdn link -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+  <!-- bootstrap icon cdn link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+
+  <!-- css style sheet link -->
+  <link rel="stylesheet" href="css/header_footer.css">
+
+
+  <style>
+    .product-card {
+      background-color: #EFEFEF;
+      border-radius: 0.8rem;
+    }
+
+    .product-card span {
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
+    }
+
+    @media (min-width: 576px) {
+
+      #section-last h3 {
+        font-size: 1.3rem;
+        text-transform: capitalize;
+      }
+    }
+
+    .form-control:focus {
+      color: var(--bs-body-color);
+      background-color: var(--bs-body-bg);
+      border-color: none;
+      outline: 0;
+      box-shadow: none;
+    }
+
+    .product-card {
+      width: 357px;
+      height: 455px;
+      margin: 10px;
+    }
+
+    .product-card img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: cover;
+    }
+
+    .breadcrumb-item a {
+      color: rgb(0, 0, 0) !important;
+      font-size: inherit;
+    }
+
+    .page-link {
+      color: black;
+    }
+
+    .active>.page-link,
+    .page-link.active {
+      background-color: black !important;
+      border-color: azure !important;
+    }
+  </style>
+
+</head>
+
+<body>
+  <!-- header -->
+  <%- include('../include/headerCommon') %>
+
+    <div class="p-2 catagory">
+      <% for( x in categories ) {%>
+        <button class="btn btn-dark" style="--bs-btn-font-size: 0rem;"><a
+            href="productList?categoryId=<%=categories[x]._id %>">
+            <%=categories[x].categoryName%>
+          </a></button>
+        <%}%>
+    </div>
+
+
+    </header>
+    <!-- header -->
+
+
+    <nav aria-label="breadcrumb " class="p-4">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/" class="">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">
+          <%=products[0].category.categoryName %>'s collections
+        </li>
+      </ol>
+    </nav>
+
+
+    <!-- section -->
+    <!--Main Navigation-->
+
+
+    <!-- sidebar + content -->
+    <section class="">
+      <div class="container-fluid">
+        <div class="row">
+          <!-- sidebar -->
+          <div class="col-md-4 col-lg-3">
+            <!-- Toggle button -->
+            <button class="btn btn-outline-secondary mb-3 w-100 d-md-none" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+              aria-label="Toggle navigation">
+              <span>Show filter</span>
+            </button>
+            <!-- Collapsible wrapper -->
+            <div class="collapse card d-md-block mb-5" id="navbarSupportedContent">
+              <div class="accordion" id="accordionPanelsStayOpenExample">
+                <div class="accordion-item">
+                  <!-- <h2 class="accordion-header" id="headingOne">
+                  <button class="accordion-button text-dark bg-light" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true"
+                    aria-controls="panelsStayOpen-collapseOne">
+                    Related items
+                  </button>
+                </h2> -->
+                  <!-- <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show"
+                  aria-labelledby="headingOne">
+                  <div class="accordion-body">
+                    <ul class="list-unstyled">
+                      <li><a href="#" class="text-dark">Electronics </a></li>
+                      <li><a href="#" class="text-dark">Home items </a></li>
+                      <li><a href="#" class="text-dark">Books, Magazines </a></li>
+                      <li><a href="#" class="text-dark">Men's clothing </a></li>
+                      <li><a href="#" class="text-dark">Interiors items </a></li>
+                      <li><a href="#" class="text-dark">Underwears </a></li>
+                      <li><a href="#" class="text-dark">Shoes for men </a></li>
+                      <li><a href="#" class="text-dark">Accessories </a></li>
+                    </ul>
+                  </div>
+                </div> -->
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button text-dark bg-light" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false"
+                      aria-controls="panelsStayOpen-collapseThree">
+                      Price
+                    </button>
+                  </h2>
+                  <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse show"
+                    aria-labelledby="headingThree">
+                    <div class="accordion-body">
+                      <!-- <div class="range">
+                      <input type="range" class="form-range" id="customRange1" />
+                    </div> -->
+                      <div class="row mb-3">
+                        <div class="col-6">
+                          <p class="mb-0">
+                            Min
+                          </p>
+                          <div class="form-outline">
+                            <input type="number" id="typeNumber" class="form-control" />
+                            <label class="form-label" for="typeNumber">₹0</label>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <p class="mb-0">
+                            Max
+                          </p>
+                          <div class="form-outline">
+                            <input type="number" id="typeNumber" class="form-control" />
+                            <label class="form-label" for="typeNumber">₹1,00000</label>
+                          </div>
+                        </div>
+                      </div>
+                      <button type="button" class="btn btn-white w-100 border border-secondary">apply</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button text-dark bg-light" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true"
+                      aria-controls="panelsStayOpen-collapseTwo">
+                      Brands
+                    </button>
+                  </h2>
+                  <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show"
+                    aria-labelledby="headingTwo">
+                    <div class="accordion-body">
+                      <div>
+                        <!-- Checked checkbox -->
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked1" />
+                          <label class="form-check-label" for="flexCheckChecked1">Mercedes</label>
+                          <span class="badge badge-secondary float-end">120</span>
+                        </div>
+                        <!-- Checked checkbox -->
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked2" />
+                          <label class="form-check-label" for="flexCheckChecked2">Toyota</label>
+                          <span class="badge badge-secondary float-end">15</span>
+                        </div>
+                        <!-- Checked checkbox -->
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked3" />
+                          <label class="form-check-label" for="flexCheckChecked3">Mitsubishi</label>
+                          <span class="badge badge-secondary float-end">35</span>
+                        </div>
+                        <!-- Checked checkbox -->
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked4" />
+                          <label class="form-check-label" for="flexCheckChecked4">Nissan</label>
+                          <span class="badge badge-secondary float-end">89</span>
+                        </div>
+                        <!-- Default checkbox -->
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
+                          <label class="form-check-label" for="flexCheckDefault">Honda</label>
+                          <span class="badge badge-secondary float-end">30</span>
+                        </div>
+                        <!-- Default checkbox -->
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
+                          <label class="form-check-label" for="flexCheckDefault">Suzuki</label>
+                          <span class="badge badge-secondary float-end">30</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button text-dark bg-light" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#panelsStayOpen-collapseFour" aria-expanded="false"
+                      aria-controls="panelsStayOpen-collapseFour">
+                      case diameter
+                    </button>
+                  </h2>
+                  <div id="panelsStayOpen-collapseFour" class="accordion-collapse collapse show"
+                    aria-labelledby="headingThree">
+                    <div class="accordion-body">
+                      <input type="checkbox" class="btn-check border justify-content-center" id="btn-check1" checked
+                        autocomplete="off" />
+                      <label class="btn btn-white mb-1 px-1" style="width: 60px;" for="btn-check1">10mm</label>
+                      <input type="checkbox" class="btn-check border justify-content-center" id="btn-check2" checked
+                        autocomplete="off" />
+                      <label class="btn btn-white mb-1 px-1" style="width: 60px;" for="btn-check2">12mm</label>
+                      <input type="checkbox" class="btn-check border justify-content-center" id="btn-check3" checked
+                        autocomplete="off" />
+                      <label class="btn btn-white mb-1 px-1" style="width: 60px;" for="btn-check3">15mm</label>
+                      <input type="checkbox" class="btn-check border justify-content-center" id="btn-check4" checked
+                        autocomplete="off" />
+                      <label class="btn btn-white mb-1 px-1" style="width: 60px;" for="btn-check4">20mm</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button text-dark bg-light" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#panelsStayOpen-collapseFive" aria-expanded="false"
+                      aria-controls="panelsStayOpen-collapseFive">
+                      Ratings
+                    </button>
+                  </h2>
+                  <div id="panelsStayOpen-collapseFive" class="accordion-collapse collapse show"
+                    aria-labelledby="headingThree">
+                    <div class="accordion-body">
+                      <!-- Default checkbox -->
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
+                        <label class="form-check-label" for="flexCheckDefault">
+                          <i class="bi bi-star-fill text-warning"></i><i class="bi bi-star-fill text-warning"></i><i
+                            class="bi bi-star-fill text-warning"></i><i class="bi bi-star-fill text-warning"></i>
+                          <i class="bi bi-star-fill text-warning"></i>
+                        </label>
+                      </div>
+                      <!-- Default checkbox -->
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
+                        <label class="form-check-label" for="flexCheckDefault">
+                          <i class="bi bi-star-fill text-warning"></i><i class="bi bi-star-fill text-warning"></i><i
+                            class="bi bi-star-fill text-warning"></i><i class="bi bi-star-fill text-warning"></i>
+                          <i class="bi bi-star-fill text-secondary"></i>
+                        </label>
+                      </div>
+                      <!-- Default checkbox -->
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
+                        <label class="form-check-label" for="flexCheckDefault">
+                          <i class="bi bi-star-fill text-warning"></i><i class="bi bi-star-fill text-warning"></i><i
+                            class="bi bi-star-fill text-warning"></i><i class="bi bi-star-fill text-secondary"></i>
+                          <i class="bi bi-star-fill text-secondary"></i>
+                        </label>
+                      </div>
+                      <!-- Default checkbox -->
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
+                        <label class="form-check-label" for="flexCheckDefault">
+                          <i class="bi bi-star-fill text-warning"></i><i class="bi bi-star-fill text-warning"></i><i
+                            class="bi bi-star-fill text-secondary"></i><i class="bi bi-star-fill text-secondary"></i>
+                          <i class="bi bi-star-fill text-secondary"></i>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- sidebar -->
+          <!-- content -->
+          <div class="col-md-8 col-lg-9">
+            <div class="d-flex justify-content-center  mb-5">
+              <h2 class="text-capitalize">
+                <%=products[0].category.categoryName %>'s collections
+              </h2>
+            </div>
+            <div class="row">
+              <% if(products.length>0) { %>
+                <% for( i=0;i<products.length;i++) { %>
+
+                  <div class="col-6 col-lg-3 col-md-4 col d-flex">
+
+                    <div class="card m-2" style="width: 13rem;">
+                      <i class="card-img-top d-flex justify-content-end pe-2"><i class="bi bi-heart"></i></i>
+                      <a href="/singleProduct?productId=<%=products[i]._id%>"><img
+                          src="uploads/<%=products[i].image[0]%>" class=""
+                          style="object-fit:cover;width: 100%; height: 100%" alt="...">
+                        
+                      </a>
+                      <div class="card-body p-0">
+                        <h5 class="card-title m-1" style="font-size: 0.8rem;">
+                          <%=products[i].productName%>
+                        </h5>
+                        <p class="card-text m-1">₹<%=products[i].discountPrice%> <del>₹<%=products[i].price%></del>
+                        </p>
+                      </div>
+                      <div class=" ps-3 pe-3">
+                        <button class="btn btn-dark card-img-bottom my-1" style="font-size: 0.6rem;">ADD TO
+                          CART</button>
+                      </div>
+                    </div>
+                  </div>
+                  <% } %>
+                    <% } %>
+                      <hr />
+
+                      <!-- Pagination -->
+                      <nav aria-label="Page navigation example" class="d-flex justify-content-center mt-3">
+                        <ul class="pagination">
+                          <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Previous">
+                              <span aria-hidden="true">&laquo;</span>
+                            </a>
+                          </li>
+                          <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                          <li class="page-item"><a class="page-link" href="#">2</a></li>
+                          <li class="page-item"><a class="page-link" href="#">3</a></li>
+                          <li class="page-item"><a class="page-link" href="#">4</a></li>
+                          <li class="page-item"><a class="page-link" href="#">5</a></li>
+                          <li class="page-item">
+                            <a class="page-link" href="#" aria-label="Next">
+                              <span aria-hidden="true">&raquo;</span>
+                            </a>
+                          </li>
+                        </ul>
+                      </nav>
+                      <!-- Pagination -->
+            </div>
+          </div>
+        </div>
+    </section>
+    <!-- sidebar + content -->
+
+    <!-- section -->
+
+
+    <%- include("../include/footer") %>
+      <script src="js/togglebutton.js"></script>
+
+</body>
+
+</html>
