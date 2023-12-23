@@ -43,10 +43,7 @@ $(document).ready(function () {
           console.log('Category updated successfully', data);
           window.location.href = '/adminCategory';
         } else if (xhr.status === 400) {
-          
           console.log('Category name already exists', data);
-
-         
         } else {
        
           console.error('Unexpected status code:', xhr.status);

@@ -49,9 +49,9 @@ app.use('/',require('./server/routes/user_routes'));
 
 app.use('/',require('./server/routes/admin_routes'))
 
-// app.all("*",(req,res)=>{
-//   res.status(400).render('error')
-// })
+app.all("*",(req,res)=>{
+  res.status(400).render('error')
+})
 
 
 const PORT = process.env.PORT || 8080;

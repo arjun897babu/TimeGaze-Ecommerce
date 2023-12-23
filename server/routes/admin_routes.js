@@ -10,15 +10,15 @@ const adminRoute = express.Router();
 
 adminRoute.get('/adminHome', adminMiddleWare.isAdmin, adminServices.adminHome);//admin home
 adminRoute.get('/adminLogin', adminMiddleWare.isNotAdmin, adminServices.adminLogin);//admin login
-adminRoute.get('/adminproducts',  adminServices.adminproducts);//product detail page
-adminRoute.get('/addproducts', adminServices.adminaddproducts);//product add page
+adminRoute.get('/adminproducts', adminMiddleWare.isAdmin, adminServices.adminproducts);//product detail page
+adminRoute.get('/addproducts', adminMiddleWare.isAdmin, adminServices.adminaddproducts);//product add page
 adminRoute.get('/adminusers', adminMiddleWare.isAdmin, adminServices.adminusers);//list users on admin side
 adminRoute.get('/adminCategory', adminMiddleWare.isAdmin, adminServices.adminCategory);//list categories on admin side
 adminRoute.get('/addCategory', adminMiddleWare.isAdmin, adminServices.addCategory);//add categories
 adminRoute.get('/updateCategory', adminMiddleWare.isAdmin, adminServices.updateCategory)//update category
 adminRoute.get('/unlistedCategory', adminMiddleWare.isAdmin, adminServices.unlistedCategory)//unlisted categories
 adminRoute.get('/unlistedProducts', adminMiddleWare.isAdmin, adminServices.unlistedProducts);//unlsited products
-adminRoute.get('/updateProduct',  adminServices.adminEditProduct);//edit product
+adminRoute.get('/updateProduct', adminMiddleWare.isAdmin, adminServices.adminEditProduct);//edit product
 
 
 adminRoute.post('/api/adminLogin', adminControll.adminLogin);//for admin login 
@@ -45,8 +45,8 @@ adminRoute.put('/api/deleteProduct/:productId', productControll.deleteProducts);
 adminRoute.put('/api/restoreProduct/:productId', productControll.restoreProducts);//for restoring the deleted product
 adminRoute.get('/api/unlistedProduct', productControll.unlistedProducts);//to show the unlisted product
 adminRoute.get('/api/singleEditProduct', productControll.singleProduct);//to get a single product detal
-adminRoute.patch('/api/deleteImage/:productId',productControll.delteImage);//
-adminRoute.put('/api/updareProduct/:productId',imageUpload.upload.array('images',4), productControll.updateProducts);//update product;
+adminRoute.patch('/api/deleteImage/:productId', productControll.delteImage);//
+adminRoute.put('/api/updareProduct/:productId', imageUpload.upload.array('images', 4), productControll.updateProducts);//update product;
 
 // adminRoute.get("*",adminServices.errorPage);
 

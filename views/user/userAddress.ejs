@@ -139,10 +139,10 @@
                 </a>
               </li>
               <li>
-                <form action="/logout" method="post" class="py3 d-flex align-items-center justify-content-center">
+                <!-- <form action="/logout" method="post" class="py3 d-flex align-items-center justify-content-center">
                   <i class="bi bi-arrow-return-left text-danger"></i>
                   <button type="submit" class="btn "><span class="text-danger">LOG OUT</span></button>
-                </form>
+                </form> -->
               </li>
             </ul>
 
@@ -268,8 +268,10 @@
                       <div class="d-flex ">
 
                         <div class="d-flex justify-content-between align-items-center">
-                          <input type="radio" name="defaultAddress" id="defaultAddress3" class="ms-2">
-                          <label for="defaultAddress3" class="ms-1">Default</label>
+                          <input type="radio" name="defaultAdress" id="defaultAdress" class="ms-2 defaultAddress"
+                            data-id="<%=element._id  %>" value="<%=element.address._id %>"
+                            <%=(element.address.defaultAdress)?'checked':''%>>
+                          <!-- <label for="defaultAdress" class="ms-1">Default</label> -->
                         </div>
 
                         <div class=" ms-5 d-flex flex-column">
@@ -283,7 +285,7 @@
                             </span>
                           </div>
                           <address>
-                            <%= element.address.addressType%>
+                            <%= element.address.address%>
                           </address>
                         </div>
 

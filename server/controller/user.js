@@ -51,7 +51,7 @@ exports.createUser = async (req, res) => {
 
       let otp = otpGenerator.generate(6, { upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false })
 
-     
+
 
       const savedUser = await newUser.save();
 
@@ -95,7 +95,7 @@ exports.userLogin = async (req, res) => {
     const validPassword = await bcrypt.compare(req.body.password, user.password);
 
     if (!validPassword) {
-      req.session.useremail =email;
+      req.session.useremail = email;
       req.session.invalidMessage = 'Invalid password';
       console.log(req.session.invalidMessage);
       return res.status(400).redirect('/login');
@@ -104,8 +104,8 @@ exports.userLogin = async (req, res) => {
     if (validPassword && !user.isBlocked) {
 
       req.session.isUserAuth = true;
-      req.session.email =email;
-    
+      req.session.email = email;
+
       res.status(200).redirect('/');
 
     } else {
@@ -142,7 +142,7 @@ exports.verifyOTP = async (req, res) => {
     const response = await OTP.find({ email }).sort({ createdAt: -1 }).limit(1);
 
     if (response.length === 0 || otp !== response[0].otp) {
-      
+
       console.log(email);
       req.session.errorMessage = 'otp not valid'
       console.log('otp not valid');
@@ -217,6 +217,58 @@ exports.sendOTP = async (req, res) => {
 
 }
 
+//updatre UserName
+
+exports.updateName = async (req,res)=>{
+  try{
+    const userEmail = req.session.email = 'arjunkan22@gmail.com';
+    const {name} = req.body;
+
+    console.log(userEmail,name)
+
+    if(!userEmail||!name){
+      return res.send('user not logged in or filed is required');
+    }
+    const existingUser = await User.findOneAndUpdate({email:userEmail},{$set:{name:name}},{new:true});
+    console.log('exist',existingUser)
+    if(existingUser){
+      res.send('name updated')
+    }else{
+      res.send('error while updatng')
+    }
+
+    
+  }
+  catch(error){
+    res.send(error.message)
+  }
+}
+
+//to update phonenumber
+exports.updateMobileNumber = async (req,res)=>{
+  try{
+    const userEmail = req.session.email = 'arjunkan22@gmail.com';
+    const {phonenumber} = req.body;
+
+    console.log(userEmail,phonenumber)
+
+    if(!userEmail||!phonenumber){
+      return res.send('user not logged in or filed is required');
+    }
+    const existingUser = await User.findOneAndUpdate({email:userEmail},{$set:{phonenumber:phonenumber}},{new:true});
+    console.log('exist',existingUser)
+    if(existingUser){
+      res.send('phonenumber updated')
+    }else{
+      res.send('error while updatng')
+    }
+
+    
+  }
+  catch(error){
+    res.send(error.message)
+  }
+}
 
 //update passowrd
 
@@ -251,6 +303,34 @@ exports.updatePassword = async (req, res) => {
     res.status(500).send(error.message);
   }
 
+}
+
+exports.getSingleUserDetails = async (req, res) => {
+  try {
+    const userEmail = req.query.userEmail ;
+    if (!userEmail) {
+      return res.send('email is not found');
+    }
+    const existingUser = await User.aggregate(
+      [
+        {
+          $match: { email: userEmail }
+        },
+        {
+          $project: { name: 1, phonenumber: 1, email: 1 ,_id:0}
+        }
+      ]
+    )
+    if(existingUser){
+      res.send(existingUser);
+    }else{
+      res.send(null)
+    }
+  }
+
+  catch (error) {
+
+  }
 }
 
 //user logout

@@ -1,7 +1,7 @@
 
 
 const User = require('../../model/userModelSchema')
-//user verified or not
+//user verified or not for new regirstered usr
 exports.isUserTrue = async (req, res, next) => {
   try {
 
@@ -39,6 +39,16 @@ exports.isUser = (req, res, next) => {
   }
 };
 
+exports.notUser =(req, res, next) => {
+  if (req.session.isUserAuth) {
+    
+    next();
+   
+  } else {
+     res.redirect('/login');
+  }
+};
+
 
 // check user is blocked or not
 
@@ -53,6 +63,7 @@ exports.isBlocked = async (req,res,next) =>{
       const userBlocked = await User.findOne({email:userEmail});
       console.log(userBlocked);
       if(userBlocked.isBlocked){
+
         req.session.destroy();
         res.redirect('/login');
       }else{

@@ -264,35 +264,31 @@ exports.productListOnUser = async (req, res) => {
     const categoryId = req.query.categoryId;
     console.log('categoyId', categoryId)
 
-    const existingCateogry = await category.findOne({ _id: categoryId });
-
-    if(!existingCateogry){
-      return res.status(404).redirect('/error')
-    }
+    const existingCateogry = await category.findOne({ _id: categoryId, unlisted: false });
 
     const products = await Product.aggregate(
       [
         {
-          $match: { category: new mongoose.Types.ObjectId(categoryId) }
+          $match: { category: new mongoose.Types.ObjectId(categoryId), unlisted: false }
         },
         {
           $lookup: {
             from: 'categories',
             localField: 'category',
-            foreignField:'_id',
+            foreignField: '_id',
             as: 'category'
           }
         },
 
-        {$unwind:'$category'}
+        { $unwind: '$category' }
 
       ]
     )
-    console.log('loggin in fucntion', products.category)
+    console.log('loggin in fucntion', products)
     if (products.length > 0) {
       res.status(200).send(products);
     } else {
-      res.status(404).send('No products found for the specified category');
+      res.send(false);
     }
 
   }

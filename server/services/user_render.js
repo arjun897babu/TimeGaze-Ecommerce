@@ -92,7 +92,7 @@ module.exports = {
   },
   productListPage: (req, res) => {
     const categoryId = req.query.categoryId;
-    console.log('after api',categoryId)
+    console.log('after api', categoryId)
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/productList?categoryId=${categoryId}`),
       axios.get(`http://localhost:${process.env.PORT}/api/categories`)
@@ -100,24 +100,32 @@ module.exports = {
       .then(axios.spread((productResponse, categoriesResponse) => {
         const products = productResponse.data;
         const categories = categoriesResponse.data;
-        console.log( products, categories)
+        console.log(products, categories)
         res.status(200).render('user/productList', { logged: req.session.isUserAuth, products, categories })
-        
+
       }))
       .catch((error) => {
         console.error('Error in userproduct pag:', error.message);
         res.status(500).send('Internal Server Error');
       });
-     
+
   },
   userProfile: (req, res) => {
-    axios.get(`http://localhost:${process.env.PORT}/api/categories`)
-      .then((response) => {
-        res.status(200).render('user/userProfile', { categories: response.data, logged: req.session.isUserAuth })
-      })
-      .catch((error) => {
-        res.status(500).send(error)
-      })
+    const userEmail = req.session.email
+    axios.all([
+      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
+      axios.get(`http://localhost:${process.env.PORT}/api/getUserInfo?userEmail=${userEmail}`)
+    ])
+      .then(axios.spread((categoriesResponse, userResponse) => {
+        const categories = categoriesResponse.data;
+        const singleUser = userResponse.data
+        console.log(categories, singleUser);
+        res.status(200).render('user/userProfile', { categories: categories, user: singleUser, logged: req.session.isUserAuth })
+      }))
+      .catch((error => {
+        console.error('Error in userproduct pag:', error.message);
+        res.status(500).send('Internal Server Error');
+      }))
 
   },
   userAddress: (req, res) => {
@@ -130,9 +138,21 @@ module.exports = {
 
         res.status(200).render('user/userAddress', { address: allAddress, logged: req.session.isUserAuth, categories: response.data })
       })
-      .catch((error)=>{
+      .catch((error) => {
         res.status(500).send(error.message)
       })
+
+  },
+  cart: (req, res) => {
+    axios.get(`http://localhost:${process.env.PORT}/api/categories`)
+      .then((response => {
+        res.status(200).render('user/cart', { categories: response.data, logged: req.session.isUserAuth })
+      }))
+
+      .catch((error) => {
+        res.status(500).send(error.message)
+      })
+
 
   },
   errorPage: (req, res) => {

@@ -96,146 +96,131 @@
 
 <body>
   <!-- header -->
-  <%- include('../include/headerCommon')  %>
+  <%- include('../include/headerCommon') %>
 
 
 
     </div>
 
 
-  </header>
-  <!-- header -->
-  <div class="container-fluid">
-    <nav aria-label="breadcrumb " class="p-4">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Home</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Profile</li>
-      </ol>
-    </nav>
-  </div>
+    </header>
+    <!-- header -->
+    <div class="container-fluid">
+      <nav aria-label="breadcrumb " class="p-4">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Profile</li>
+        </ol>
+      </nav>
+    </div>
 
-  <section class="container-fluid my-3">
-    <div class="row">
-      <aside class="col-md-3 p-2 bg-light-subtle">
-        <div>
-          <ul class="flex-column d-flex ">
-            <li>
-              <h4>Your account</h4>
-            </li>
-            <li class="is-active ">
-              <a href="/profile">
-                <span class="text ">Profile</span>
-              </a>
-            </li>
+    <section class="container-fluid my-3">
+      <div class="row">
+        <aside class="col-md-3 p-2 bg-light-subtle">
+          <div>
+            <ul class="flex-column d-flex ">
+              <li>
+                <h4>Your account</h4>
+              </li>
+              <li class="is-active ">
+                <a href="/profile">
+                  <span class="text ">Profile</span>
+                </a>
+              </li>
 
-            <li class="">
-              <a href="">
-                <span class="text">orders</span>
-              </a>
-            </li>
-            <li class="">
-              <a href="/address">
-                <span class="text">adress</span>
-              </a>
-            </li>
-            <li>
-              <form action="/logout" method="post" class="py3 d-flex align-items-center justify-content-center">
-                <i class="bi bi-arrow-return-left text-danger"></i>
-                <button type="submit" class="btn "><span class="text-danger">LOG OUT</span></button>
-              </form>
-            </li>
-          </ul>
+              <li class="">
+                <a href="">
+                  <span class="text">orders</span>
+                </a>
+              </li>
+              <li class="">
+                <a href="/address">
+                  <span class="text">adress</span>
+                </a>
+              </li>
+              <li>
+                <!-- <form action="/logout" method="post" class="py3 d-flex align-items-center justify-content-center">
+                  <i class="bi bi-arrow-return-left text-danger"></i>
+                  <button type="submit" class="btn "><span class="text-danger">LOG OUT</span></button>
+                </form> -->
+              </li>
+            </ul>
 
-        </div>
-
-      </aside>
-      <div class="mobile-profile-navigaton">
-        <div class="col-12 d-flex   container-fluid justify-content-evenly bg-dark mb-3">
-          <a href="/profile">
-            <div class="text-white is-activeMobile">Profile</div>
-          </a>
-          <a href="/address">
-            <div class="text-white ">adress</div>
-          </a> <a href="">
-            <div class="text-white ">orders</div>
-          </a>
-        </div>
-      </div>
-
-
-      <div class="col-md-9">
-        <div class="bg-white rounded-3">
-          <h3>Hey Arun ,here's Your profile</h3>
-          <br>
-          <div class="d-flex justify-content-between">
-            <h5>Profile Information</h5>
-            <div class="p-3 "><span class="btn btn-dark edit-profile-btn">edit profile</span></div>
           </div>
 
-          <hr>
-          <form action="" class="requires-validation" novalidate>
-            <div class="mb-3">
-              <label for="validateCustomerName" class="form-label">name*</label>
-              <input type="text" class="form-control" id="validateCustomerName" placeholder="name.." required readonly>
-              <small class="text-danger"></small>
-
-            </div>
-
-            <div class="mb-3">
-              <label for="validationCustomerEmail" class="form-label">email id*</label>
-              <input type="email" class="form-control" id="validateCustomerEmail" placeholder="email id..." required
-                readonly>
-              <small class="text-danger"></small>
-            </div>
-
-            <div class="mb-3">
-              <label for="validateCustomerPhoneNumber" class="form-label">phone number*</label>
-              <input type="number" class="form-control" id="validateCustomerPhoneNumber" placeholder="phone number..."
-                required readonly>
-              <small class="text-danger"></small>
-            </div>
-            <div class="text-center col-12">
-              <button class="btn btn-dark " id="update-button" disabled> update </button>
-            </div>
-            <div class="d-flex justify-content-end">
-              <a href="" class="btn btn-dark">
-                <span>change passowrd</span>
-              </a>
-            </div>
-          </form>
+        </aside>
+        <div class="mobile-profile-navigaton">
+          <div class="col-12 d-flex   container-fluid justify-content-evenly bg-dark mb-3">
+            <a href="/profile">
+              <div class="text-white is-activeMobile">Profile</div>
+            </a>
+            <a href="/address">
+              <div class="text-white ">adress</div>
+            </a> <a href="">
+              <div class="text-white ">orders</div>
+            </a>
+          </div>
         </div>
+
+
+        <div class="col-md-9">
+          <div class="bg-white rounded-3">
+            <h3>Hey Arun ,here's Your profile</h3>
+            <br>
+            <div class="d-flex justify-content-between">
+              <h5>Profile Information</h5>
+            </div>
+
+            <hr>
+            <form action="" class="requires-validation" novalidate>
+              <div class="mb-3 position-relative">
+                <label for="validateCustomerName" class="form-label">name*</label>
+                <input type="text" class="form-control oldValue" id="validateCustomerName " name="name"
+                  value="<%= user[0].name %>" required readonly style="cursor: not-allowed;" >
+                <small class="text-danger"></small>
+                <i class="position-absolute bi bi-pencil-fill" style="right: 2rem; top:2.3rem;cursor: pointer;"></i>
+                <div class=" position-absolute option-button" style="right: 2rem;top:0; display: none;"><i
+                    class=" bi-x-circle me-2 cancel-icon" style="cursor: pointer;" ></i> <i
+                    class="bi bi-floppy name-save-icon" style="cursor: pointer;color: rgb(27, 111, 200);"></i></div>
+              </div>
+
+              <div class="mb-3 position-relative">
+                <label for="validateCustomerPhonenumber" class="form-label">phone number</label>
+                <input type="text" class="form-control oldValue" id="validateCustomerPhonenumber" name="phonenumber"
+                  value="<%= user[0].phonenumber %>" required readonly style="cursor: not-allowed;">
+                <small class="text-danger"></small>
+                <i class="position-absolute bi bi-pencil-fill" style="right: 2rem; top:2.3rem;cursor: pointer;"></i>
+                <div class=" position-absolute option-button" style="right: 2rem;top:0; display: none;"><i
+                    class=" bi-x-circle me-2 cancel-icon" style="cursor: pointer;"></i> <i
+                    class="bi bi-floppy phoneNumber-save-icon" style="cursor: pointer;color: rgb(27, 111, 200);"></i></div>
+              </div>
+              
+              <div class="mb-3 position-relative">
+                <label for="validateCustomerEmail" class="form-label">email address</label>
+                <input type="text" class="form-control oldValue" id="validateCustomerEmail " name="email"
+                  value="<%= user[0].email %>" required readonly style="cursor: not-allowed;" >
+                <small class="text-danger"></small>
+                <i class="position-absolute bi bi-pencil-fill" style="right: 2rem; top:2.3rem;cursor: pointer;"></i>
+                <div class=" position-absolute option-button" style="right: 2rem;top:0; display: none;"><i
+                    class=" bi-x-circle me-2 cancel-icon" style="cursor: pointer;"></i> <i
+                    class="bi bi-floppy save-icon" style="cursor: pointer;color: rgb(27, 111, 200);"></i></div>
+              </div>
+
+             
+
+            </form>
+          </div>
+        </div>
+
       </div>
 
-    </div>
-
-  </section>
+    </section>
 
 
-  <%- include('../include/footer') %>
-
-
-    <script>
-      const form = Array.from(document.querySelector('.requires-validation').elements);
-      console.log(form);
-
-      const editButton = document.querySelector('.edit-profile-btn');
-      editButton.addEventListener('click', () => {
-        form.forEach((elements, index) => {
-          elements.removeAttribute('readonly');
-          if (index === form.length - 1)
-
-            elements.removeAttribute('disabled');
-
-        })
-
-      })
-
-    </script>
-
-
-    <!-- bootstrap js cdn link -->
-
-    <script src="js/togglebutton.js"></script>
+    <%- include('../include/footer') %>
+      <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+      <script src="js/editProgile.js"></script>
+      <script src="js/togglebutton.js"></script>
 
 </body>
 
