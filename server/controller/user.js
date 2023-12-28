@@ -105,6 +105,9 @@ exports.userLogin = async (req, res) => {
 
       req.session.isUserAuth = true;
       req.session.email = email;
+      req.session.userId = user._id;
+      req.session.addressId = user.adress;
+      console.log(req.session.addressId)
 
       res.status(200).redirect('/');
 
@@ -219,53 +222,53 @@ exports.sendOTP = async (req, res) => {
 
 //updatre UserName
 
-exports.updateName = async (req,res)=>{
-  try{
+exports.updateName = async (req, res) => {
+  try {
     const userEmail = req.session.email = 'arjunkan22@gmail.com';
-    const {name} = req.body;
+    const { name } = req.body;
 
-    console.log(userEmail,name)
+    console.log(userEmail, name)
 
-    if(!userEmail||!name){
+    if (!userEmail || !name) {
       return res.send('user not logged in or filed is required');
     }
-    const existingUser = await User.findOneAndUpdate({email:userEmail},{$set:{name:name}},{new:true});
-    console.log('exist',existingUser)
-    if(existingUser){
+    const existingUser = await User.findOneAndUpdate({ email: userEmail }, { $set: { name: name } }, { new: true });
+    console.log('exist', existingUser)
+    if (existingUser) {
       res.send('name updated')
-    }else{
+    } else {
       res.send('error while updatng')
     }
 
-    
+
   }
-  catch(error){
+  catch (error) {
     res.send(error.message)
   }
 }
 
 //to update phonenumber
-exports.updateMobileNumber = async (req,res)=>{
-  try{
+exports.updateMobileNumber = async (req, res) => {
+  try {
     const userEmail = req.session.email = 'arjunkan22@gmail.com';
-    const {phonenumber} = req.body;
+    const { phonenumber } = req.body;
 
-    console.log(userEmail,phonenumber)
+    console.log(userEmail, phonenumber)
 
-    if(!userEmail||!phonenumber){
+    if (!userEmail || !phonenumber) {
       return res.send('user not logged in or filed is required');
     }
-    const existingUser = await User.findOneAndUpdate({email:userEmail},{$set:{phonenumber:phonenumber}},{new:true});
-    console.log('exist',existingUser)
-    if(existingUser){
+    const existingUser = await User.findOneAndUpdate({ email: userEmail }, { $set: { phonenumber: phonenumber } }, { new: true });
+    console.log('exist', existingUser)
+    if (existingUser) {
       res.send('phonenumber updated')
-    }else{
+    } else {
       res.send('error while updatng')
     }
 
-    
+
   }
-  catch(error){
+  catch (error) {
     res.send(error.message)
   }
 }
@@ -305,9 +308,44 @@ exports.updatePassword = async (req, res) => {
 
 }
 
+exports.updateUserPassword = async (req, res) => {
+
+  try {
+
+    const userEmail = req.session.email = 'arjunkan22@gmail.com';
+    const { password } = req.body;
+    console.log('password', password);
+
+    if (!userEmail) {
+      return res.send('user is not logged in');
+    }
+    if (!password) return res.send('all fields are required');
+
+
+
+    const user = await User.findOne({ email: userEmail }, { _id: 1, password: 1 });
+    console.log(user, 'user is found');
+    const oldPassword = await bcrypt.compare(password, user.password);
+    if (oldPassword) {
+      res.send('enter a new password')
+    } else {
+      const salt = 10;
+      const bycriptedNewPassword = await bcrypt.hash(password, salt)
+      await User.findByIdAndUpdate(user._id, { $set: { password: bycriptedNewPassword } }, { new: true });
+      res.send('passowrd upadated');
+    }
+  }
+  catch (error) {
+    console.log(error.message);
+    res.send('internel sever error')
+  }
+
+
+}
+
 exports.getSingleUserDetails = async (req, res) => {
   try {
-    const userEmail = req.query.userEmail ;
+    const userEmail = req.query.userEmail;
     if (!userEmail) {
       return res.send('email is not found');
     }
@@ -317,13 +355,13 @@ exports.getSingleUserDetails = async (req, res) => {
           $match: { email: userEmail }
         },
         {
-          $project: { name: 1, phonenumber: 1, email: 1 ,_id:0}
+          $project: { name: 1, phonenumber: 1, email: 1, _id: 0 }
         }
       ]
     )
-    if(existingUser){
+    if (existingUser) {
       res.send(existingUser);
-    }else{
+    } else {
       res.send(null)
     }
   }

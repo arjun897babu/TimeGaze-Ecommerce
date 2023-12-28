@@ -41,7 +41,6 @@ exports.isUser = (req, res, next) => {
 
 exports.notUser =(req, res, next) => {
   if (req.session.isUserAuth) {
-    
     next();
    
   } else {

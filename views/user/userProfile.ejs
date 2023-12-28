@@ -165,7 +165,7 @@
 
         <div class="col-md-9">
           <div class="bg-white rounded-3">
-            <h3>Hey Arun ,here's Your profile</h3>
+            <h3 class="text-capitalize">Hey <%=user[0].name%> ,here's Your profile</h3>
             <br>
             <div class="d-flex justify-content-between">
               <h5>Profile Information</h5>
@@ -176,11 +176,11 @@
               <div class="mb-3 position-relative">
                 <label for="validateCustomerName" class="form-label">name*</label>
                 <input type="text" class="form-control oldValue" id="validateCustomerName " name="name"
-                  value="<%= user[0].name %>" required readonly style="cursor: not-allowed;" >
+                  value="<%= user[0].name %>" required readonly style="cursor: not-allowed;">
                 <small class="text-danger"></small>
                 <i class="position-absolute bi bi-pencil-fill" style="right: 2rem; top:2.3rem;cursor: pointer;"></i>
                 <div class=" position-absolute option-button" style="right: 2rem;top:0; display: none;"><i
-                    class=" bi-x-circle me-2 cancel-icon" style="cursor: pointer;" ></i> <i
+                    class=" bi-x-circle me-2 cancel-icon" style="cursor: pointer;"></i> <i
                     class="bi bi-floppy name-save-icon" style="cursor: pointer;color: rgb(27, 111, 200);"></i></div>
               </div>
 
@@ -192,13 +192,14 @@
                 <i class="position-absolute bi bi-pencil-fill" style="right: 2rem; top:2.3rem;cursor: pointer;"></i>
                 <div class=" position-absolute option-button" style="right: 2rem;top:0; display: none;"><i
                     class=" bi-x-circle me-2 cancel-icon" style="cursor: pointer;"></i> <i
-                    class="bi bi-floppy phoneNumber-save-icon" style="cursor: pointer;color: rgb(27, 111, 200);"></i></div>
+                    class="bi bi-floppy phoneNumber-save-icon" style="cursor: pointer;color: rgb(27, 111, 200);"></i>
+                </div>
               </div>
-              
+
               <div class="mb-3 position-relative">
                 <label for="validateCustomerEmail" class="form-label">email address</label>
                 <input type="text" class="form-control oldValue" id="validateCustomerEmail " name="email"
-                  value="<%= user[0].email %>" required readonly style="cursor: not-allowed;" >
+                  value="<%= user[0].email %>" required readonly style="cursor: not-allowed;">
                 <small class="text-danger"></small>
                 <i class="position-absolute bi bi-pencil-fill" style="right: 2rem; top:2.3rem;cursor: pointer;"></i>
                 <div class=" position-absolute option-button" style="right: 2rem;top:0; display: none;"><i
@@ -206,7 +207,46 @@
                     class="bi bi-floppy save-icon" style="cursor: pointer;color: rgb(27, 111, 200);"></i></div>
               </div>
 
-             
+              <!-- modal toggle botton  -->
+              <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                  Change Password
+                </button>
+              </div>
+
+              <!-- Modal -->
+              <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title fs-5" id="changePasswordModalLabel">Change Password</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <form action="" method="" class="requires-validation" novalidate>
+                        <div class="form-group">
+                          <label for="validatePassword">Your new password</label>
+                          <input type="password" class="form-control" name="password" id="validatePassword">
+                          <small class="text-danger"></small>
+
+                        </div>
+                        <div class="form-group">
+                          <label for="validatePassword2">Repeat password</label>
+                          <input type="password" class="form-control " id="validatePassword2">
+                          <small class="text-danger"></small>
+
+                        </div>
+                        <div class="d-flex justify-content-end">
+                          <button type="submit" class="btn btn-outline-dark my-4 updatePassword updatePassword" id="changePasswordModal">Confirm</button>
+                        </div>
+
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
 
             </form>
           </div>
@@ -219,6 +259,7 @@
 
     <%- include('../include/footer') %>
       <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
       <script src="js/editProgile.js"></script>
       <script src="js/togglebutton.js"></script>
 

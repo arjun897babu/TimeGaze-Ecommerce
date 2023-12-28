@@ -1,81 +1,80 @@
 const mongoose = require('mongoose');
 const Address = require('../model/addressSchema');
 const User = require('../model/userModelSchema');
+const address = require('../model/addressSchema');
 
 exports.createAdress = async (req, res) => {
 
   try {
     const { name, mobileNumber, district, pincode, locality, address, state, addressType } = req.body;
 
-    const userEmail = req.session.email ;
+    const userEmail = req.session.email;
 
 
     if (!name || !mobileNumber || !district || !pincode || !locality || !address || !state || !addressType) {
       return res.send('all fields are required')
     }
 
-    if (!userEmail) return res.status(400).send('no email is found')
+    if (!userEmail) return res.status(401).redirect('/login')
 
     const existingUser = await User.findOne({ email: userEmail });
 
-    if (!existingUser) {
-      return res.status(400).send('no user exist');//no user exis
+
+
+
+    if (existingUser.adress) {
+      const adresslength = await Address.aggregate(
+        [
+          {
+            $match: { _id: existingUser.adress._id }
+          },
+          { $unwind: '$address' }
+        ]
+      );
+
+      const existingAddressDocument = await Address.findById(existingUser.adress._id);
+
+      if (adresslength.length < 1) {
+        const newNestedAdress =
+        {
+          ...req.body,
+          defaultAdress: true,
+        }
+
+
+        existingAddressDocument.address.push(newNestedAdress);
+        await existingAddressDocument.save();
+        res.status(200).redirect('/address')
+      } else {
+
+        const newAdressData = { ...req.body };
+        existingAddressDocument.address.push(newAdressData);
+        await existingAddressDocument.save();
+        res.status(200).redirect('/address');
+      }
     }
+
     else {
 
-      if (existingUser.adress) {
-        const adresslength = await Address.aggregate(
-          [
+      const newNestedAdress = new Address(
+        {
+          address: [
             {
-              $match: { _id: existingUser.adress._id }
-            },
-            { $unwind: '$address' }
+              ...req.body,
+              defaultAdress: true,
+            }
           ]
-        );
-        const existingAddressDocument = await Address.findById(existingUser.adress._id);
-
-        if (adresslength.length < 1) {
-          const newNestedAdress =
-          {
-            ...req.body,
-            defaultAdress: true,
-          }
-
-          // const existingAddressDocument = await Address.findById(existingUser.adress._id);
-          existingAddressDocument.address.push(newNestedAdress);
-          await existingAddressDocument.save();
-          res.status(200).redirect('/address')
-        } else {
-          // const existingAddressDocument = await Address.findById(existingUser.adress._id);
-          const newAdressData = { ...req.body };
-          existingAddressDocument.address.push(newAdressData);
-          await existingAddressDocument.save();
-          res.status(200).redirect('/address');
         }
-      }
+      );
 
-      else {
+      const addedNewAddress = await newNestedAdress.save();
 
-        const newNestedAdress = new Address(
-          {
-            address: [
-              {
-                ...req.body,
-                defaultAdress: true,
-              }
-            ]
-          }
-        );
+      existingUser.adress = addedNewAddress._id;
+      await existingUser.save();
+      res.status(200).redirect('/address')
 
-        const addedNewAddress = await newNestedAdress.save();
-
-        existingUser.adress = addedNewAddress._id;
-        await existingUser.save();
-        console.log(newNestedAdress)
-        res.send('new adress added to collection address 1st time' + newNestedAdress);
-
-      }
     }
+
   }
   catch (error) {
     console.log(error)
@@ -87,8 +86,8 @@ exports.getAllAdress = async (req, res) => {
 
 
   try {
-    console.log('calling  api',req.query.userEmail )
-    const userEmail = req.query.userEmail ;
+    console.log('calling  api', req.query.userEmail)
+    const userEmail = req.query.userEmail;
 
     if (!userEmail) {
       return res.send('user not logged in ')
@@ -128,7 +127,7 @@ exports.deleteAddress = async (req, res) => {
     const { addressId } = req.params;
     const { selectedId } = req.body;
 
-    console.log(addressId,selectedId)
+    console.log(addressId, selectedId)
 
     if (!addressId || !selectedId) {
       return res.send('all fields are required');
@@ -165,11 +164,11 @@ exports.deleteAddress = async (req, res) => {
       );
 
       //check is there default address or not
-      const isDefault = existingAddressDocument.every(element => !element.address.defaultAdress) 
-        console.log(existingAddressDocument.length)
+      const isDefault = existingAddressDocument.every(element => !element.address.defaultAdress)
+      console.log(existingAddressDocument.length)
 
       //change the default address 
-      if (isDefault&&existingAddressDocument.length>0) {
+      if (isDefault && existingAddressDocument.length > 0) {
         await Address.findOneAndUpdate(
           {
             "_id": addressId
@@ -194,3 +193,74 @@ exports.deleteAddress = async (req, res) => {
     res.send(error.message)
   }
 }
+
+//to get a single address details
+exports.editAddress = async (req, res) => {
+
+  const selectedId = req.query.selected;
+  const { addressId } = req.params;
+
+  if (!selectedId || !addressId) return res.send('not found or not logged in ');
+  const trueAddress = await Address.aggregate(
+    [
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(addressId)
+        }
+      },
+      { $unwind: '$address' },
+      {
+        $match: {
+          'address._id': new mongoose.Types.ObjectId(selectedId)
+        }
+      }
+    ]
+  );
+
+  if (trueAddress) {
+    res.send(trueAddress);
+  } else {
+    res.send('not found');
+  }
+
+}
+
+// update a address
+exports.updateAddress = async (req, res) => {
+  try {
+    const newData = { ...req.body };
+    const { selected } = req.params;
+    const addressId = req.session.addressId = '6587e4b0f6f5cdb5f67b1573'
+    const existing = await Address.findOne(
+      { _id: addressId },
+      { 'address': { $elemMatch: { _id: selected } }}
+    );
+    if (existing.address.length>0) {
+      const updatedDocument = await Address.findByIdAndUpdate(
+        addressId,
+        {
+          $set: {
+            'address.$[elem].name': newData.name,
+            'address.$[elem].mobileNumber': newData.mobileNumber,
+            'address.$[elem].district': newData.district,
+            'address.$[elem].pincode': newData.pincode,
+            'address.$[elem].locality': newData.locality,
+            'address.$[elem].address': newData.address,
+            'address.$[elem].state': newData.state,
+            'address.$[elem].addressType': newData.addressType,
+          }
+        },
+        { new: true, arrayFilters: [{ 'elem._id': selected }] }
+      );
+
+      if (updatedDocument) {
+        res.status(200).send('Updated');
+      }
+    } else {
+      res.status(404).send('not found')
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+};

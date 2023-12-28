@@ -262,9 +262,13 @@ exports.delteImage = async (req, res) => {
 exports.productListOnUser = async (req, res) => {
   try {
     const categoryId = req.query.categoryId;
-    console.log('categoyId', categoryId)
+    console.log('categoyId', categoryId);
 
     const existingCateogry = await category.findOne({ _id: categoryId, unlisted: false });
+    console.log('existing category', existingCateogry)
+    if (!existingCateogry) {
+      return res.send('cast error')
+    }
 
     const products = await Product.aggregate(
       [
@@ -285,6 +289,7 @@ exports.productListOnUser = async (req, res) => {
       ]
     )
     console.log('loggin in fucntion', products)
+    
     if (products.length > 0) {
       res.status(200).send(products);
     } else {

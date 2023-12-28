@@ -27,7 +27,7 @@
         <% for( x in categories ) {%>
           <button class="btn btn-dark" style="--bs-btn-font-size: 0rem;">
             <a
-              href="productList?categoryId=<%=categories[x]._id %>">
+              href="/productList?categoryId=<%=categories[x]._id %>">
               <%=categories[x].categoryName%>
             </a></button>
           <%}%>
@@ -75,10 +75,10 @@
                   <p class="card-text m-1">₹<%=products[i].discountPrice%> <del>₹<%=products[i].price%></del>
                   </p>
                 </div>
-                <div class=" ps-3 pe-3">
+                <!-- <div class=" ps-3 pe-3">
                   <button class="btn btn-dark card-img-bottom my-1" style="font-size: 0.6rem;">ADD TO
                     CART</button>
-                </div>
+                </div> -->
               </div>
             </div>
 

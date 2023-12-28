@@ -6,7 +6,7 @@ let erroMessage = {
     required: 'this field is required'
   },
   productNameInput: {
-    invalid: 'enter valid product name(3-20 characters)'
+    invalid: 'enter valid product name(min:3-20 characters)'
   },
   brandNameInput: {
 
@@ -114,7 +114,7 @@ console.log(imageElement);
 
 
 function checkInputValidity(form, element) {
-  let productName = /^[a-zA-Z][a-zA-Z ']{2,20}(?:\d{1,})?[a-zA-Z]$/;
+  let productName = /^[a-zA-Z][0-9a-zA-Z ']{2,20}[0-9a-zA-Z]$/;
   let brandName = /^[a-zA-Z][a-zA-Z ']{2,20}[a-zA-Z]$/;
   let price = /^[0-9]+$/
   let discount = /^(?:[1-9]|[1-9][0-9]|100)$/;

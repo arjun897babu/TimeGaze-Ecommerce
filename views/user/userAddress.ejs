@@ -241,21 +241,18 @@
                                 value="Office">
                               <label class="btn btn-outline-dark" for="office">Office</label>
                             </div>
-
+                            <small class="text-danger"></small>
                           </div>
                         </div>
                       </div>
-                      <small class="text-danger"></small>
+                      
+
+                      <div class="d-flex justify-content-center mt-3">
+                        <button type="submit" class="btn btn-outline-dark col-6">Add adress</button>
+                      </div>
+                    </form>
                   </div>
-
-
-
-                  <div class="d-flex justify-content-center mt-3">
-                    <button type="submit" class="btn btn-outline-dark col-6">Add adress</button>
-                  </div>
-
                 </div>
-                </form>
               </div>
             </div>
           </div>
@@ -279,7 +276,9 @@
                             <span class=" me-3 m-0">
                               <%= element.address.name%>
                             </span>
-                            <span class="me-3 bg-secondary-subtle">home</span>
+                            <span class="me-3 bg-secondary-subtle">
+                              <%= element.address.addressType%>
+                            </span>
                             <span>
                               <%= element.address.mobileNumber%>
                             </span>
@@ -293,11 +292,15 @@
                       </div>
 
                     </div>
-                    <div class="col-md-3 d-flex align-items-center justify-content-md-end">
-                      <div>
-                        <button class="btn btn-outline-danger delete-address" value="<%= element.address._id%>"
-                          data-id="<%=element._id  %>"> <i class="bi bi-trash-fill"></i></button>
-                      </div>
+                    <div class="col-md-3 d-flex align-items-center justify-content-md-end gap-2">
+                      <a href="/editAddress?selected=<%= element.address._id%>" class="btn btn-outine-dark" value="<%= element.address._id%>"
+                        data-id="<%=element._id  %>">
+                        <i class="bi bi-pencil-fill"></i>
+                      </a>
+
+                      <button class="btn btn-dark delete-address" value="<%= element.address._id%>"
+                        data-id="<%=element._id  %>"> <i class="bi bi-trash3-fill"></i></button>
+
                     </div>
                   </div>
                 </div>

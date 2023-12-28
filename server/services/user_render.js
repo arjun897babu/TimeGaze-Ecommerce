@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { response } = require('express');
+// const { response } = require('express');
 
 
 module.exports = {
@@ -129,24 +129,61 @@ module.exports = {
 
   },
   userAddress: (req, res) => {
-    console.log('before render', req.session.email);
-    const userEmail = req.session.email
-    axios.get(`http://localhost:${process.env.PORT}/api/getAddressDetails?userEmail=${userEmail}`)
-      .then((response) => {
-        const allAddress = response.data
-        console.log('response axios', response.data)
 
-        res.status(200).render('user/userAddress', { address: allAddress, logged: req.session.isUserAuth, categories: response.data })
-      })
+    const userEmail = req.session.email
+    axios.all([
+      axios.get(`http://localhost:${process.env.PORT}/api/getAddressDetails?userEmail=${userEmail}`),
+      axios.get(`http://localhost:${process.env.PORT}/api/categories`)
+    ])
+      .then(axios.spread((addressResponse, categoryResponse) => {
+        const allAddress = addressResponse.data
+        const categories = categoryResponse.data
+        res.status(200).render('user/userAddress', { address: allAddress, logged: req.session.isUserAuth, categories: categories })
+      }))
       .catch((error) => {
+        console.log(error)
         res.status(500).send(error.message)
       })
 
   },
+  editAddress: (req, res) => {
+    const addressId = req.session.addressId;
+    const { selected } = req.query
+    console.log('axios', addressId, selected);
+
+    axios.all([
+      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
+      axios.get(`http://localhost:${process.env.PORT}/api/userEditAddress/${addressId}?selected=${selected}`)
+    ])
+      .then(axios.spread((categoryResponse, addressResponse) => {
+        const allCategories = categoryResponse.data;
+        const address = addressResponse.data;
+
+        res.status(200).render('user/userEditAddress', { logged: req.session.isUserAuth, categories: allCategories, address: address })
+
+      }))
+      .catch(error => {
+        res.status(500).send(error.message)
+      })
+
+
+
+
+  },
+
   cart: (req, res) => {
-    axios.get(`http://localhost:${process.env.PORT}/api/categories`)
-      .then((response => {
-        res.status(200).render('user/cart', { categories: response.data, logged: req.session.isUserAuth })
+    const userId = req.session.userId;
+    console.log(userId)
+    axios.all([
+      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
+      axios.get(`http://localhost:${process.env.PORT}/api/getUserCart/${userId}`)
+    ])
+
+      .then(axios.spread((categoryResponse, cartResponse) => {
+        const categories = categoryResponse.data;
+        const cart = cartResponse.data;
+        console.log(categories, cart)
+        res.status(200).render('user/cart', { categories: categories, cart: cart, logged: req.session.isUserAuth })
       }))
 
       .catch((error) => {

@@ -13,7 +13,7 @@ Array.from(forms).forEach(form => {
     })
 
     if (isValidate) {
-      form.submit()
+      form.submit();
     }
   })
 });
@@ -92,4 +92,8 @@ function clearMessage(element) {
 
   errorMessageElement = element.parentElement.querySelector('small');
   errorMessageElement.innerHTML = ('')
+}
+
+function updatePassword(){
+  
 }

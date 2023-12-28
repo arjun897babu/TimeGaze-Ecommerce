@@ -28,6 +28,21 @@
       font-size: inherit;
     }
 
+    .image-zoom {
+      overflow: hidden;
+    }
+
+    .image-zoom img {
+      transform: scale(var(--zoom));
+      transform-origin: var(--x) var(--y);
+      transition: transform 0.3s ease;
+    }
+
+    .image-zoom:hover {
+      cursor: zoom-in;
+      --zoom: 3;
+    }
+
     .page-link {
       color: black;
     }
@@ -83,7 +98,7 @@
       object-fit: cover;
     }
 
-   
+
 
     .breadcrumb-item a {
       color: rgb(0, 0, 0) !important;
@@ -95,71 +110,82 @@
 
 <body>
   <!-- header -->
-  <%- include('../include/headerCommon')  %>
+  <%- include('../include/headerCommon') %>
 
-      <div class="p-2 catagory">
-        <% for( x in categories ) {%>
-          <button class="btn btn-dark" style="--bs-btn-font-size: 0rem;"><a
-              href="/productList?categoryId=<%=categories[x]._id %>">
-              <%=categories[x].categoryName%>
-            </a></button>
-          <%}%>
-      </div>
+    <div class="p-2 catagory">
+      <% for( x in categories ) {%>
+        <button class="btn btn-dark" style="--bs-btn-font-size: 0rem;"><a
+            href="/productList?categoryId=<%=categories[x]._id %>">
+            <%=categories[x].categoryName%>
+          </a></button>
+        <%}%>
+    </div>
 
     </div>
 
 
-  </header>
-  <!-- header -->
-  <!-- content -->
-  <div class="container">
-    <nav aria-label="breadcrumb " class="p-4">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="/">Home</a></li>
-        <!-- <li class="breadcrumb-item "></a></li> -->
-        <li class="breadcrumb-item active" aria-current="page"><%=products.productName%></li>
-      </ol>
-    </nav>
-  </div>
-  <section class="py-5">
+    </header>
+    <!-- header -->
+    <!-- content -->
     <div class="container">
-      <div class="row ">
-        <aside class="col-sm-6">
-          <div class="border rounded-4 p-3 d-flex justify-content-center">
-            <img style="object-fit: cover; max-height: 55vh; " class="rounded-4 fit" src="uploads/<%=products.image[0]%>" />
-          </div>
+      <nav aria-label="breadcrumb " class="p-4">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <!-- <li class="breadcrumb-item "></a></li> -->
+          <li class="breadcrumb-item active" aria-current="page">
+            <%=products.productName%>
+          </li>
+        </ol>
+      </nav>
+    </div>
+    <section class="py-5">
+      <div class="container">
+        <div class="row ">
+          <aside class="col-sm-6">
+            <div class="border rounded-4 mb-3 d-flex justify-content-center image-zoom">
+              <img style="max-width: 80%; object-fit: contain;" class="rounded-4 fit "
+                src="uploads/<%=products.image[0]  %>" id="main-image-div" />
+            </div>
+            <div class="d-flex justify-content-center g-3 mb-3">
+              <% for(i=0;i<products.image.length;i++) { %>
+                <div class="mx-auto p-1"><img width="80" height="80" style="border: 1px solid gainsboro;"
+                    class="rounded-2 smallImageDiv" src="uploads/<%=products.image[i]%>" /></div>
+                <% } %>
+            </div>
 
-        </aside>
-        <main class="col-sm-6">
-          <div class="p-3">
-            <h4 class="title text-dark">
-              <%=products.productName %>Fashion <%=products.category.categoryName%>'s <%=products.caseShape%> Case
-               Watch <br />
-              
-            </h4>
-            <hr>
-            <div class="d-flex flex-row my-3">
-              <div class="text-warning mb-1 me-2">
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-fill"></i>
-                <i class="bi bi-star-half"></i>
-                <span class="ms-1">
-                  4.5
-                </span>
+          </aside>
+          <main class="col-sm-6">
+            <div class="p-3">
+              <h4 class="title text-dark">
+                <%=products.productName %>Fashion <%=products.category.categoryName%>'s <%=products.caseShape%> Case
+                      Watch <br />
+
+              </h4>
+              <hr>
+              <div class="d-flex flex-row my-3">
+                <div class="text-warning mb-1 me-2">
+                  <i class="bi bi-star-fill"></i>
+                  <i class="bi bi-star-fill"></i>
+                  <i class="bi bi-star-fill"></i>
+                  <i class="bi bi-star-fill"></i>
+                  <i class="bi bi-star-half"></i>
+                  <span class="ms-1">
+                    4.5
+                  </span>
+                </div>
+
+                <!-- <span class="text-success ms-2">In stock</span> -->
+              </div>
+              <span class="text-success">
+                <%=products.offer%>% offer
+              </span>
+              <div class="mb-3">
+
+                <span class="h5">₹<%=products.discountPrice%></span>
+                <span class="text-muted"><del>₹<%=products.price%></del></span>
               </div>
 
-              <!-- <span class="text-success ms-2">In stock</span> -->
-            </div>
-            <span class="text-success"><%=products.offer%>% offer</span>
-            <div class="mb-3">
-
-              <span class="h5">₹<%=products.discountPrice%></span>
-              <span class="text-muted"><del>₹<%=products.price%></del></span>
-            </div>
-
-            <!-- <p>
+              <!-- <p>
             Modern look and quality demo item is a streetwear-inspired collection that continues to break away from the conventions of mainstream fashion. Made in Italy, these black and brown clothing low-top shirts for
             men.
           </p>
@@ -179,73 +205,93 @@
           </div> -->
 
 
-            <div class="justify-content-center d-flex">
-              <a href="#" class="btn btn-dark shadow-0 col-8">
+              <div class="justify-content-center d-flex">
+                <a href="#" class="btn btn-dark shadow-0 col-8">
 
-                <i class="me-1 bi bi-base"></i>
-                Add to cart
-              </a>
+                  <i class="me-1 bi bi-base"></i>
+                  Add to cart
+                </a>
+              </div>
+
+
+
             </div>
-
-
-
-          </div>
-        </main>
-      </div>
-    </div>
-  </section>
-  <!-- content -->
-  <div class="container p-1 product-images me2 border border-dark-subtle">
-    <div class=" bg-light-subtle">
-      <div class="container-fluid p-2">
-        <div class="row d-flex justify-content-evenly">
-         <% for(i=1;i<products.image.length;i++) {%>
-          <div class="col-sm-3 d-flex justify-content-center p-2   ">
-            <div class="border border-dark ">
-              <img class="" src="uploads/<%=products.image[i]  %>" alt="" style="object-fit: contain;width: 10rem;">
-            </div>
-          </div>
-          <% } %>
+          </main>
         </div>
       </div>
+    </section>
+    <!-- content -->
+    <div class="container my-3">
+      <h4>Product Information</h4>
+      <hr>
 
+      <table>
+        <tr>
+          <th class="pe-4">Product</th>
+          <td>:</td>
+          <td class="ps-4">
+            <%=products.productName%>
+          </td>
+        </tr>
+        <tr>
+          <th class="pe-4">Case Diameter</th>
+          <td>:</td>
+          <td class="ps-4">
+            <%=products.caseDiameter%> mm
+          </td>
+        </tr>
+        <tr>
+          <th class="pe-4">Case Shape</th>
+          <td>:</td>
+          <td class="ps-4">
+            <%=products.caseShape%>
+          </td>
+        </tr>
+        <tr>
+          <th class="pe-4">Display Type</th>
+          <td>:</td>
+          <td class="ps-4">Analogue</td>
+        </tr>
+      </table>
+      <h1></h1>
+      <hr>
     </div>
-  </div>
-
-  <div class="container my-3">
-    <h4>Product Information</h4>
-    <hr>
-
-    <table>
-      <tr>
-        <th class="pe-4">Product</th>
-        <td>:</td>
-        <td class="ps-4"><%=products.productName%></td>
-      </tr>
-      <tr>
-        <th class="pe-4">Case Diameter</th>
-        <td>:</td>
-        <td class="ps-4"><%=products.caseDiameter%> mm</td>
-      </tr>
-      <tr>
-        <th class="pe-4">Case Shape</th>
-        <td>:</td>
-        <td class="ps-4"><%=products.caseShape%></td>
-      </tr>
-      <tr>
-        <th class="pe-4">Display Type</th>
-        <td>:</td>
-        <td class="ps-4">Analogue</td>
-      </tr>
-    </table>
-    <h1></h1>
-    <hr>
-  </div>
 
 
 
-  <%- include("../include/footer") %>
-    <script src="js/togglebutton.js"></script>
+    <%- include("../include/footer") %>
+      <script src="js/togglebutton.js"> </script>
+      <script>
+        const mainDiv = document.getElementById('main-image-div')
+        const smallImages = Array.from(document.querySelectorAll('.smallImageDiv'))
+
+        smallImages.forEach(function (element) {
+          element.addEventListener('click', function () {
+            mainDiv.src = this.src;
+
+          });
+        });
+
+        
+        document.querySelectorAll('.image-zoom').forEach(element => {
+          let x, y, width, height;
+          element.onmouseenter = () => {
+            const size = element.getBoundingClientRect();
+            x = size.x;
+            y = size.y;
+            width = size.width;
+            height = size.height;
+          };
+          element.onmousemove = e => {
+            const horizontal = (e.clientX - x) / width * 100;
+            const vertical = (e.clientY - y) / height * 100;
+
+            element.style.setProperty('--x', horizontal + '%');
+            element.style.setProperty('--y', vertical + '%');
+          };
+        });
+
+      </script>
 
 </body>
 
