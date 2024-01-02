@@ -148,7 +148,7 @@
             </div>
             <div class="d-flex justify-content-center g-3 mb-3">
               <% for(i=0;i<products.image.length;i++) { %>
-                <div class="mx-auto p-1"><img width="80" height="80" style="border: 1px solid gainsboro;"
+                <div class=" p-1"><img width="80" height="80" style="border: 1px solid gainsboro;"
                     class="rounded-2 smallImageDiv" src="uploads/<%=products.image[i]%>" /></div>
                 <% } %>
             </div>
@@ -206,11 +206,28 @@
 
 
               <div class="justify-content-center d-flex">
-                <a href="#" class="btn btn-dark shadow-0 col-8">
+                <% if(isCart) {%>
+                  <a href="/cart" class="col-8">
+                    <i class="p-0 btn btn-dark shadow-0 col-12">
+                      <button class="btn btn-dark card-img-bottom my-1">GO TO
+                        CART</button>
+                    </i>
+                  </a>
+                  <% } else{ %>
+                    <% if(products.quantity>0) {%>
+                      <form action='/api/addToCart/<%=products._id%>' method="post"
+                        class="p-0 btn btn-dark shadow-0 col-8">
+                        <button class="btn btn-dark card-img-bottom my-1" type="submit">
+                          ADD TO CART
+                        </button>
+                      </form>
+                      <% }else{ %>
+                        <i class="p-0 btn btn-dark shadow-0 col-8">
+                          <button class="btn btn-dark card-img-bottom my-1">OUT OF STOCK</button>
+                        </i>
+                        <% } %>
+                          <% } %>
 
-                  <i class="me-1 bi bi-base"></i>
-                  Add to cart
-                </a>
               </div>
 
 
@@ -272,7 +289,7 @@
           });
         });
 
-        
+
         document.querySelectorAll('.image-zoom').forEach(element => {
           let x, y, width, height;
           element.onmouseenter = () => {

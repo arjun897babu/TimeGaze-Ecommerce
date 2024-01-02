@@ -5,7 +5,7 @@ const User = require('../model/userModelSchema');
 
 const adminDetails = {
   emailAddress: 'admin@gmail.com',
-  password: 'qwerty123'
+  password: '1234'
 }
 
 exports.adminLogin = (req, res) => {

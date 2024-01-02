@@ -4,7 +4,6 @@ require('dotenv').config();
 module.exports = {
 
   adminLogin: (req, res) => {
-   
 
     res.render('admin/adminLogin', { errorMessage: req.session.errorMessage }, (error, html) => {
       if (error) {
@@ -54,9 +53,8 @@ module.exports = {
       .then(axios.spread((productResponse, categoriesResponse) => {
         const products = productResponse.data;
         const categories = categoriesResponse.data;
-        
 
-        res.status(200).render('admin/editproduct', { products, categories });
+        res.status(200).render('admin/editproduct', { products:products.existingProduct, categories });
       }))
       .catch((error) => {
         console.error('Error in adminEditProduct:', error.message);
@@ -127,6 +125,10 @@ module.exports = {
       .catch(error => {
         res.send(error.message)
       })
+  },
+  order:(req,res)=>{
+    
+    res.status(200).render('admin/adminOrder')
   },
   errorPage:(req,res)=>{
     res.status(404).render('error')

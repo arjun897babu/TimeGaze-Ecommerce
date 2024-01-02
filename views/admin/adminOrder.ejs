@@ -35,14 +35,14 @@
 
 
       <ul class="side-menu top">
-        <li >
+        <li>
           <a href="/adminHome">
             <i class='bx bxs-dashboard'></i>
             <span class="text">Dashboard</span>
           </a>
         </li>
 
-        <li class="active" >
+        <li >
           <a href="/adminproducts">
             <i class='bx bxs-shopping-bags'></i>
             <span class="text">products</span>
@@ -54,7 +54,7 @@
             <span class="text">users</span>
           </a>
         </li>
-        <li>
+        <li class="active">
           <a href="/order">
             <i class='bx bx-basket'></i>
             <span class="text">Orders</span>
@@ -104,17 +104,28 @@
             <img src="image/timegazelogo.png" alt="timegaze logo" style="width: 9rem;">
           </div>
 
-        </nav>
 
+        </nav>
         <!-- NAVBAR -->
         <nav aria-label="breadcrumb " class="p-4">
           <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/adminHome">Home</a></li>
-            <li class="breadcrumb-item"><a href="/adminproducts">products</a></li>
-            <li class="breadcrumb-item active" aria-current="page">unlisted product</li>
+            <li class="breadcrumb-item active" aria-current="page">orders</li>
           </ol>
         </nav>
-        
+
+        <!-- <div class="container-fluid ">
+          <div class="container d-flex justify-content-end" ><a href="/addproducts"><button type="submit" class="btn btn-dark ">
+            add products +
+          </button></a>
+            
+            <a href="/unlistedProducts"><button type="submit" class="btn btn-danger ms-2">
+              unlisted products
+            </button></a>
+            
+          </div>
+          
+        </div> -->
         <!-- Table -->
         <div class="container-fluid mt-3">
           <div class="table-responsive ">
@@ -122,31 +133,45 @@
               <thead>
                 <tr>
                   <th></th>
-                  <th>Name</th>
-                  <th>QTY</th>
-                  <th>Category</th>
-                  <th></th>
+                  <th>orderId</th>
+                 
+                  <th>product</th>
+                  <th>action</th>
+
                 </tr>
               </thead>
               <tbody class="mb-2">
-                <% for(x in products){ %>
+
                 <tr>
                   <th>
-                    <img src="uploads/<%= products[x].image[0] %>" style="width: 4rem;object-fit: cover;">
+                    <img src="uploads/" style="width: 4rem;object-fit: cover;">
                   </th>
+                  <td class="fixed-td">orderId</td>
                   <td class="fixed-td">
-                    <h6><%=products[x].productName%></h6>
-                    <p class="card-text"><%=products[x].discountPrice%><del class="text-black-50"><%=products[x].price%></del></p>
+                    <h6>product name</h6>
+                    <p class="card-text">discountPrice<del class="text-black-50">offer price</del></p>
                   </td>
-                  <td><%=products[x].quantity%></td>
-                  <td><%=products[x].category.categoryName%></td>
-                  <td>
-                      <button class="btn restore_product" data-id="<%=products[x]._id %>" type="submit">
-                        <i class="bi bi-box-arrow-down"></i>
-                      </button>
+                  <td class="">
+
+                    <form action="">
+                      <div class="justify-content-between d-flex">
+                        <select name="orderStatus" id="" class="me-1">
+                          <option value="">ordered</option>
+                          <option value="">pending</option>
+                          <option value="">delivered</option>
+                          <option value="">cancel</option>
+                        </select>
+                        <input style="font-size: 0.6rem;" class="btn btn-dark me-1" type="submit" value="submit"> 
+                      </div>
+
+                    </form>
+
+
+
+
                   </td>
                 </tr>
-                <% } %>
+
               </tbody>
             </table>
           </div>
@@ -158,6 +183,5 @@
 
   </div>
 
-<%- include('../include/adminfooter') %>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="js/restoreProduct.js"></script>
+  <%- include('../include/adminfooter') %>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>

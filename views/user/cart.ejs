@@ -36,7 +36,7 @@
     <!-- header -->
 
     </header>
-    <% if(cart!=null) { %>
+    <% if(cart.length> 0) { %>
       <section>
         <!-- cart + summary -->
         <section class="bg-light my-5">
@@ -63,36 +63,58 @@
                                 <p class="text-muted">
                                   <%=cart[carts].cartItem.product.brand%>
                                 </p>
+                                <% if(cart[carts].cartItem.product.quantity<6) {%>
+                                  <p class="text-danger">
+                                    <% if(cart[carts].cartItem.product.quantity<1) {%>
+                                      OUT OF STOCK
+                                      <% } else {%>
+                                        only <%=cart[carts].cartItem.product.quantity%> left
+                                          <% } %>
+                                  </p>
+                                  <% } %>
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div class="col-lg-2 col-sm-6 col-6 d-flex flex-row flex-lg-column flex-xl-row text-nowrap">
-                          <div class="">
-                            <select style="width: 100px;" class="form-select me-4" name="quantity">
-                              <% for (let i=1; i <=4; i++) { %>
-                                <option value="<%= i  %>" <%=cart[carts].cartItem.quantity===i ? 'selected' : '' %>><%=
-                                    i %>
-                                </option>
-                                <% } %>
-                            </select>
-                          </div>
-                          <div class="">
-                            <text class="h6">₹ <%=cart[carts].cartItem.product.discountPrice%></text> <small
-                              class="text-success">
-                              <%=cart[carts].cartItem.product.offer%>% off
-                            </small> <br />
-                            <small class="text-muted text-nowrap"> ₹ <%=cart[carts].cartItem.product.discountPrice%> /
-                                per item </small>
-                          </div>
-                        </div>
-                        <div
-                          class="col-lg col-sm-6 d-flex justify-content-sm-center justify-content-md-start justify-content-lg-center justify-content-xl-end mb-2">
-                          <div class="float-md-end">
-                            <button data-id="<%=cart[carts].cartItem._id %>"
-                              class="btn btn-light border text-danger icon-hover-danger remove-item"> Remove </button>
-                          </div>
-                        </div>
+                      
+                          <% if(cart[carts].cartItem.product.quantity>0) {%>
+                            <div class="col-lg-2 col-sm-6 col-6 d-flex flex-row flex-lg-column flex-xl-row text-nowrap">
+                              <div class="">
+                                <select style="width: 100px;" data-id="<%=cart[carts].cartItem.product._id%>"
+                                  class="form-select me-4 cart-quantity" name="quantity">
+                                  <% const maxOrder=5; %>
+                                    <% const availableQuantity=cart[carts].cartItem.product.quantity; %>
+                                      <% const displayQuantity=Math.min(maxOrder, availableQuantity); %>
+                                        <% for (let i=1; i <=displayQuantity; i++) { %>
+                                          <option value="<%= i  %>" <%=cart[carts].cartItem.quantity===i ? 'selected'
+                                            : '' %>>
+                                            <%= i %>
+                                          </option>
+                                          <% } %>
+                                </select>
+                              </div>
+                              <div class="">
+                                <text class="h6">₹
+                                  <%=cart[carts].cartItem.product.discountPrice*cart[carts].cartItem.quantity%>
+                                </text>
+                                <small class="text-success">
+                                  <%=cart[carts].cartItem.product.offer%>% off
+                                </small> <br />
+                                <small class="text-muted text-nowrap"> ₹ <%=cart[carts].cartItem.product.discountPrice%>
+                                    /
+                                    per item </small>
+                              </div>
+                            </div>
+                            <% } %>
+                              
+                                <div
+                                  class="col-lg col-sm-6 d-flex justify-content-sm-center justify-content-md-start justify-content-lg-center justify-content-xl-end mb-2">
+                                  <div class="float-md-end">
+                                    <button data-id="<%=cart[carts].cartItem._id %>"
+                                      class="btn btn-light border text-danger icon-hover-danger remove-item"> Remove
+                                    </button>
+                                  </div>
+                                </div>
                       </div>
                     </div>
                   </div>
@@ -120,26 +142,28 @@
                 <div class="card shadow-0 border">
                   <div class="card-body">
                     <div class="d-flex justify-content-between">
-                      <p class="mb-2">Total price:</p>
-                      <p class="mb-2">₹329.00</p>
+                      <p class="mb-2">Price(<%=cart.length %> items)</p>
+                      <p class="mb-2">₹<%= cart[0].cartTotal %>
+                      </p>
                     </div>
-                    <div class="d-flex justify-content-between">
+                    <!-- <div class="d-flex justify-content-between">
                       <p class="mb-2">Discount:</p>
                       <p class="mb-2 text-success">-₹60.00</p>
-                    </div>
+                    </div> -->
                     <div class="d-flex justify-content-between">
-                      <p class="mb-2">TAX:</p>
-                      <p class="mb-2">₹14.00</p>
+                      <p class="mb-2">Delivery</p>
+                      <p class="mb-2 text-success">Free</p>
                     </div>
                     <hr />
                     <div class="d-flex justify-content-between">
                       <p class="mb-2">Total price:</p>
-                      <p class="mb-2 fw-bold">₹283.00</p>
+                      <p class="mb-2 fw-bold">₹<%= cart[0].cartTotal %>
+                      </p>
                     </div>
 
                     <div class="mt-3">
-                      <a href="#" class="btn btn-dark w-100 shadow-0 mb-2"> Make Purchase </a>
-                      <a href="#" class="btn btn-light w-100 border mt-2"> Back to shop </a>
+                      <a href="/checkout" class="btn btn-dark w-100 shadow-0 mb-2"> Make Purchase </a>
+                      <a href="/" class="btn btn-light w-100 border mt-2"> Back to shop </a>
                     </div>
                   </div>
                 </div>
@@ -151,6 +175,33 @@
 
       </section>
       <% }else { %>
+
+        <div class="container-fluid  my-1">
+          <div class="row">
+
+            <div class="col-md-12">
+
+              <div class="card">
+
+                <div class="card-body cart">
+                  <div class="col-sm-12 empty-cart-cls text-center">
+                    <img
+                      src="https://www.getillustrations.com/packs/matilda-startup-illustrations/scenes/_1x/shopping,%20e-commerce%20_%20empty,%20shopping%20cart,%20items,%20products,%20zero,%20none_md.png"
+                      width="130" height="130" class="img-fluid mb-4 mr-3">
+                    <h3><strong>Your Cart is Empty</strong></h3>
+                    <a href="/" class="btn btn-dark cart-btn-transform m-3" data-abc="true">continue shopping</a>
+
+
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+
+          </div>
+
+        </div>
 
         <% } %>
 

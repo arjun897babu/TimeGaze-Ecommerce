@@ -2,6 +2,7 @@ const adminServices = require('../services/admin_render');
 const adminControll = require('../controller/admin');
 const productControll = require('../controller/product');
 const cateogryControll = require('../controller/category')
+const orderControll = require('../controller/order');
 const adminMiddleWare = require('../middlewares/admin/admin');
 const imageUpload = require('../middlewares/admin/multerMIddleWare')
 
@@ -19,6 +20,7 @@ adminRoute.get('/updateCategory', adminMiddleWare.isAdmin, adminServices.updateC
 adminRoute.get('/unlistedCategory', adminMiddleWare.isAdmin, adminServices.unlistedCategory)//unlisted categories
 adminRoute.get('/unlistedProducts', adminMiddleWare.isAdmin, adminServices.unlistedProducts);//unlsited products
 adminRoute.get('/updateProduct',  adminServices.adminEditProduct);//edit product
+adminRoute.get('/order',adminMiddleWare.isAdmin,adminServices.order);//admin order management
 
 
 adminRoute.post('/api/adminLogin', adminControll.adminLogin);//for admin login 
@@ -48,7 +50,9 @@ adminRoute.get('/api/singleEditProduct', productControll.singleProduct);//to get
 adminRoute.patch('/api/deleteImage/:productId', productControll.delteImage);//
 adminRoute.put('/api/updareProduct/:productId', imageUpload.upload.array('images', 4), productControll.updateProducts);//update product;
 
-// adminRoute.get("*",adminServices.errorPage);
+adminRoute.get('/api/getAllOrder',orderControll.getAllOrderDetails)//to get all orderDetails
+
+
 
 module.exports = adminRoute;
 

@@ -9,6 +9,7 @@ exports.createAdress = async (req, res) => {
     const { name, mobileNumber, district, pincode, locality, address, state, addressType } = req.body;
 
     const userEmail = req.session.email;
+    const { source } = req.query
 
 
     if (!name || !mobileNumber || !district || !pincode || !locality || !address || !state || !addressType) {
@@ -44,13 +45,21 @@ exports.createAdress = async (req, res) => {
 
         existingAddressDocument.address.push(newNestedAdress);
         await existingAddressDocument.save();
-        res.status(200).redirect('/address')
+        if(source==='checkout'){
+          res.status(200).redirect('/checkout')
+        }else{
+          res.status(200).redirect('/address')
+        }
       } else {
 
         const newAdressData = { ...req.body };
         existingAddressDocument.address.push(newAdressData);
         await existingAddressDocument.save();
-        res.status(200).redirect('/address');
+        if(source==='checkout'){
+          res.status(200).redirect('/checkout')
+        }else{
+          res.status(200).redirect('/address')
+        }
       }
     }
 
@@ -71,7 +80,12 @@ exports.createAdress = async (req, res) => {
 
       existingUser.adress = addedNewAddress._id;
       await existingUser.save();
-      res.status(200).redirect('/address')
+      if(source==='checkout'){
+        res.status(200).redirect('/checkout')
+      }else{
+        res.status(200).redirect('/address')
+      }
+     
 
     }
 
@@ -86,7 +100,7 @@ exports.getAllAdress = async (req, res) => {
 
 
   try {
-    console.log('calling  api', req.query.userEmail)
+
     const userEmail = req.query.userEmail;
 
     if (!userEmail) {
@@ -106,7 +120,7 @@ exports.getAllAdress = async (req, res) => {
         ]
       );
 
-      console.log('user all Adress', allAddress);
+
       res.send(allAddress)
     } else {
       return res.send(null)
@@ -230,12 +244,15 @@ exports.updateAddress = async (req, res) => {
   try {
     const newData = { ...req.body };
     const { selected } = req.params;
-    const addressId = req.session.addressId = '6587e4b0f6f5cdb5f67b1573'
+    const { source } = req.query
+    const addressId = req.session.addressId;
+
     const existing = await Address.findOne(
       { _id: addressId },
-      { 'address': { $elemMatch: { _id: selected } }}
+      { 'address': { $elemMatch: { _id: selected } } }
     );
-    if (existing.address.length>0) {
+
+    if (existing.address.length > 0) {
       const updatedDocument = await Address.findByIdAndUpdate(
         addressId,
         {
@@ -254,7 +271,17 @@ exports.updateAddress = async (req, res) => {
       );
 
       if (updatedDocument) {
-        res.status(200).send('Updated');
+        if (source === 'address') {
+          res.status(200).json({
+            message: 'Updated',
+            redirectUrl: '/address'
+          });
+        } else if (source === 'checkout') {
+          res.status(200).json({
+            message: 'Updated',
+            redirectUrl: '/checkout'
+          });
+        }
       }
     } else {
       res.status(404).send('not found')
@@ -264,3 +291,43 @@ exports.updateAddress = async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 };
+
+
+exports.makeDefault = async (req, res, next) => {
+  try {
+    const { selectedId } = req.params;
+    const addressId = req.session.addressId ;
+
+    if (!selectedId || !addressId) {
+      return res.status(400).send('Missing parameter');
+    }
+
+    const existingAddressDocument = await Address.findById(
+      addressId,
+      { 'address._id': 1, 'address.defaultAdress': 1 }
+    );
+
+    if (!existingAddressDocument) {
+      let error = new Error('Item not found');
+      error.status = 404;
+      return next(error);
+    }
+
+    const selectedIndex = existingAddressDocument.address.findIndex(item => item._id.equals(selectedId));
+
+    if (selectedIndex === -1) {
+      let error = new Error('Item not found');
+      error.status = 404;
+      return next(error);
+    }
+
+    existingAddressDocument.address.forEach((item, index) => item.defaultAdress = (index === selectedIndex));
+
+    await existingAddressDocument.save();
+
+    res.send('working');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  }
+}

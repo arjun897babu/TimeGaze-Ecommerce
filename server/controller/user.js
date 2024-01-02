@@ -224,16 +224,15 @@ exports.sendOTP = async (req, res) => {
 
 exports.updateName = async (req, res) => {
   try {
-    const userEmail = req.session.email = 'arjunkan22@gmail.com';
+    console.log('b')
+    const userEmail = req.session.email ;
     const { name } = req.body;
-
-    console.log(userEmail, name)
 
     if (!userEmail || !name) {
       return res.send('user not logged in or filed is required');
     }
     const existingUser = await User.findOneAndUpdate({ email: userEmail }, { $set: { name: name } }, { new: true });
-    console.log('exist', existingUser)
+   
     if (existingUser) {
       res.send('name updated')
     } else {
@@ -250,16 +249,15 @@ exports.updateName = async (req, res) => {
 //to update phonenumber
 exports.updateMobileNumber = async (req, res) => {
   try {
-    const userEmail = req.session.email = 'arjunkan22@gmail.com';
+    console.log('a')
+    const userEmail = req.session.email;
     const { phonenumber } = req.body;
-
-    console.log(userEmail, phonenumber)
 
     if (!userEmail || !phonenumber) {
       return res.send('user not logged in or filed is required');
     }
     const existingUser = await User.findOneAndUpdate({ email: userEmail }, { $set: { phonenumber: phonenumber } }, { new: true });
-    console.log('exist', existingUser)
+   
     if (existingUser) {
       res.send('phonenumber updated')
     } else {

@@ -1,7 +1,29 @@
+$('.change-address').click(function(event){
+  event.preventDefault();
+  const selectedId = $(this).attr('data-id');
+  console.log(selectedId);
+  makeAddressDefualt(selectedId);
+})
 
+function makeAddressDefualt(selectedId){
+  $.ajax({
+    url:`/api/makeDefault/${selectedId}`,
+    type:'PUT',
+    contentType:'application/json',
+    success: function(response) {
+     location.reload()
+    },
+    error: function(error) {
+     
+      console.error(error);
+    }
+
+  })
+}
 
 $('#updateAddress').click(function (event) {
   event.preventDefault();
+  event.stopPropagation()
   const selected = $(this).attr('data-id');
   const form = $('.requires-validation');
   const data  = form.serializeArray();
@@ -15,14 +37,14 @@ $('#updateAddress').click(function (event) {
 });
 
 function updateAddress(newData, selected) {
-  $.ajax({ 
-    url: `/api/updateAddress/${selected}?source=address`,
+  $.ajax({
+    url: `/api/updateAddress/${selected}?source=checkout`,
     type: 'PUT',
     data: JSON.stringify(newData),
     contentType: 'application/json',
     success: function (data, textStatus, xhr) {
       if (xhr.status === 200) {
-        console.log('Name update:', data);
+       
         window.location.href = data.redirectUrl
     }
     },

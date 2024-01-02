@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TimeGaze</title>
+  <link rel="icon" href="image/android-chrome-512x512.png" type="image/png" alt="Site Icon">
+
+  <!-- boostrap css cdn link -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+  <!-- bootstrap icon cdn link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+
+  <!-- css style sheet link -->
+  <link rel="stylesheet" href='css/header_footer.css'>
+
+
+  <style>
+    .cart-container {
+
+      overflow-y: auto;
+      max-height: 200px;
+      /* Set a max height for the container */
+    }
+
+    .form-control:focus {
+      color: var(--bs-body-color);
+      background-color: var(--bs-body-bg);
+      border-color: none;
+      outline: 0;
+      box-shadow: none;
+    }
+
+    .btn-close:focus {
+      outline: 0;
+      box-shadow: none;
+      border-color: none;
+    }
+
+    .form-fontSize {
+      font-size: 0.9rem;
+    }
+
+    .inputfiled-size {
+      height: 1.6rem;
+    }
+
+    .cart-container::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+
+</head>
+
+<body>
+  <!-- header -->
+  <%- include('../include/headerCommon') %>
+    <!-- header -->
+    </header>
+
+    <section>
+      <!-- checkout + summary -->
+      <section class="bg-light my-5">
+        <div class="container-fluid">
+          <div class="row">
+
+            <div class="col-md-9 mb-2 ">
+              <div class="bg-white my-1 col-md-8 p-2 d-flex justify-content-between align-items-center border">
+                <div>
+                  <h5 class="m-0" style="font-size: 0.9rem;">Logged in</h5>
+                  <small class="mb-0 text-wrap" style="font-size: 0.6rem;">
+                    <%=cartItems[0].user.name %>
+                      <%=cartItems[0].user.phonenumber %>
+                  </small>
+                </div>
+                <div class="text-success">
+                  <i class="bi bi-check-circle"></i>
+                </div>
+              </div>
+              <!-- address -->
+              <div class="d-flex col-md-8  flex-column border mb-1 bg-white p-2 flex-sm-row justify-content-between ">
+                <!-- default address -->
+                <div class="">
+                  <div class="d-flex flex-column">
+                    <div class="d-flex flex-wrap align-items-center mb-2">
+                      <span class="me-2 form-fontSize ">
+                        <%=address.defaultAddress.address.name %>
+                      </span>
+                      <span class="badge bg-secondary me-2">
+                        <%=address.defaultAddress.address.addressType %>
+                      </span>
+                      <span>
+                        <%=address.defaultAddress.address.mobileNumber %>
+                      </span>
+                    </div>
+                    <address class="mb-0 " style="font-size: 0.6rem;white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  max-width: 200px;">
+                      <%=address.defaultAddress.address.address %>
+                    </address>
+                  </div>
+                </div>
+                <!-- default address -->
+                <div class=" d-flex align-items-center justify-content-md-end gap-2">
+                  <!-- modal trigger button for edit address -->
+                  <i class="btn bi bi-pencil-fill" data-bs-toggle="modal" data-bs-target="#addressModal"></i>
+
+                  <div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content rounded-0">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="addressModalLabel">Edit Address</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-1">
+                          <form class="requires-validation" novalidate>
+                            <div class="row p-1">
+
+                              <div class="col-md-6 mb-1">
+                                <label for="validateName" class="form-label form-fontSize"> Name</label>
+                                <input type="text" class="form-control inputfiled-size" name='name'
+                                  value="<%=address.defaultAddress.address.name %>" id="validateName">
+                                <small class="text-danger"></small>
+                              </div>
+
+                              <div class="col-md-6 mb-1">
+                                <label for="validateMobileNumber" class="form-label form-fontSize"> Mobile
+                                  Number</label>
+                                <input type="number" name="mobileNumber"
+                                  value="<%=address.defaultAddress.address.mobileNumber %>"
+                                  class="form-control inputfiled-size" id="validateMobileNumber">
+                                <small class="text-danger"></small>
+                              </div>
+
+                              <div class="col-5 mb-1">
+                                <label for="validateDistrict" class="form-label form-fontSize">District</label>
+                                <input type="text" name="district" value="<%=address.defaultAddress.address.district %>"
+                                  class="form-control inputfiled-size" id="validateDistrict">
+                                <small class="text-danger"></small>
+                              </div>
+
+                              <div class="col-3 mb-1">
+                                <label for="validatePincode" class="form-label form-fontSize">Pincode</label>
+                                <input type="number" name="pincode" value="<%=address.defaultAddress.address.pincode %>"
+                                  class="form-control inputfiled-size" id="validatePincode">
+                                <small class="text-danger"></small>
+                              </div>
+                              <div class="col-4 mb-1">
+                                <label for="validatelocality" class="form-label form-fontSize">Locality</label>
+                                <input type="text" name="locality" value="<%=address.defaultAddress.address.locality %>"
+                                  class="form-control inputfiled-size" id="validatelocality">
+                                <small class="text-danger"></small>
+                              </div>
+
+                              <div class="col-md-12 mb-1">
+                                <label for="validateAdress" class="form-label form-fontSize">Address</label>
+                                <textarea class="form-control " name="address" id="validateAdress" rows="3"
+                                  placeholder="Address (area and street)"><%=address.defaultAddress.address.address %></textarea>
+                                <small class="text-danger"></small>
+                              </div>
+
+                              <div class="col-md-12 mb-1">
+                                <div class="col-3">
+                                  <label for="validateState" class="form-label form-fontSize">State</label>
+                                  <input type="text" name="state" value="<%=address.defaultAddress.address.state %>"
+                                    class="form-control inputfiled-size" id="validateState">
+                                  <small class="text-danger"></small>
+                                </div>
+                              </div>
+
+                              <div class="col-md-12 mb-1">
+                                <div class="col-2 d-flex flex-column ">
+                                  <label class="form-label form-fontSize">Address Type</label>
+                                  <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    <input type="radio" name="addressType" class="btn-check" id="home"
+                                      autocomplete="off" value="Home"
+                                      <%=(address.defaultAddress.address.addressType==='Home' )?'checked':'' %>>
+                                    <label class="btn btn-outline-dark" for="home">Home</label>
+
+                                    <input type="radio" name="addressType" class="btn-check" id="office"
+                                      autocomplete="off" value="Office"
+                                      <%=(address.defaultAddress.address.addressType==='Office' )?'checked':'' %>>
+                                    <label class="btn btn-outline-dark" for="office">Office</label>
+                                  </div>
+                                  <small class="text-danger"></small>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="d-flex justify-content-center mt-3">
+                              <button type="submit" id="updateAddress"
+                                data-id="<%=address.defaultAddress.address._id %>"
+                                class="btn btn-outline-dark col-6">save Address</button>
+                            </div>
+                          </form>
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- end of modal for edit address -->
+
+                  <!-- modal for show all other address -->
+                  <i class="btn btn-dark" style="font-size: 0.5rem;" data-bs-toggle="modal"
+                    data-bs-target="#addressChangeModal">Change</i>
+
+                  <div class="modal fade" id="addressChangeModal" tabindex="-1" aria-labelledby="addressModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content rounded-0">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="addressModalLabel">Select Address</h5>
+                          <button type="button " class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <!-- single address body -->
+                          <% for(addressItem of address.otherAddresses ) {%>
+                            <div class="d-flex flex-column border mb-2  ">
+
+                              <div class="d-flex justify-content-between">
+                                <div class="mb-1 p-2  d-flex flex-column ">
+                                  <div class="">
+                                    <label for="address1" class="me-2 text-capitalize">
+                                      <%=addressItem.address.name %>
+                                    </label>
+                                    <span class="badge bg-secondary me-2 text-capitalize">
+                                      <%=addressItem.address.addressType %>
+                                    </span>
+                                    <span>
+                                      <%=addressItem.address.mobileNumber %>
+                                    </span>
+                                  </div>
+                                  <address style="white-space: nowrap;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                max-width: 200px;" class="text-capitalize m-0 form-fontSize">
+                                    <%=addressItem.address.address %>
+                                  </address>
+                                </div>
+                                <div style="order: 1; " class="d-flex align-items-center me-1">
+                                  <button type="button" data-id="<%=addressItem.address._id  %>"
+                                    style="font-size: 0.6rem;" class="btn btn-dark change-address">Select</button>
+                                </div>
+                              </div>
+
+                            </div>
+                            <!--end of  single address body -->
+                            <% } %>
+                              <!-- Button for trigger add a new address modal -->
+                              <button style="font-size:0.6rem ;" data-bs-toggle="modal"
+                                data-bs-target="#addAddressModal" class="btn btn-dark m-1" type="submit">Add New
+                                Address</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- modal for add a new address -->
+                <div class="modal fade" id="addAddressModal" tabindex="-3" aria-labelledby="addressModalLabel"
+                  aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content rounded-0">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="addressModalLabel">Add Address</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body p-1">
+                        <form action="/api/createAdress?source=checkout" method="post" class="requires-validation1"
+                          novalidate>
+                          <div class="row p-2">
+
+                            <div class="col-md-6">
+                              <label for="validateName1" class="form-label"> name</label>
+                              <input type="text" class="form-control " name='name' id="validateName1">
+                              <small class="text-danger"></small>
+                            </div>
+
+                            <div class="col-md-6">
+                              <label for="validateMobileNumber1" class="form-label"> mobileNumber</label>
+                              <input type="number" name="mobileNumber" class="form-control " id="validateMobileNumber1">
+                              <small class="text-danger"></small>
+                            </div>
+
+                            <div class="col-5">
+                              <label for="validateDistrict1" class="form-label">District</label>
+                              <input type="text" name="district" class="form-control " id="validateDistrict1">
+                              <small class="text-danger"></small>
+                            </div>
+
+                            <div class="col-3">
+                              <label for="validatePincode" class="form-label">Pincode</label>
+                              <input type="number" name="pincode" class="form-control " id="validatePincode">
+                              <small class="text-danger"></small>
+                            </div>
+                            <div class="col-4">
+                              <label for="validatelocality1" class="form-label">Locality</label>
+                              <input type="text" name="locality" class="form-control " id="validatelocality1">
+                              <small class="text-danger"></small>
+                            </div>
+
+
+                            <div class="col-md-12">
+                              <div class="row">
+                                <div class="col-md-12">
+                                  <label for="validateAdress1" class="form-label">Address</label>
+                                  <textarea class="form-control " name="address" id="validateAdress1" rows="4"
+                                    placeholder="adress(area and street)"></textarea>
+                                  <small class="text-danger"></small>
+                                </div>
+                              </div>
+
+                            </div>
+                            <div class="col-md-12">
+                              <div class="col-3">
+                                <label for="validateState1" class="form-label">state</label>
+                                <input type="text" name="state" class="form-control " id="validateState1">
+                                <small class="text-danger"></small>
+                              </div>
+                            </div>
+                            <div class="col-md-12">
+                              <div class="col-2 d-flex flex-column ">
+                                <label class="form-label">AdressType</label>
+                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                  <input type="radio" name="addressType" class="btn-check" id="home1" autocomplete="off"
+                                    value="Home">
+                                  <label class="btn btn-outline-dark" for="home1">Home</label>
+
+                                  <input type="radio" name="addressType" class="btn-check" id="office1"
+                                    autocomplete="off" value="Office">
+                                  <label class="btn btn-outline-dark" for="office1">Office</label>
+                                </div>
+                                <small class="text-danger"></small>
+                              </div>
+                            </div>
+                          </div>
+
+
+                          <div class="d-flex justify-content-center mt-3">
+                            <button type="submit" class="btn btn-outline-dark col-6">Add adress</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- end of modal for add a new address -->
+              </div>
+              <!-- items in cart -->
+              <div class="d-flex col-md-8 border mb-1 bg-white p-2">
+
+
+                <div class="cart-container">
+                  <h6 class="text-dark my-4">Items in cart</h6>
+                  <!-- single cart Item -->
+                  <% for( x of cartItems) {%>
+                  <div class="d-flex align-items-center mb-4">
+                    <div class="me-3 position-relative">
+                      <img src="uploads/<%=x.cartItem.product.image[0]  %>"
+                        style="height: 96px; width: 96px;" class="img-sm rounded border" />
+                    </div>
+                    <div class="">
+                      <a href="#" class="nav-link">
+                        <%=x.cartItem.product.productName  %> <br />
+                       
+                      </a>
+                      <div class="price text-muted">Total:₹<%=x.cartItem.product.discountPrice* x.cartItem.quantity%>(<%=x.cartItem.quantity%>*₹<%= x.cartItem.product.discountPrice %>)</div>
+                    </div>
+                  </div>
+                  <% } %>
+                </div>
+              </div>
+              <!-- items in cart -->
+
+              <!-- payment option -->
+              <div class="d-flex col-md-8 border mb-1 bg-white p-2 d-flex flex-column">
+                <form action="/api/createOrder/<%=address.defaultAddress.address._id %>" method="post">
+                  <h5 class="form-label form-fontSize" style="font-size: 0.9rem;">Payment Option</h5>
+                  <div class="ms-2">
+                    <!-- <div class="d-flex-align-items-center">
+                      <input type="radio" name="PaymentOption" id="onlinePayment" autocomplete="off"
+                        value="onlinePayment">
+                      <label for="onlinePayment">Online Payment</label>
+                    </div> -->
+                    <div class="d-flex-align-items-center">
+                      <input type="radio" name="PaymentOption" id="cashOnDelivery" autocomplete="off"
+                        value="cashOnDelivery">
+                      <label for="cashOnDelivery">Cash on Delivery</label>
+                    </div>
+                    <small class="text-danger"></small>
+                  </div>
+                  <div class="d-flex justify-content-end">
+                    <input type="submit" class="btn btn-dark m-2" style="font-size: 0.6rem;" value="submit">
+                  </div>
+
+                </form>
+              </div>
+              <!-- payment option -->
+
+            </div>
+
+
+
+            <!-- summary -->
+            <div class="col-md-3 mt-2">
+              <!-- <div class="card mb-1 border shadow-0">
+              <div class="card-body">
+                <form>
+                  <div class="form-group">
+                    <label class="form-label">Have coupon?</label>
+                    <div class="input-group ">
+                      <input type="text" class="form-control border" name="" placeholder="Coupon code">
+                      <button class="btn btn-light border">Apply</button>
+                    </div>
+                  </div>
+                </form>
+              </div>-->
+
+              <div class="card shadow-0 border">
+                <div class="card-body p-2">
+                  <div class="d-flex justify-content-between">
+                    <p class="mb-0">Price (<%=cartItems.length %> items)</p>
+                    <p class="mb-0">₹<%=cartItems[0].cartTotal %></p>
+                  </div>
+                  <!--
+                  <div class="d-flex justify-content-between">
+                      <p class="mb-0">Discount:</p>
+                      <p class="mb-0 text-success">-₹60.00</p>
+                  </div>
+                  -->
+                  <div class="d-flex justify-content-between">
+                    <p class="mb-0">Delivery</p>
+                    <p class="mb-0 text-success">Free</p>
+                  </div>
+                  <hr />
+                  <div class="d-flex justify-content-between">
+                    <p class="mb-0">Total price:</p>
+                    <p class="mb-0 fw-bold">₹<%=cartItems[0].cartTotal %></p>
+                  </div>
+
+                  <div class="mt-2">
+                    <!-- <a href="#" class="btn btn-dark w-100 shadow-0 mb-1">Make Purchase</a> -->
+                    <!-- <a href="/" class="btn btn-light w-100 border mt-1">Back to shop</a> -->
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <!-- summary -->
+
+          </div>
+        </div>
+      </section>
+      <!-- checkout + summary -->
+
+    </section>
+
+    <!-- footer -->
+    <%- include('../include/footer') %>
+      <!-- footer -->
+      <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <script src="js/checkout.js"></script>
+      <script src="js/togglebutton.js"></script>
+</body>
+
+</html>

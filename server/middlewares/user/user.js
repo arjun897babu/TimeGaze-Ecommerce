@@ -8,7 +8,7 @@ exports.isUserTrue = async (req, res, next) => {
     const { email, password } = req.body;
 
     const users = await User.findOne({ email });
-    console.log(users);
+
     if (!users) {
       return next()
     }
@@ -32,46 +32,52 @@ exports.isUserTrue = async (req, res, next) => {
 
 //user is authenticated
 exports.isUser = (req, res, next) => {
+
   if (req.session.isUserAuth) {
-    return res.redirect('/');
+
+    return res.redirect(req.session.redirectUrl || '/');
   } else {
+    console.log(req.session.redirectUrl)
     next();
   }
 };
 
-exports.notUser =(req, res, next) => {
+exports.notUser = (req, res, next) => {
+
   if (req.session.isUserAuth) {
+    req.session.redirectUrl = req.originalUrl;
+
     next();
-   
+
   } else {
-     res.redirect('/login');
+    res.redirect('/login');
   }
 };
 
 
 // check user is blocked or not
 
-exports.isBlocked = async (req,res,next) =>{
-  try{
+exports.isBlocked = async (req, res, next) => {
+  try {
     const userEmail = req.session.email;
-    console.log(userEmail);
-    if(!userEmail){
-       return next()
+
+    if (!userEmail) {
+      return next()
     }
-    if(userEmail){
-      const userBlocked = await User.findOne({email:userEmail});
-      console.log(userBlocked);
-      if(userBlocked.isBlocked){
+    if (userEmail) {
+      const userBlocked = await User.findOne({ email: userEmail });
+
+      if (userBlocked.isBlocked) {
 
         req.session.destroy();
         res.redirect('/login');
-      }else{
+      } else {
         next()
       }
     }
 
   }
-  catch(error){
+  catch (error) {
     res.status(500).send('internal server error')
   }
 }

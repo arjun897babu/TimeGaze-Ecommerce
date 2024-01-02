@@ -69,20 +69,22 @@ module.exports = {
     });
   },
   singleProduct: (req, res) => {
-
+    const userId = req.session.userId
+    console.log('this is axios:', userId)
     const { productId } = req.query;
-    console.log(productId);
+
 
     axios.all([
-      axios.get(`http://localhost:${process.env.PORT}/api/singleEditProduct?productId=${productId}`),
+      axios.get(`http://localhost:${process.env.PORT}/api/singleEditProduct?productId=${productId}&userId=${userId}`),
       axios.get(`http://localhost:${process.env.PORT}/api/categories`)
     ])
       .then(axios.spread((productResponse, categoriesResponse) => {
         const products = productResponse.data;
         const categories = categoriesResponse.data;
-        console.log(products, categories)
+        console.log(products, categories);
 
-        res.status(200).render('user/singleProduct', { logged: req.session.isUserAuth, products, categories })
+
+        res.status(200).render('user/singleProduct', { logged: req.session.isUserAuth, products: products.existingProduct, isCart: products.isCart, categories })
       }))
       .catch((error) => {
         console.error('Error in adminEditProduct:', error.message);
@@ -92,7 +94,7 @@ module.exports = {
   },
   productListPage: (req, res) => {
     const categoryId = req.query.categoryId;
-    console.log('after api', categoryId)
+    if (!categoryId) return res.redirect('/error')
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/productList?categoryId=${categoryId}`),
       axios.get(`http://localhost:${process.env.PORT}/api/categories`)
@@ -101,6 +103,7 @@ module.exports = {
         const products = productResponse.data;
         const categories = categoriesResponse.data;
         console.log(products, categories)
+
         res.status(200).render('user/productList', { logged: req.session.isUserAuth, products, categories })
 
       }))
@@ -119,7 +122,7 @@ module.exports = {
       .then(axios.spread((categoriesResponse, userResponse) => {
         const categories = categoriesResponse.data;
         const singleUser = userResponse.data
-        console.log(categories, singleUser);
+
         res.status(200).render('user/userProfile', { categories: categories, user: singleUser, logged: req.session.isUserAuth })
       }))
       .catch((error => {
@@ -192,6 +195,72 @@ module.exports = {
 
 
   },
+  checkoutPage: (req, res) => {
+    const userEmail = req.session.email;
+    const userId = req.session.userId;
+    axios.all([
+      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
+      axios.get(`http://localhost:${process.env.PORT}/api/getAddressDetails?userEmail=${userEmail}`),
+      axios.get(`http://localhost:${process.env.PORT}/api/getUserCart/${userId}`)
+    ])
+
+      .then(axios.spread((categoryResponse, addressResponse, cartResponse) => {
+        const categories = categoryResponse.data;
+        const addressData = addressResponse.data;
+        console.log(addressData)
+
+        const address = {
+          defaultAddress: addressData.find(data => data.address.defaultAdress),
+          otherAddresses: addressData.filter(data => !data.address.defaultAdress),
+        };
+
+        const cartItems = cartResponse.data;
+        console.log('checkout page is rendered');
+        console.log(categories, address, cartItems);
+
+        res.status(200).render('user/checkout', { categories: categories, logged: req.session.isUserAuth, address: address, cartItems: cartItems })
+      }))
+
+      .catch((error) => {
+        res.status(500).send(error.message)
+      })
+
+  },
+  orderHistory: (req, res) => {
+    const {userId} = req.session
+    axios.all([
+      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
+      axios.get(`http://localhost:${process.env.PORT}/api/getUserOrder/${userId}`)
+    ])
+      .then(axios.spread((categoryResponse,orderResponse) => {
+
+        const categories = categoryResponse.data;
+        const orders = orderResponse.data;
+        console.log(orders)
+        res.status(200).render('user/orderHistory', { logged: req.session.isUserAuth,order:orders, categories: categories })
+      }))
+      .catch((error) => {
+        console.log(error)
+        res.status(500).send(error.message)
+      })
+  },
+  ordersingle: (req, res) => {
+    const {userId} = req.session
+    axios.all([
+      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
+     
+    ])
+      .then(axios.spread((categoryResponse) => {
+
+        const categories = categoryResponse.data
+        res.status(200).render('user/ordersingle', { logged: req.session.isUserAuth, categories: categories })
+      }))
+      .catch((error) => {
+        console.log(error)
+        res.status(500).send(error.message)
+      })
+  },
+
   errorPage: (req, res) => {
     res.status(404).render('error')
   }

@@ -1,6 +1,7 @@
 const { default: mongoose } = require('mongoose');
 const category = require('../model/categorySchema');
 const Product = require('../model/productSchema');
+const Cart = require('../model/cartSchema');
 
 const fs = require('fs')
 
@@ -190,23 +191,49 @@ exports.restoreProducts = async (req, res) => {
   }
 }
 
-//to get a single details of product 
+
 
 exports.singleProduct = async (req, res) => {
 
   try {
+    let isCart = false; // for checking item exist in user cart
+
+    const { userId } = req.query
     const { productId } = req.query;
-    console.log(productId);
+    console.log(productId,'this is userId:',typeof userId);
+
     if (!productId) {
       return res.send('all fields are required');
     }
-    const existingProduct = await Product.findOne({ _id: productId }).populate('category')
+    const existingProduct = await Product.findOne({ _id: productId }).populate('category');
+
+    if (  userId !== 'undefined' && userId !== '') {
+      console.log('userid exist')
+      
+      const existCartItem = await Cart.findOne({
+        userId: userId,
+        'cartItem': {
+          $elemMatch: { product: productId }
+        }
+      });
+       
+      if (existCartItem) {
+        isCart = true
+        console.log('user id changed ')
+      }
+    }
+
+
+    const result = {
+      isCart: isCart,
+      existingProduct: existingProduct
+    }
 
     if (!existingProduct) {
-      res.send('no product found')
+      res.send(null)
     } else {
       console.log(existingProduct);
-      res.send(existingProduct)
+      res.send(result);
     }
   }
 
@@ -231,10 +258,10 @@ exports.delteImage = async (req, res) => {
       return res.status(400).send('All fields are required');
     }
 
-    fs.unlink(`public/uploads/${imageName}`, (err) => {
-      if (err) throw err;
-      // File has been deleted successfully
-    });
+    // fs.unlink(`public/uploads/${imageName}`, (err) => {
+    //   if (err) throw err;
+    //   // File has been deleted successfully
+    // });
 
     const dbDeletedImage = await Product.findByIdAndUpdate(
       productId,
@@ -266,8 +293,8 @@ exports.productListOnUser = async (req, res) => {
 
     const existingCateogry = await category.findOne({ _id: categoryId, unlisted: false });
     console.log('existing category', existingCateogry)
-    if (!existingCateogry) {
-      return res.send('cast error')
+    if (existingCateogry===null) {
+      return res.send(null)
     }
 
     const products = await Product.aggregate(
@@ -289,7 +316,7 @@ exports.productListOnUser = async (req, res) => {
       ]
     )
     console.log('loggin in fucntion', products)
-    
+
     if (products.length > 0) {
       res.status(200).send(products);
     } else {

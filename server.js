@@ -28,7 +28,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 //morgan
-app.use(morgan('tiny'));
+// app.use(morgan('tiny'));
 app.use(cors())
  
 // Connecting database
@@ -48,7 +48,16 @@ app.use('/',require('./server/routes/user_routes'));
 
 //loading admin routes
 
-app.use('/',require('./server/routes/admin_routes'))
+app.use('/',require('./server/routes/admin_routes'));
+
+app.use((err, req, res, next) => {
+  if (err.status === 404) {
+    res.status(404).render('error');
+  } else {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 app.all("*",(req,res)=>{
   res.status(404).render('error')

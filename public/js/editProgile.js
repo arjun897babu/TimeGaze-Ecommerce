@@ -1,7 +1,6 @@
-const baseURL = window.location.protocol + '//' + window.location.host
 $(document).ready(function () {
 
-
+  let inputField;
   $(".bi-pencil-fill").click(function () {
     console.log('working');
     let container = $(this).closest('.position-relative');
@@ -9,7 +8,7 @@ $(document).ready(function () {
     container.find('.option-button').show()
     $(this).hide();
 
-    let inputField = container.find('.oldValue').css('cursor', 'auto');;
+    inputField = container.find('.oldValue').css('cursor', 'auto');;
     inputField.data('currentValue', inputField.val());
     inputField.removeAttr('readonly');
   });
@@ -19,7 +18,7 @@ $(document).ready(function () {
     container.find('.option-button').hide()
     container.find('.bi-pencil-fill').show();
 
-    let inputField = container.find('.oldValue').css('cursor', 'not-allowed');;
+    inputField = container.find('.oldValue').css('cursor', 'not-allowed');;
     inputField.val(inputField.data('currentValue'));
     inputField.prop('readonly', true);
   });
@@ -28,18 +27,18 @@ $(document).ready(function () {
     let container = $(this).closest('.position-relative');
     let value = container.find('.oldValue').val();
     console.log(value)
-    updateName(value);
+    if(inputField.data('currentValue')!==value) updateName(value)
   })
   $('.phoneNumber-save-icon').click(function () {
     let container = $(this).closest('.position-relative');
     let value = container.find('.oldValue').val();
     console.log(value);
-    updatePhonenumber(value)
+    if(inputField.data('currentValue')!==value) updatePhonenumber(value)
   })
 
   function updateName(value) {
     $.ajax({
-      url: `${baseURL}/api/updateUserName`,
+      url: `/api/updateUserName`,
       type: 'PATCH',
       data: JSON.stringify({
         name: value
@@ -62,7 +61,7 @@ $(document).ready(function () {
 
   function updatePhonenumber(value) {
     $.ajax({
-      url: `${baseURL}/api/updateUserMobileNumber`,
+      url: `/api/updateUserMobileNumber`,
       type: 'PATCH',
       data: JSON.stringify({
         phonenumber: value
@@ -188,7 +187,7 @@ function clearMessage(element) {
 function updatePassword(password) {
 
   $.ajax({
-    url: `${baseURL}/api/updateUserPassowrd`,
+    url: `/api/updateUserPassowrd`,
     type: 'PATCH',
     contentType: 'application/json',
     data: JSON.stringify({

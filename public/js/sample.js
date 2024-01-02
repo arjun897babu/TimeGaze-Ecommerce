@@ -89,7 +89,7 @@ function updateProduct(form) {
     contentType:false,
     processData:false,
     success:function(response){
-      console.log(response);
+     
       location.reload()
     },
     error:function(response){
