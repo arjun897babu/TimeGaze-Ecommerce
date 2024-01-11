@@ -2,7 +2,7 @@ const category = require('../model/categorySchema');
 
 
 //to add categories
-exports.addCategory = async (req, res) => {
+exports.addCategory = async (req, res,next) => {
   try {
     const { name } = req.body;
 
@@ -28,12 +28,12 @@ exports.addCategory = async (req, res) => {
 
 
   } catch (error) {
-    res.status(500).send(error.message);
+   next(error)
   }
 }
 
 //find all category
-exports.findAllCategory = async (req, res) => {
+exports.findAllCategory = async (req, res,next) => {
   try {
     const Category = await category.find({ unlisted: false });
     // console.log(Category);
@@ -45,12 +45,13 @@ exports.findAllCategory = async (req, res) => {
     }
 
   } catch (error) {
-    res.status(500).send(error.message);
+    next(error)
+    // res.status(500).send(error.message);
   }
 };
 
 //unlisted category
-exports.findUnlistedCategory = async (req, res) => {
+exports.findUnlistedCategory = async (req, res,next) => {
   try {
     const Category = await category.find({ unlisted: true });
     console.log(Category);
@@ -62,14 +63,14 @@ exports.findUnlistedCategory = async (req, res) => {
     }
 
   } catch (error) {
-    res.status(500).send(error.message);
+    next(error)
   }
 }
 
 
 //delete category
 
-exports.deleteCategory = async (req, res) => {
+exports.deleteCategory = async (req, res,next) => {
   try {
     const { categoryId } = req.params;
 
@@ -91,7 +92,7 @@ exports.deleteCategory = async (req, res) => {
 }
 
 //resote category
-exports.restoreCategory = async (req, res) => {
+exports.restoreCategory = async (req, res,next) => {
   try {
     const { categoryId } = req.params;
 
@@ -113,7 +114,7 @@ exports.restoreCategory = async (req, res) => {
 
 //single category page
 
-exports.singleCategory = async (req, res) => {
+exports.singleCategory = async (req, res,next) => {
 
   try {
     const { categoryId } = req.query;

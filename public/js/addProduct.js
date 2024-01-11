@@ -13,7 +13,8 @@ let erroMessage = {
     invalid: 'enter valid brand name(3-20 characters)'
   },
   caseDiameterInput: {
-    invalid: 'enter a valid case diameter(upto 50mm)'
+    invalid: 'enter a valid case diameter(upto 50mm)',
+    invalid2:'enter a valid number'
   },
   caseShapeInput: {
 
@@ -81,7 +82,7 @@ let erroMessage = {
 function checkInputValidity(form, element) {
   let productName = /^[a-zA-Z][a-zA-Z ']{2,20}(?:\d{1,})?[a-zA-Z]$/;
   let brandName = /^[a-zA-Z][a-zA-Z ']{2,20}[a-zA-Z]$/;
-  let price = /^[0-9]+$/
+  let price = /^[1-9]\d*$/
   let discount = /^(?:[1-9]|[1-9][0-9]|100)$/;
 
   //input field
@@ -151,6 +152,12 @@ function checkInputValidity(form, element) {
     isValid = false
     caseDiameterInput.classList.remove('is-valid');
     caseDiameterInput.classList.add('is-invalid');
+  }
+  else if (!price.test(caseDiameterInputValue)) {
+    displayErrorMessage(caseDiameterInput, erroMessage.caseDiameterInput.invalid2)
+    caseDiameterInput.classList.remove('is-valid');
+    caseDiameterInput.classList.add('is-invalid')
+
   }
   else if (caseDiameterInputValue <= 50 && Number(caseDiameterInputValue) % 1 === 0) {
     clearMessage(caseDiameterInput);

@@ -4,7 +4,7 @@ $(document).ready(function () {
   $(".bi-pencil-fill").click(function () {
     console.log('working');
     let container = $(this).closest('.position-relative');
-    console.log(container)
+    
     container.find('.option-button').show()
     $(this).hide();
 
@@ -206,3 +206,8 @@ function updatePassword(password) {
   })
 
 }
+
+$('#changePasswordModal').on('hidden.bs.modal', function () {
+  $('#changePasswordModal input').val(''); 
+  $('#changePasswordModal input').removeClass('is-valid is-invalid')
+ })

@@ -115,7 +115,7 @@
     <div class="p-2 catagory">
       <% for( x in categories ) {%>
         <button class="btn btn-dark" style="--bs-btn-font-size: 0rem;"><a
-            href="/productList?categoryId=<%=categories[x]._id %>">
+            href="/productList?category=<%=categories[x].categoryName %>">
             <%=categories[x].categoryName%>
           </a></button>
         <%}%>
@@ -127,6 +127,7 @@
     </header>
     <!-- header -->
     <!-- content -->
+    <%products=products[0]  %>
     <div class="container">
       <nav aria-label="breadcrumb " class="p-4">
         <ol class="breadcrumb">
@@ -153,7 +154,7 @@
                 <% } %>
             </div>
 
-          </aside>
+       </aside>
           <main class="col-sm-6">
             <div class="p-3">
               <h4 class="title text-dark">

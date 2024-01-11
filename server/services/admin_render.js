@@ -1,6 +1,7 @@
 const axios = require('axios');
 const { response } = require('express');
 require('dotenv').config();
+const queryString  = require('querystring')
 module.exports = {
 
   adminLogin: (req, res) => {
@@ -21,10 +22,16 @@ module.exports = {
   },
 
   adminproducts: (req, res) => {
+
+    const query = queryString.stringify(req.query);
     
-    axios.get(`http://localhost:${process.env.PORT}/api/allProducts`)
-      .then((response) => {
-        res.render('admin/adminproducts', { products: response.data })
+    axios.get(`http://localhost:${process.env.PORT}/api/allProducts?${query}`)
+      .then((productResponse) => {
+        const products = productResponse.data.products;
+        const totalPages = productResponse.data.totalPages;
+          console.log(totalPages)
+          
+        res.status(200).render('admin/adminproducts', { products,totalPages})
       })
       .catch((error) => {
         res.status(500).send(error.message)
@@ -35,7 +42,15 @@ module.exports = {
 
     axios.get(`http://localhost:${process.env.PORT}/api/categories`)
       .then((response) => {
-        res.status(200).render('admin/addproduct', { categories: response.data })
+        
+        console.log('dd',req.session.errorMessage)
+        res.status(200).render('admin/addproduct', { categories: response.data,errorMessage:req.session.errorMessage },(error,html)=>{
+          if (error) {
+            res.send(error.message)
+          }
+          delete req.session.errorMessage;
+          res.status(200).send(html)
+        })
       })
       .catch((error) => {
         res.status(500).send(error)
@@ -44,14 +59,15 @@ module.exports = {
   },
 
   adminEditProduct: (req, res) => {
-    const { productId } = req.query;
+    const { product } = req.query;
+    const query = queryString.stringify(req.query);
 
     axios.all([
-      axios.get(`http://localhost:${process.env.PORT}/api/singleEditProduct?productId=${productId}`),
+      axios.get(`http://localhost:${process.env.PORT}/api/singleEditProduct?${query}`),
       axios.get(`http://localhost:${process.env.PORT}/api/categories`)
     ])
       .then(axios.spread((productResponse, categoriesResponse) => {
-        const products = productResponse.data;
+        const products = productResponse.data.result;
         const categories = categoriesResponse.data;
 
         res.status(200).render('admin/editproduct', { products:products.existingProduct, categories });
@@ -127,8 +143,16 @@ module.exports = {
       })
   },
   order:(req,res)=>{
-    
-    res.status(200).render('admin/adminOrder')
+    axios.get(`http://localhost:${process.env.PORT}/api/getAllOrder`)
+    .then((response) => {
+      const order = response.data;
+      console.log(order)
+      res.status(200).render('admin/adminOrder', { orders: order })
+    })
+    .catch(error => {
+      res.send(error.message)
+    })
+   
   },
   errorPage:(req,res)=>{
     res.status(404).render('error')

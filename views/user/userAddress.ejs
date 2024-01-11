@@ -257,10 +257,13 @@
               </div>
             </div>
           </div>
+          
           <% if(address.length>0){ %>
             <% address.forEach(function (element,index) { %>
               <div class="container">
+                
                 <div class="container-fluid">
+                  
                   <div class="row border mb-3">
                     <div class="col-md-9 p-1">
                       <div class="d-flex ">
@@ -284,7 +287,10 @@
                               <%= element.address.mobileNumber%>
                             </span>
                           </div>
-                          <address>
+                          <address style="font-size: 0.8rem;white-space: nowrap;
+                          overflow: hidden;
+                          text-overflow: ellipsis;
+                          max-width: 220px;">
                             <%= element.address.address%>
                           </address>
                         </div>
@@ -308,12 +314,11 @@
               </div>
               <% }); %>
                 <% } %>
-
         </div>
 
       </div>
     </section>
-
+    
     <!-- footer -->
     <%- include('../include/footer') %>
       <!-- footer -->

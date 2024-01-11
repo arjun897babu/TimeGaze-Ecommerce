@@ -5,7 +5,7 @@ const otpGenerator = require('otp-generator');
 const OTP = require('../model/OTPModel');
 const mailSender = require('../services/mailSender');
 
-exports.createUser = async (req, res) => {
+exports.createUser = async (req, res,next) => {
 
 
   const { name, email, phonenumber, password } = req.body
@@ -68,12 +68,12 @@ exports.createUser = async (req, res) => {
 
     } catch (error) {
       console.log(error)
-      res.status(500).send(error.message);
+     next(error)
     }
   }
 };
 
-exports.userLogin = async (req, res) => {
+exports.userLogin = async (req, res,next) => {
   try {
 
     const { email, password } = req.body;
@@ -128,7 +128,7 @@ exports.userLogin = async (req, res) => {
 
 //otp verify 
 
-exports.verifyOTP = async (req, res) => {
+exports.verifyOTP = async (req, res,next) => {
 
 
   try {
@@ -178,7 +178,7 @@ exports.verifyOTP = async (req, res) => {
 
 //generating otp for resetting password
 
-exports.sendOTP = async (req, res) => {
+exports.sendOTP = async (req, res,next) => {
   const { email } = req.body;
   try {
     if (!email) {
@@ -222,9 +222,9 @@ exports.sendOTP = async (req, res) => {
 
 //updatre UserName
 
-exports.updateName = async (req, res) => {
+exports.updateName = async (req, res,next) => {
   try {
-    console.log('b')
+    
     const userEmail = req.session.email ;
     const { name } = req.body;
 
@@ -247,7 +247,7 @@ exports.updateName = async (req, res) => {
 }
 
 //to update phonenumber
-exports.updateMobileNumber = async (req, res) => {
+exports.updateMobileNumber = async (req, res,next) => {
   try {
     console.log('a')
     const userEmail = req.session.email;
@@ -273,7 +273,7 @@ exports.updateMobileNumber = async (req, res) => {
 
 //update passowrd
 
-exports.updatePassword = async (req, res) => {
+exports.updatePassword = async (req, res,next) => {
 
   try {
     const { email, password } = req.body;

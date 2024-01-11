@@ -2,61 +2,79 @@ const mongoose = require('mongoose');
 const Cart = require('../model/cartSchema');
 const User = require('../model/userModelSchema');
 const Product = require('../model/productSchema');
+const queryString = require('querystring')
 
-exports.addToCart = async (req, res) => {
+exports.addToCart = async (req, res, next) => {
   try {
 
-    const userId = req.session.userId;
-    if (!userId) {
-      return res.status(401).redirect('/login')
-    }
+    const userId = req.session.userId
+
+    if (!userId) return res.status(401).redirect('/login')
 
     const { productId } = req.params;
 
-    console.log('user email and addressId,productId', userId, productId);
-    if (!productId) return res.send('preoduct id is missiin');
+    const availableProducts = await Product.aggregate(
+      [
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'category',
+            foreignField: '_id',
+            as: 'category'
+          }
+        },
+        { $unwind: '$category' },
+        {
+          $match: {
+            $and: [
+              {
+                _id: new mongoose.Types.ObjectId(productId),
+                unlisted: false
+              },
+              {
+                'category.unlisted': false
+              }
+            ]
+          }
+        }
+      ]
+    )
 
-    const availableProduct = await Product.findById(productId);
+    const availableProduct = availableProducts[0]
 
-    console.log(availableProduct)
-    if (availableProduct.quantity > 0) {
+    if (availableProducts.length < 1) return res.redirect('/productList');
 
-      const existingCart = await Cart.findOne({ userId: userId });
-      console.log('existing cart', existingCart)
-      if (existingCart) {
-
-        existingCart.cartItem.push({ product: productId, })
-        existingCart.cartTotal += availableProduct.discountPrice;
+    if (availableProduct.quantity < 1) return res.redirect(`/singleProduct?productId=${availableProduct.productName}`)
 
 
-        await existingCart.save()
-        res.status(200).redirect(`/singleProduct?productId=${productId}`);
+    const existingCart = await Cart.findOne({ userId: userId });
 
-      } else {
-        const newCart = new Cart({
-          userId: userId,
-          cartItem: [{ product: productId, }],
-          cartTotal: availableProduct.discountPrice,
-        });
+    if (existingCart) {
 
+      existingCart.cartItem.push({ product: productId, })
+      existingCart.cartTotal += availableProduct.discountPrice;
 
-        await newCart.save();
-        res.status(200).redirect(`/singleProduct?productId=${productId}`);
-      }
+      await existingCart.save()
 
+    } else {
+      const newCart = new Cart({
+        userId: userId,
+        cartItem: [{ product: productId, }],
+        cartTotal: availableProduct.discountPrice,
+      });
 
-
+      await newCart.save()
     }
-    else {
-      res.send('product out of stock')
-    }
+
+    res.status(200).redirect(`/singleProduct?product=${availableProduct.productName}`);
+
   } catch (error) {
     console.log(error.message)
-    res.status(500).send('internel server error')
+    next(error)
   }
 }
 
-exports.getUserCart = async (req, res) => {
+exports.getUserCart = async (req, res, next) => {
   try {
     const { userId } = req.params;
     console.log(userId);
@@ -120,10 +138,10 @@ exports.getUserCart = async (req, res) => {
   }
 }
 
-exports.removeCartItem = async (req, res) => {
+exports.removeCartItem = async (req, res, next) => {
   try {
     const { cartItemId } = req.params;
-    const userId = req.session.userId ;
+    const userId = req.session.userId;
     console.log(cartItemId, userId);
     const userCart = await Cart.findOne({ userId: userId }).populate('cartItem.product');
 
@@ -175,7 +193,7 @@ exports.cartQuantity = async (req, res, next) => {
             return total + item.quantity * productPrice;
           }, 0);
           existCartItem.cartTotal = newCartTotal;
-          const newCart = await existCartItem.save();
+          await existCartItem.save();
           res.status(200).send('quantity changed');
         } else {
           res.status(404).send('Out of stock');

@@ -42,7 +42,7 @@
           </a>
         </li>
 
-        <li >
+        <li>
           <a href="/adminproducts">
             <i class='bx bxs-shopping-bags'></i>
             <span class="text">products</span>
@@ -134,44 +134,60 @@
                 <tr>
                   <th></th>
                   <th>orderId</th>
-                 
+
                   <th>product</th>
+                  <th>status</th>
                   <th>action</th>
 
                 </tr>
               </thead>
               <tbody class="mb-2">
+                <% if(orders.length>0) {%>
 
-                <tr>
-                  <th>
-                    <img src="uploads/" style="width: 4rem;object-fit: cover;">
-                  </th>
-                  <td class="fixed-td">orderId</td>
-                  <td class="fixed-td">
-                    <h6>product name</h6>
-                    <p class="card-text">discountPrice<del class="text-black-50">offer price</del></p>
-                  </td>
-                  <td class="">
-
-                    <form action="">
-                      <div class="justify-content-between d-flex">
-                        <select name="orderStatus" id="" class="me-1">
-                          <option value="">ordered</option>
-                          <option value="">pending</option>
-                          <option value="">delivered</option>
-                          <option value="">cancel</option>
-                        </select>
-                        <input style="font-size: 0.6rem;" class="btn btn-dark me-1" type="submit" value="submit"> 
-                      </div>
-
-                    </form>
-
-
+                  <% for(order of orders) {%>
+                    <tr>
+                      <td>
+                        <img src="uploads/<%=order.orderItems.image[0]  %>" style="width: 4rem;object-fit: cover;">
+                      </td>
+                      <td class="fixed-td">
+                        <%=order.orderItems._id %>
+                      </td>
+                      <td class="fixed-td">
+                        <h6>
+                          <%=order.orderItems.productName %>
+                        </h6>
+                        <p class="card-text">
+                          <%=order.orderItems.discountPrice %><del class="text-black-50">
+                              <%=order.orderItems.price %>
+                            </del>
+                        </p>
+                      </td>
+                      <td class="status">
+                        <%=order.orderItems.orderStatus%>
+                      </td>
+                      <td class="">
 
 
-                  </td>
-                </tr>
-
+                        <div class="justify-content-between d-flex">
+                          <% if(order.orderItems.orderStatus !== 'delivered' && order.orderItems.orderStatus !== 'canceled') { %>
+                            <select name="orderStatus" id="" class="me-1">
+                              <option value="placed" <%=order.orderItems.orderStatus==='placed' ? 'selected' : '' %>>placed</option>
+                              <option value="pending" <%=order.orderItems.orderStatus==='pending' ? 'selected' : '' %>>pending</option>
+                              <option value="shipped" <%=order.orderItems.orderStatus==='shipped' ? 'selected' : '' %>>shipped</option>
+                              <option value="delivered" <%=order.orderItems.orderStatus==='delivered' ? 'selected' : '' %>>delivered</option>
+                              <option value="canceled" <%=order.orderItems.orderStatus==='canceled' ? 'selected' : '' %>>canceled</option>
+                            </select>
+                            <button data-id="<%=order.orderItems._id%>" style="font-size: 0.6rem;" class="btn btn-dark me-1 changeOrder">submit</button>
+                          <% } else if(order.orderItems.orderStatus === 'canceled') { %>
+                            <span class="text-danger">order canceled.</span>
+                          <% } else { %>
+                            <span class="text-success">order delivered.</span>
+                          <% } %>
+                        </div>
+                      </td>
+                    </tr>
+                    <% } %>
+                      <% } %>
               </tbody>
             </table>
           </div>
@@ -185,3 +201,5 @@
 
   <%- include('../include/adminfooter') %>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/adminOrderStatus.js"></script>

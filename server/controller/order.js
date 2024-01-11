@@ -69,9 +69,8 @@ exports.createOrder = async (req, res, next) => {
     const isValid = valid.every(bolean => bolean);
 
     if (existingAddress.length === 0 || !isValid) {
-      let error = new Error('not found');
-      error.status = 404
-      return next(error)
+      
+      return res.status(404).json({status:'failed',message:'some product is outOf stock',redirectUrl:'/cart'})
     }
 
     //creating billing address
@@ -132,10 +131,10 @@ exports.createOrder = async (req, res, next) => {
         }
       });
 
-      console.log('this is bulkoperation', bulkoperation)
 
       await Product.bulkWrite(bulkoperation);
-      res.send('product added to the cart')
+      req.session.isOrder = true;
+      res.status(200).json({message:'order placed successFully',status:'success',redirectUrl:'/orderSuccess'})
 
     }
     else {
@@ -185,7 +184,7 @@ exports.getOrderDetails = async (req, res, next) => {
     }
 
   } catch (error) {
-    res.send(error.message)
+    next(error)
   }
 }
 
@@ -203,6 +202,8 @@ exports.getAllOrderDetails = async (req, res, next) => {
             as: 'userDetails'
           },
         },
+        { $unwind: '$orderItems' }
+        ,
         {
           $project:
           {
@@ -219,6 +220,69 @@ exports.getAllOrderDetails = async (req, res, next) => {
     }
 
   } catch (error) {
-    res.send(error.message)
+    next(error)
+  }
+}
+
+exports.changeStatus = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+    const { orderStatus } = req.body;
+    console.log(req.body.orderStatus)
+    console.log(orderId,orderStatus)
+
+    if (!orderStatus) return res.status(400).send('all fields required');
+    
+    const updatedOrder = await Order.findOneAndUpdate(
+      {
+        'orderItems':
+        {
+          $elemMatch:
+            { _id: orderId }
+        }
+      },
+      {
+        $set:
+          { 'orderItems.$.orderStatus': orderStatus }
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (updatedOrder) {
+
+      if (orderStatus === 'canceled') {
+
+        let product = {};
+
+        for (const items of updatedOrder.orderItems) {
+          if (items._id.equals(new mongoose.Types.ObjectId(orderId))) {
+            product.quantity = items.quantity;
+            product._id = items.product;
+            break;
+          }
+        }
+     
+
+        await Product.findByIdAndUpdate(
+          product._id,
+          {
+            $inc:
+              { quantity: product.quantity }
+          },
+          
+        );
+      }
+      const updatedItem = updatedOrder.orderItems.find(items=>items._id.equals(new mongoose.Types.ObjectId(orderId)));
+      console.log(updatedItem)
+      res.status(200).json({response:updatedItem,status:'success'});
+
+    } else {
+      res.status(400).json({message:'not found'})
+    }
+  }
+  catch (error) {
+    next(error)
   }
 }

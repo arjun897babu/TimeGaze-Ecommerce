@@ -89,6 +89,16 @@
       color: rgb(0, 0, 0) !important;
       font-size: inherit;
     }
+
+    .cart-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cart-container {
+
+      overflow-y: auto;
+      max-height: 440px;
+    }
   </style>
 
 </head>
@@ -165,41 +175,54 @@
           </div>
         </div>
 
-        <div class="col-md-9">
-          <% for(items of order) {%>
-            <div class="card mb-3 rounded-0 border p-2">
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="row">
-                    <div class="col-md-6">
-                      <div class="m-1">
-                        <a href="/orderSingle" class="card-body">
-                          <img src="uploads/<%=items.orderItems.image[0]  %>" style="height: 48; width: 48px;"
-                            class="img-sm rounded border" alt="Product Image">
-                        </a>
+        <div class="col-md-9 cart-container">
+          <% if(order.length>0) {%>
+            <% for(items of order) {%>
+              <div class="card mb-3 rounded-0 border p-2">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="m-1">
+                          <a href="/orderSingle" class="card-body">
+                            <img src="uploads/<%=items.orderItems.image[0]  %>" style="height: 48; width: 48px;"
+                              class="img-sm rounded border" alt="Product Image">
+                          </a>
+                        </div>
                       </div>
-                    </div>
-                    <div class="col-md-6 d-flex align-items-center">
-                      <div>
-                        <span class="d-block text-capitalize"><%=items.orderItems.productName  %></span>
+                      <div class="col-md-6 d-flex align-items-center">
+                        <div>
+                          <span class="d-block text-capitalize">
+                            <%=items.orderItems.productName %>
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="col-md-4 d-flex align-items-center">
-                  <span class="me-3">Status:</span><%=items.orderItems.orderStatus  %>
-                </div>
-                <div class="col-md-2 d-flex align-items-center justify-content-end">
-                  <div>
-                    <div class="delivery-status">
-                      <div class="status-icon"></div>
-                      <button class="btn btn-dark btn-sm" data-id="<%=items.orderItems._id  %>" style="font-size: 0.6rem;">Cancel</button>
+                  <div class="col-md-4 d-flex align-items-center status">
+                    <span class="me-3">Status:</span>
+                    <%=items.orderItems.orderStatus %>
+                  </div>
+                  <div class="col-md-2 d-flex align-items-center justify-content-end">
+                    <div>
+                      <% if(items.orderItems.orderStatus!=='canceled'&& items.orderItems.orderStatus!=='delivered') {%>
+                        <div class="delivery-status">
+                          <div class="status-icon"></div>
+                          <button class="btn btn-dark btn-sm changeOrder" value="canceled"
+                            data-id="<%=items.orderItems._id  %>" style="font-size: 0.6rem;">cancel</button>
+                        </div>
+                        <% } %>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <% } %>
+              <% } %>
+                <% }else{ %>
+                  <div class="text-center">
+                    \(^Д^)/<br>
+                    No Orders.
+                  </div>
+                  <% } %>
         </div>
 
       </div>
@@ -207,6 +230,7 @@
     <%- include('../include/footer') %>
       <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <script src="js/orderStatus.js"></script>
 </body>
 
 </html>

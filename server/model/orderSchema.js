@@ -2,89 +2,91 @@ const mongoose = require('mongoose');
 
 
 const OrderSchema = new mongoose.Schema({
-   
-  userId:{
-    type:mongoose.Schema.ObjectId,
-    ref:'User',
+
+  userId: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
 
   },
-  orderItems:[{
-    product:{
-      type:mongoose.Types.ObjectId,
-      ref:'Product'
+  orderItems: [{
+    product: {
+      type: mongoose.Types.ObjectId,
+      ref: 'Product'
     },
-    productName:{
-      type:String,
+    productName: {
+      type: String,
 
     },
-    caseDiameter:{
-      type:Number,
+    caseDiameter: {
+      type: Number,
     },
-    caseShape:{
-      type:String
+    caseShape: {
+      type: String
     },
-    price:{
-      type:Number
+    price: {
+      type: Number
     },
-    offer:{
-      type:Number
+    offer: {
+      type: Number
     },
-    discountPrice:{
-      type:Number,
+    discountPrice: {
+      type: Number,
     },
     quantity: {
       type: Number,
     },
-    productTotal:{
-      type:Number,
+    productTotal: {
+      type: Number,
     },
     image: [{
       type: String,
     }],
-    orderStatus:{
-      type:String,
-      default:'success'
+    orderStatus: {
+      type: String,
+      default: 'placed',
+      index: true,
     }
 
   }],
-  address:{
-    name:{
-      type:String,
-      
-    },
-    mobileNumber:{
-      type:Number
+  address: {
+    name: {
+      type: String,
 
     },
-    district:{
-      type:String,
+    mobileNumber: {
+      type: Number
+
     },
-    pincode:{
-      type:Number
+    district: {
+      type: String,
     },
-    locality:{
-      type:String,
+    pincode: {
+      type: Number
     },
-    address:{
-      type:String,
+    locality: {
+      type: String,
     },
-    state:{
-      type:String,
+    address: {
+      type: String,
     },
-    addressType:{
-      type:String,
+    state: {
+      type: String,
+    },
+    addressType: {
+      type: String,
     }
   },
-  paymentMethod:{
-    type:String,
+  paymentMethod: {
+    type: String,
 
   },
-  orderDate:{
-    type:Date,
-    default:Date.now()
+  orderDate: {
+    type: Date,
+    default: Date.now()
   }
 
 });
 
-const Order = mongoose.model('Order',OrderSchema);
-module.exports = Order
+OrderSchema.index({ 'orderItems._id': 1 });
+const Order = mongoose.model('Order', OrderSchema);
+module.exports = Order 

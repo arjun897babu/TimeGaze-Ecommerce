@@ -76,4 +76,5 @@ function quantityManageMent(cartItem, newQuantity) {
       }
     }
   })
-}
+};
+

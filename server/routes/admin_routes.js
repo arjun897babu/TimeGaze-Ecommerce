@@ -48,9 +48,10 @@ adminRoute.put('/api/restoreProduct/:productId', productControll.restoreProducts
 adminRoute.get('/api/unlistedProduct', productControll.unlistedProducts);//to show the unlisted product
 adminRoute.get('/api/singleEditProduct', productControll.singleProduct);//to get a single product detal
 adminRoute.patch('/api/deleteImage/:productId', productControll.delteImage);//
-adminRoute.put('/api/updareProduct/:productId', imageUpload.upload.array('images', 4), productControll.updateProducts);//update product;
+adminRoute.put('/api/updateProduct/:productId', imageUpload.upload.array('images', 4), productControll.updateProducts);//update product;
 
 adminRoute.get('/api/getAllOrder',orderControll.getAllOrderDetails)//to get all orderDetails
+adminRoute.put('/api/changeOrderStatus/:orderId',orderControll.changeStatus)//control order status
 
 
 

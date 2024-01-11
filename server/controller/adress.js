@@ -3,7 +3,7 @@ const Address = require('../model/addressSchema');
 const User = require('../model/userModelSchema');
 const address = require('../model/addressSchema');
 
-exports.createAdress = async (req, res) => {
+exports.createAdress = async (req, res, next) => {
 
   try {
     const { name, mobileNumber, district, pincode, locality, address, state, addressType } = req.body;
@@ -45,9 +45,9 @@ exports.createAdress = async (req, res) => {
 
         existingAddressDocument.address.push(newNestedAdress);
         await existingAddressDocument.save();
-        if(source==='checkout'){
+        if (source === 'checkout') {
           res.status(200).redirect('/checkout')
-        }else{
+        } else {
           res.status(200).redirect('/address')
         }
       } else {
@@ -55,9 +55,9 @@ exports.createAdress = async (req, res) => {
         const newAdressData = { ...req.body };
         existingAddressDocument.address.push(newAdressData);
         await existingAddressDocument.save();
-        if(source==='checkout'){
+        if (source === 'checkout') {
           res.status(200).redirect('/checkout')
-        }else{
+        } else {
           res.status(200).redirect('/address')
         }
       }
@@ -80,23 +80,22 @@ exports.createAdress = async (req, res) => {
 
       existingUser.adress = addedNewAddress._id;
       await existingUser.save();
-      if(source==='checkout'){
+      if (source === 'checkout') {
         res.status(200).redirect('/checkout')
-      }else{
+      } else {
         res.status(200).redirect('/address')
       }
-     
 
     }
 
   }
   catch (error) {
-    console.log(error)
-    res.status(500).send(error.message)
+    next(error)
+
   }
 }
 
-exports.getAllAdress = async (req, res) => {
+exports.getAllAdress = async (req, res, next) => {
 
 
   try {
@@ -120,7 +119,7 @@ exports.getAllAdress = async (req, res) => {
         ]
       );
 
-
+ 
       res.send(allAddress)
     } else {
       return res.send(null)
@@ -130,7 +129,7 @@ exports.getAllAdress = async (req, res) => {
 
   }
   catch (error) {
-    res.status(500).send(error.message)
+    next(error)
   }
 }
 
@@ -242,10 +241,14 @@ exports.editAddress = async (req, res) => {
 // update a address
 exports.updateAddress = async (req, res) => {
   try {
+
+    console.log('this s jjdj',req.body)
     const newData = { ...req.body };
     const { selected } = req.params;
     const { source } = req.query
     const addressId = req.session.addressId;
+    if(!selected||!source||!newData) return res.status().send('bad request')
+    console.log(newData, source, selected)
 
     const existing = await Address.findOne(
       { _id: addressId },
@@ -296,7 +299,7 @@ exports.updateAddress = async (req, res) => {
 exports.makeDefault = async (req, res, next) => {
   try {
     const { selectedId } = req.params;
-    const addressId = req.session.addressId ;
+    const addressId = req.session.addressId;
 
     if (!selectedId || !addressId) {
       return res.status(400).send('Missing parameter');

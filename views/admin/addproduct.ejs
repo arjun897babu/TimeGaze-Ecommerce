@@ -121,8 +121,8 @@
 
                 <div class="col-md-6">
                   <label for="validateProductName" class="form-label">product name</label>
-                  <input type="text" class="form-control" name="name" id="validateProductName">
-                  <small class="text-danger"></small>
+                  <input type="text" class="form-control <%= (errorMessage && errorMessage.name)?'is-invalid':''  %>  " name="name" id="validateProductName">
+                  <small class="text-danger"><%= (errorMessage && errorMessage.name)?errorMessage.name:''  %></small>
                 </div>
                 <div class="col-md-6">
                   <label for="validatebrand" class="form-label">brand</label>
