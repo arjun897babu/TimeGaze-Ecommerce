@@ -1,15 +1,19 @@
 const axios = require('axios');
-const { response } = require('express');
+const queryString = require('querystring')
+// const { response } = require('express');
 
 
 module.exports = {
   home: (req, res) => {
+
+    const { query } = req.query;
+    console.log(query);
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/allProducts`),
       axios.get(`http://localhost:${process.env.PORT}/api/categories`)
     ])
       .then(axios.spread((productResponse, categoriesResponse) => {
-        const products = productResponse.data;
+        const products = productResponse.data.products;
         const categories = categoriesResponse.data;
         console.log('prodcuts:', products, 'categories', categories)
         console.log(req.session.email);
@@ -68,75 +72,229 @@ module.exports = {
       res.send(html)
     });
   },
-  singleProduct: (req, res) => {
+  singleProduct: (req, res) => { 
+    const userId = req.session.userId
+    const query = queryString.stringify(req.query);
 
-    const { productId } = req.query;
-    console.log(productId);
 
     axios.all([
-      axios.get(`http://localhost:${process.env.PORT}/api/singleEditProduct?productId=${productId}`),
+      axios.get(`http://localhost:${process.env.PORT}/api/singleEditProduct?userId=${userId}&${query}`),
       axios.get(`http://localhost:${process.env.PORT}/api/categories`)
     ])
       .then(axios.spread((productResponse, categoriesResponse) => {
-        const products = productResponse.data;
+        const products = productResponse.data.result;
         const categories = categoriesResponse.data;
-        console.log(products, categories)
+        
 
-        res.status(200).render('user/singleProduct', { logged: req.session.isUserAuth, products, categories })
+        res.status(200).render('user/singleProduct', { logged: req.session.isUserAuth, products: products.existingProduct, isCart: products.isCart, categories })
       }))
       .catch((error) => {
-        console.error('Error in adminEditProduct:', error.message);
+        console.error('Error in adminEditProduct:', error);
         res.status(500).send('Internal Server Error');
       });
 
   },
   productListPage: (req, res) => {
-    const categoryId = req.query.categoryId;
-    console.log('after api',categoryId)
+
+    const query = queryString.stringify(req.query);
+
     axios.all([
-      axios.get(`http://localhost:${process.env.PORT}/api/productList?categoryId=${categoryId}`),
+      axios.get(`http://localhost:${process.env.PORT}/api/allProducts?${query}`),
       axios.get(`http://localhost:${process.env.PORT}/api/categories`)
     ])
       .then(axios.spread((productResponse, categoriesResponse) => {
-        const products = productResponse.data;
+        const products = productResponse.data.products;
         const categories = categoriesResponse.data;
-        console.log( products, categories)
-        res.status(200).render('user/productList', { logged: req.session.isUserAuth, products, categories })
-        
+        const totalPages = productResponse.data.totalPages;
+        const brands = productResponse.data.brands;
+        const caseDiameters = productResponse.data.caseDiameters;
+        const selected = productResponse.data.selected;
+        console.log(caseDiameters)
+     
+        res.status(200).render('user/productList', { logged: req.session.isUserAuth, products, categories, totalPages,brands,caseDiameters,selected })
+
       }))
       .catch((error) => {
         console.error('Error in userproduct pag:', error.message);
         res.status(500).send('Internal Server Error');
       });
-     
+
   },
   userProfile: (req, res) => {
-    axios.get(`http://localhost:${process.env.PORT}/api/categories`)
-      .then((response) => {
-        res.status(200).render('user/userProfile', { categories: response.data, logged: req.session.isUserAuth })
-      })
-      .catch((error) => {
-        res.status(500).send(error)
-      })
+    const userEmail = req.session.email
+    axios.all([
+      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
+      axios.get(`http://localhost:${process.env.PORT}/api/getUserInfo?userEmail=${userEmail}`)
+    ])
+      .then(axios.spread((categoriesResponse, userResponse) => {
+        const categories = categoriesResponse.data;
+        const singleUser = userResponse.data
+
+        res.status(200).render('user/userProfile', { categories: categories, user: singleUser, logged: req.session.isUserAuth })
+      }))
+      .catch((error => {
+        console.error('Error in userproduct pag:', error.message);
+        res.status(500).send('Internal Server Error');
+      }))
 
   },
   userAddress: (req, res) => {
-    console.log('before render', req.session.email);
-    const userEmail = req.session.email
-    axios.get(`http://localhost:${process.env.PORT}/api/getAddressDetails?userEmail=${userEmail}`)
-      .then((response) => {
-        const allAddress = response.data
-        console.log('response axios', response.data)
 
-        res.status(200).render('user/userAddress', { address: allAddress, logged: req.session.isUserAuth, categories: response.data })
-      })
-      .catch((error)=>{
+    const userEmail = req.session.email
+    axios.all([
+      axios.get(`http://localhost:${process.env.PORT}/api/getAddressDetails?userEmail=${userEmail}`),
+      axios.get(`http://localhost:${process.env.PORT}/api/categories`)
+    ])
+      .then(axios.spread((addressResponse, categoryResponse) => {
+        const allAddress = addressResponse.data
+        const categories = categoryResponse.data
+        res.status(200).render('user/userAddress', { address: allAddress, logged: req.session.isUserAuth, categories: categories })
+      }))
+      .catch((error) => {
+        console.log(error)
         res.status(500).send(error.message)
       })
 
   },
-  errorPage: (req, res) => {
-    res.status(404).render('error')
-  }
+  editAddress: (req, res) => {
+    const addressId = req.session.addressId;
+    const { selected } = req.query
+    console.log('axios', addressId, selected);
+
+    axios.all([
+      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
+      axios.get(`http://localhost:${process.env.PORT}/api/userEditAddress/${addressId}?selected=${selected}`)
+    ])
+      .then(axios.spread((categoryResponse, addressResponse) => {
+        const allCategories = categoryResponse.data;
+        const address = addressResponse.data;
+
+        res.status(200).render('user/userEditAddress', { logged: req.session.isUserAuth, categories: allCategories, address: address })
+
+      }))
+      .catch(error => {
+        res.status(500).send(error.message)
+      })
+
+
+
+
+  },
+
+  cart: (req, res) => {
+    const userId = req.session.userId;
+    console.log(userId)
+    axios.all([
+      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
+      axios.get(`http://localhost:${process.env.PORT}/api/getUserCart/${userId}`)
+    ])
+
+      .then(axios.spread((categoryResponse, cartResponse) => {
+        const categories = categoryResponse.data;
+        const cart = cartResponse.data;
+        console.log(categories, cart)
+        res.status(200).render('user/cart', { categories: categories, cart: cart, logged: req.session.isUserAuth })
+      }))
+
+      .catch((error) => {
+        res.status(500).send(error.message)
+      })
+
+
+  },
+  checkoutPage: (req, res) => {
+    console.log(req.originalUrl)
+    const userEmail = req.session.email;
+    const userId = req.session.userId;
+    axios.all([
+      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
+      axios.get(`http://localhost:${process.env.PORT}/api/getAddressDetails?userEmail=${userEmail}`),
+      axios.get(`http://localhost:${process.env.PORT}/api/getUserCart/${userId}`)
+    ])
+
+      .then(axios.spread((categoryResponse, addressResponse, cartResponse) => {
+        const categories = categoryResponse.data;
+        const addressData = addressResponse.data;
+
+
+        const address = {
+          defaultAddress: addressData.find(data => data.address.defaultAdress),
+          otherAddresses: addressData.filter(data => !data.address.defaultAdress),
+        };
+
+        const cartItems = cartResponse.data;
+
+
+        res.status(200).render('user/checkout', { categories: categories, logged: req.session.isUserAuth, address: address, cartItems: cartItems })
+      }))
+
+      .catch((error) => {
+        res.status(500).send(error.message)
+      })
+
+  },
+  orderHistory: (req, res) => {
+    const { userId } = req.session
+    axios.all([
+      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
+      axios.get(`http://localhost:${process.env.PORT}/api/getUserOrder/${userId}`)
+    ])
+      .then(axios.spread((categoryResponse, orderResponse) => {
+
+        const categories = categoryResponse.data;
+        const orders = orderResponse.data;
+        console.log(orders)
+        res.status(200).render('user/orderHistory', { logged: req.session.isUserAuth, order: orders, categories: categories })
+      }))
+      .catch((error) => {
+        console.log(error)
+        res.status(500).send(error.message)
+      })
+  },
+  ordersingle: (req, res) => {
+    const { userId } = req.session
+    axios.all([
+      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
+
+    ])
+      .then(axios.spread((categoryResponse) => {
+
+        const categories = categoryResponse.data
+        res.status(200).render('user/ordersingle', { logged: req.session.isUserAuth, categories: categories })
+      }))
+      .catch((error) => {
+        console.log(error)
+        res.status(500).send(error.message)
+      })
+  },
+  orderSuccess: (req, res) => {
+    const { userId } = req.session
+    axios.all([
+      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
+
+    ])
+      .then(axios.spread((categoryResponse) => {
+
+        const categories = categoryResponse.data
+        res.status(200).render('user/orderSuccess', { logged: req.session.isUserAuth, categories: categories }, (error, html) => {
+          if (error) {
+            return res.send(error)
+          }
+
+          delete req.session.isOrder;
+          res.send(html);
+
+        })
+      }))
+      .catch((error) => {
+        console.log(error)
+        res.status(500).send(error.message)
+      })
+
+  },
+
+  // errorPage: (req, res) => {
+  //   res.status(404).render('error')
+  // }
 }
 

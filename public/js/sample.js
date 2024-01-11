@@ -6,7 +6,7 @@ let erroMessage = {
     required: 'this field is required'
   },
   productNameInput: {
-    invalid: 'enter valid product name(3-20 characters)'
+    invalid: 'enter valid product name(min:3-20 characters)'
   },
   brandNameInput: {
 
@@ -77,23 +77,29 @@ let erroMessage = {
 })();
 
 function updateProduct(form) {
-  console.log('Entered updateProduct');
+
 
   const productId = form.getAttribute('data-id');
-  console.log(form.elements);
   const formData = new FormData(form);
   $.ajax({
-    url:`http://localhost:3000/api/updareProduct/${productId}`,
+    url:`/api/updateProduct/${productId}`,
     method:'PUT',
     data:formData,
     contentType:false,
     processData:false,
     success:function(response){
-      console.log(response);
-      location.reload()
+      window.location.href = '/adminProducts'
     },
-    error:function(response){
-      console.log((response));
+    error:function(xhr,textStatus,errorThrown){
+     
+      if(xhr.status===409){
+        let input = form.elements['validateProductName'];
+        $(input).addClass('is-invalid');
+        let errorMessage = xhr.responseJSON.error
+
+        $(input).siblings('.text-danger').text(errorMessage);
+        
+      }
     }
     
 
@@ -114,7 +120,7 @@ console.log(imageElement);
 
 
 function checkInputValidity(form, element) {
-  let productName = /^[a-zA-Z][a-zA-Z ']{2,20}(?:\d{1,})?[a-zA-Z]$/;
+  let productName = /^[a-zA-Z][0-9a-zA-Z ']{2,20}[0-9a-zA-Z]$/;
   let brandName = /^[a-zA-Z][a-zA-Z ']{2,20}[a-zA-Z]$/;
   let price = /^[0-9]+$/
   let discount = /^(?:[1-9]|[1-9][0-9]|100)$/;
@@ -498,7 +504,7 @@ function delteImage(productId, image) {
     success: function (data, textStatus, xhr) {
       if (xhr.status === 200) {
         console.log(data);
-        location.reload()
+       window.location.href = '/adminproducts'
       }
     }, error: function (xhr, textStatus, errorThrown) {
       if (xhr.status === 400) {

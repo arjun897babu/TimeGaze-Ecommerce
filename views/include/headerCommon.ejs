@@ -7,7 +7,7 @@
 
         <div class="navigation-mobile-list ">
           <ul>
-            <li><a href="">home</a></li>
+            <li><a href="/">home</a></li>
             <% for(x in categories) {%>
               <li><a href="/productList/<%=categories[x]._id %>">
                   <%=categories[x].categoryName%>
@@ -15,7 +15,7 @@
               <% } %>
 
                 <% if(logged){%>
-                  <li><a href=""><i class="bi bi-cart"> </i>cart</a></li>
+                  <li><a href="/cart"><i class="bi bi-cart"> </i>cart</a></li>
                   <li><a href=""><i class="bi bi-heart"> </i>wishlist</a></li>
                   <form action="/logout" method="post">
 
@@ -48,7 +48,7 @@
         <div class="d-flex align-content-center  " id="menu-short-cut">
           <% if(logged) {%>
             <div class="icon-container">
-              <a href="#" class="text-dark m-2">
+              <a href="/cart" class="text-dark m-2">
                 <i class="bi bi-cart">
                   <div><span>cart</span></div>
                 </i>

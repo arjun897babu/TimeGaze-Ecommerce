@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const session = require('express-session');
-
+const cors = require('cors')
 const morgan = require('morgan');
 const path = require('path');
 
@@ -11,7 +11,7 @@ const connectDB = require('./server/database/connection');
 //session
 app.use(session({ 
   secret:'key',
-  resave: true, 
+  resave: true,  
   saveUninitialized: true 
 }));
 
@@ -28,7 +28,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 //morgan
-app.use(morgan('tiny'));
+// app.use(morgan('tiny'));
+app.use(cors())
  
 // Connecting database
 connectDB();
@@ -47,11 +48,21 @@ app.use('/',require('./server/routes/user_routes'));
 
 //loading admin routes
 
-app.use('/',require('./server/routes/admin_routes'))
+app.use('/',require('./server/routes/admin_routes'));
 
-// app.all("*",(req,res)=>{
-//   res.status(400).render('error')
-// })
+app.use((err, req, res, next) => {
+  if (err.status === 404) {
+    console.log(err.stack)
+    res.status(404).render('error');
+  } else {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.all("*",(req,res)=>{
+  res.status(404).render('error')
+})
 
 
 const PORT = process.env.PORT || 8080;

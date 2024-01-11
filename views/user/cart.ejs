@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TimeGaze</title>
+  <link rel="icon" href="image/android-chrome-512x512.png" type="image/png" alt="Site Icon">
+
+  <!-- boostrap css cdn link -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+  <!-- bootstrap icon cdn link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+
+  <!-- css style sheet link -->
+  <link rel="stylesheet" href='css/header_footer.css'>
+
+
+  <style>
+    .form-control:focus {
+      color: var(--bs-body-color);
+      background-color: var(--bs-body-bg);
+      border-color: none;
+      outline: 0;
+      box-shadow: none;
+    }
+  </style>
+
+</head>
+
+<body>
+  <!-- header -->
+  <%- include('../include/headerCommon') %>
+    <!-- header -->
+
+    </header>
+    <% if(cart.length> 0) { %>
+      <section>
+        <!-- cart + summary -->
+        <section class="bg-light my-5">
+          <div class="container-fluid">
+            <div class="row">
+              <!-- cart -->
+              <h4 class="card-title my-2">Your shopping cart</h4>
+              <div class="col-md-9 mb-2 ">
+                <% for(carts in cart) { %>
+                  <div class="card border mb-1 shadow-0">
+                    <div class="m-1">
+                      <div class="row gy-1 mb-2 ">
+                        <div class="col-md-6 ">
+                          <div class="">
+                            <div class="row">
+                              <div class="col-4">
+                                <img src="uploads/<%=cart[carts].cartItem.product.image[0]   %>" class="border rounded"
+                                  style=" object-fit: cover; height: 5rem;;" />
+                              </div>
+                              <div class="col-8">
+                                <a href="#" class="nav-link">
+                                  <%=cart[carts].cartItem.product.productName%>
+                                </a>
+                                <p class="text-muted">
+                                  <%=cart[carts].cartItem.product.brand%>
+                                </p>
+                                <% if(cart[carts].cartItem.product.quantity<6) {%>
+                                  <p class="text-danger">
+                                    <% if(cart[carts].cartItem.product.quantity<1) {%>
+                                      OUT OF STOCK
+                                      <% } else {%>
+                                        only <%=cart[carts].cartItem.product.quantity%> left
+                                          <% } %>
+                                  </p>
+                                  <% } %>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      
+                          <% if(cart[carts].cartItem.product.quantity>0) {%>
+                            <div class="col-lg-2 col-sm-6 col-6 d-flex flex-row flex-lg-column flex-xl-row text-nowrap">
+                              <div class="">
+                                <select style="width: 100px;" data-id="<%=cart[carts].cartItem.product._id%>"
+                                  class="form-select me-4 cart-quantity" name="quantity">
+                                  <% const maxOrder=5; %>
+                                    <% const availableQuantity=cart[carts].cartItem.product.quantity; %>
+                                      <% const displayQuantity=Math.min(maxOrder, availableQuantity); %>
+                                        <% for (let i=1; i <=displayQuantity; i++) { %>
+                                          <option value="<%= i  %>" <%=cart[carts].cartItem.quantity===i ? 'selected'
+                                            : '' %>>
+                                            <%= i %>
+                                          </option>
+                                          <% } %>
+                                </select>
+                              </div>
+                              <div class="">
+                                <text class="h6">₹
+                                  <%=cart[carts].cartItem.product.discountPrice*cart[carts].cartItem.quantity%>
+                                </text>
+                                <small class="text-success">
+                                  <%=cart[carts].cartItem.product.offer%>% off
+                                </small> <br />
+                                <small class="text-muted text-nowrap"> ₹ <%=cart[carts].cartItem.product.discountPrice%>
+                                    /
+                                    per item </small>
+                              </div>
+                            </div>
+                            <% } %>
+                              
+                                <div
+                                  class="col-lg col-sm-6 d-flex justify-content-sm-center justify-content-md-start justify-content-lg-center justify-content-xl-end mb-2">
+                                  <div class="float-md-end">
+                                    <button data-id="<%=cart[carts].cartItem._id %>"
+                                      class="btn btn-light border text-danger icon-hover-danger remove-item"> Remove
+                                    </button>
+                                  </div>
+                                </div>
+                      </div>
+                    </div>
+                  </div>
+                  <% } %>
+                    <div class="border-top pt-2 mx-2 mb-2">
+                      <p><i class="fas fa-truck text-muted fa-lg"></i> Free Delivery within 1-2 weeks</p>
+                    </div>
+              </div>
+              <!-- cart -->
+              <!-- summary -->
+              <div class="col-md-3">
+                <!-- <div class="card mb-3 border shadow-0">
+                  <div class="card-body">
+                    <form>
+                      <div class="form-group">
+                        <label class="form-label">Have coupon?</label>
+                        <div class="input-group ">
+                          <input type="text" class="form-control border" name="" placeholder="Coupon code">
+                          <button class="btn btn-light border">Apply</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div> -->
+                <div class="card shadow-0 border">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                      <p class="mb-2">Price(<%=cart.length %> items)</p>
+                      <p class="mb-2">₹<%= cart[0].cartTotal %>
+                      </p>
+                    </div>
+                    <!-- <div class="d-flex justify-content-between">
+                      <p class="mb-2">Discount:</p>
+                      <p class="mb-2 text-success">-₹60.00</p>
+                    </div> -->
+                    <div class="d-flex justify-content-between">
+                      <p class="mb-2">Delivery</p>
+                      <p class="mb-2 text-success">Free</p>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between">
+                      <p class="mb-2">Total price:</p>
+                      <p class="mb-2 fw-bold">₹<%= cart[0].cartTotal %>
+                      </p>
+                    </div>
+
+                    <div class="mt-3">
+                      <a href="/checkout?" class="btn btn-dark w-100 shadow-0 mb-2"> Make Purchase </a>
+                      <a href="/" class="btn btn-light w-100 border mt-2"> Back to shop </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- summary -->
+            </div>
+          </div>
+        </section>
+
+      </section>
+      <% }else { %>
+
+        <div class="container-fluid  my-1">
+          <div class="row">
+
+            <div class="col-md-12">
+
+              <div class="card">
+
+                <div class="card-body cart">
+                  <div class="col-sm-12 empty-cart-cls text-center">
+                    <img
+                      src="https://www.getillustrations.com/packs/matilda-startup-illustrations/scenes/_1x/shopping,%20e-commerce%20_%20empty,%20shopping%20cart,%20items,%20products,%20zero,%20none_md.png"
+                      width="130" height="130" class="img-fluid mb-4 mr-3">
+                    <h3><strong>Your Cart is Empty</strong></h3>
+                    <a href="/" class="btn btn-dark cart-btn-transform m-3" data-abc="true">continue shopping</a>
+
+
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <% } %>
+
+
+          <!-- footer -->
+          <%- include('../include/footer') %>
+            <!-- footer -->
+            <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script src="js/cart.js"></script>
+            <script src="js/togglebutton.js"></script>
+</body>
+
+</html>

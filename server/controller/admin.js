@@ -1,14 +1,15 @@
 const { response } = require('express');
 const User = require('../model/userModelSchema');
+const { default: mongoose } = require('mongoose');
 
 
 
 const adminDetails = {
   emailAddress: 'admin@gmail.com',
-  password: 'qwerty123'
+  password: '1234'
 }
 
-exports.adminLogin = (req, res) => {
+exports.adminLogin = (req, res,next) => {
   const { email, password } = req.body;
 
 
@@ -48,7 +49,7 @@ exports.findAllUser = async (req, res) => {
     }
   }
   catch (error) {
-    res.status(500).send(error)
+    next(error)
   }
 }
 
@@ -64,12 +65,12 @@ exports.blockUser = async (req, res) => {
     const user = await User.findByIdAndUpdate(userId, { isBlocked: true }, { new: true });
     if (user) {
       req.session.userBlocked = true;
-      console.log( req.session.userBlocked);
+    
       res.status(200).send('User blocked successfully');
     } else {
       res.status(404).send('User not found');
     }
-    console.log( req.session.userBlocked);
+   
 
   } catch (error) {
     console.error(error);
@@ -79,7 +80,7 @@ exports.blockUser = async (req, res) => {
 
 
 //unblock user
-exports.unblockUser = async (req, res) => {
+exports.unblockUser = async (req, res,next) => {
   try {
 
     const { userId } = req.params
@@ -96,5 +97,6 @@ exports.unblockUser = async (req, res) => {
   }
   catch (error) {
     res.status(500).send(error.message)
+    
   }
 }

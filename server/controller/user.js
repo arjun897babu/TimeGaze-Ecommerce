@@ -5,7 +5,7 @@ const otpGenerator = require('otp-generator');
 const OTP = require('../model/OTPModel');
 const mailSender = require('../services/mailSender');
 
-exports.createUser = async (req, res) => {
+exports.createUser = async (req, res,next) => {
 
 
   const { name, email, phonenumber, password } = req.body
@@ -51,7 +51,7 @@ exports.createUser = async (req, res) => {
 
       let otp = otpGenerator.generate(6, { upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false })
 
-     
+
 
       const savedUser = await newUser.save();
 
@@ -68,12 +68,12 @@ exports.createUser = async (req, res) => {
 
     } catch (error) {
       console.log(error)
-      res.status(500).send(error.message);
+     next(error)
     }
   }
 };
 
-exports.userLogin = async (req, res) => {
+exports.userLogin = async (req, res,next) => {
   try {
 
     const { email, password } = req.body;
@@ -95,7 +95,7 @@ exports.userLogin = async (req, res) => {
     const validPassword = await bcrypt.compare(req.body.password, user.password);
 
     if (!validPassword) {
-      req.session.useremail =email;
+      req.session.useremail = email;
       req.session.invalidMessage = 'Invalid password';
       console.log(req.session.invalidMessage);
       return res.status(400).redirect('/login');
@@ -104,8 +104,11 @@ exports.userLogin = async (req, res) => {
     if (validPassword && !user.isBlocked) {
 
       req.session.isUserAuth = true;
-      req.session.email =email;
-    
+      req.session.email = email;
+      req.session.userId = user._id;
+      req.session.addressId = user.adress;
+      console.log(req.session.addressId)
+
       res.status(200).redirect('/');
 
     } else {
@@ -125,7 +128,7 @@ exports.userLogin = async (req, res) => {
 
 //otp verify 
 
-exports.verifyOTP = async (req, res) => {
+exports.verifyOTP = async (req, res,next) => {
 
 
   try {
@@ -142,7 +145,7 @@ exports.verifyOTP = async (req, res) => {
     const response = await OTP.find({ email }).sort({ createdAt: -1 }).limit(1);
 
     if (response.length === 0 || otp !== response[0].otp) {
-      
+
       console.log(email);
       req.session.errorMessage = 'otp not valid'
       console.log('otp not valid');
@@ -175,7 +178,7 @@ exports.verifyOTP = async (req, res) => {
 
 //generating otp for resetting password
 
-exports.sendOTP = async (req, res) => {
+exports.sendOTP = async (req, res,next) => {
   const { email } = req.body;
   try {
     if (!email) {
@@ -217,10 +220,60 @@ exports.sendOTP = async (req, res) => {
 
 }
 
+//updatre UserName
+
+exports.updateName = async (req, res,next) => {
+  try {
+    
+    const userEmail = req.session.email ;
+    const { name } = req.body;
+
+    if (!userEmail || !name) {
+      return res.send('user not logged in or filed is required');
+    }
+    const existingUser = await User.findOneAndUpdate({ email: userEmail }, { $set: { name: name } }, { new: true });
+   
+    if (existingUser) {
+      res.send('name updated')
+    } else {
+      res.send('error while updatng')
+    }
+
+
+  }
+  catch (error) {
+    res.send(error.message)
+  }
+}
+
+//to update phonenumber
+exports.updateMobileNumber = async (req, res,next) => {
+  try {
+    console.log('a')
+    const userEmail = req.session.email;
+    const { phonenumber } = req.body;
+
+    if (!userEmail || !phonenumber) {
+      return res.send('user not logged in or filed is required');
+    }
+    const existingUser = await User.findOneAndUpdate({ email: userEmail }, { $set: { phonenumber: phonenumber } }, { new: true });
+   
+    if (existingUser) {
+      res.send('phonenumber updated')
+    } else {
+      res.send('error while updatng')
+    }
+
+
+  }
+  catch (error) {
+    res.send(error.message)
+  }
+}
 
 //update passowrd
 
-exports.updatePassword = async (req, res) => {
+exports.updatePassword = async (req, res,next) => {
 
   try {
     const { email, password } = req.body;
@@ -251,6 +304,69 @@ exports.updatePassword = async (req, res) => {
     res.status(500).send(error.message);
   }
 
+}
+
+exports.updateUserPassword = async (req, res) => {
+
+  try {
+
+    const userEmail = req.session.email = 'arjunkan22@gmail.com';
+    const { password } = req.body;
+    console.log('password', password);
+
+    if (!userEmail) {
+      return res.send('user is not logged in');
+    }
+    if (!password) return res.send('all fields are required');
+
+
+
+    const user = await User.findOne({ email: userEmail }, { _id: 1, password: 1 });
+    console.log(user, 'user is found');
+    const oldPassword = await bcrypt.compare(password, user.password);
+    if (oldPassword) {
+      res.send('enter a new password')
+    } else {
+      const salt = 10;
+      const bycriptedNewPassword = await bcrypt.hash(password, salt)
+      await User.findByIdAndUpdate(user._id, { $set: { password: bycriptedNewPassword } }, { new: true });
+      res.send('passowrd upadated');
+    }
+  }
+  catch (error) {
+    console.log(error.message);
+    res.send('internel sever error')
+  }
+
+
+}
+
+exports.getSingleUserDetails = async (req, res) => {
+  try {
+    const userEmail = req.query.userEmail;
+    if (!userEmail) {
+      return res.send('email is not found');
+    }
+    const existingUser = await User.aggregate(
+      [
+        {
+          $match: { email: userEmail }
+        },
+        {
+          $project: { name: 1, phonenumber: 1, email: 1, _id: 0 }
+        }
+      ]
+    )
+    if (existingUser) {
+      res.send(existingUser);
+    } else {
+      res.send(null)
+    }
+  }
+
+  catch (error) {
+
+  }
 }
 
 //user logout

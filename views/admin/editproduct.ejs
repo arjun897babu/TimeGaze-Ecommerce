@@ -55,7 +55,7 @@
           </a>
         </li>
         <li>
-          <a href="#">
+          <a href="/order">
             <i class='bx bx-basket'></i>
             <span class="text">Orders</span>
           </a>
@@ -116,6 +116,7 @@
         </nav>
         <div class="container-fluid p-3  ">
           <div class="bg-white rounded-3">
+            <%products=products[0]  %>
             <form action="" class="requires-validation" data-id="<%=products._id%>"
               enctype="multipart/form-data" novalidate>
               <div class="row p-2">
@@ -163,7 +164,7 @@
                 <div class="col-md-3">
                   <label for="validateCategory" class="form-label">Categories</label>
                   <select id="validateCategory" class="form-select form-control" name="category">
-
+                  
                     <% for (x in categories) { %>
                       <option <%= products.category._id === categories[x]._id?"selected":"" %> 
                         value="<%= categories[x]._id%>"><%= categories[x].categoryName %>

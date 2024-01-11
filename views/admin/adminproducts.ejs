@@ -18,6 +18,17 @@
   <link rel="stylesheet" href="css/adminproducts.css">
 
   <title>AdminHub</title>
+  <style>
+    .page-link {
+      color: black;
+    }
+
+    .active>.page-link,
+    .page-link.active {
+      background-color: black !important;
+      border-color: azure !important;
+    }
+  </style>
 </head>
 
 
@@ -35,14 +46,14 @@
 
 
       <ul class="side-menu top">
-        <li >
+        <li>
           <a href="/adminHome">
             <i class='bx bxs-dashboard'></i>
             <span class="text">Dashboard</span>
           </a>
         </li>
 
-        <li class="active" >
+        <li class="active">
           <a href="/adminproducts">
             <i class='bx bxs-shopping-bags'></i>
             <span class="text">products</span>
@@ -55,7 +66,7 @@
           </a>
         </li>
         <li>
-          <a href="#">
+          <a href="/order">
             <i class='bx bx-basket'></i>
             <span class="text">Orders</span>
           </a>
@@ -90,7 +101,7 @@
     <!-- SIDEBAR -->
 
     <!-- CONTENT -->
-    <div class=" col-12 col-md-9 " >
+    <div class=" col-12 col-md-9 ">
       <div class="ps-0 ">
         <!-- NAVBAR -->
         <nav>
@@ -113,22 +124,24 @@
             <li class="breadcrumb-item active" aria-current="page">Products</li>
           </ol>
         </nav>
-        
+
         <div class="container-fluid ">
-          <div class="container d-flex justify-content-end" ><a href="/addproducts"><button type="submit" class="btn btn-dark ">
-            add products +
-          </button></a>
-            
+          <div class="container d-flex justify-content-end"><a href="/addproducts"><button type="submit"
+                class="btn btn-dark ">
+                add products +
+              </button></a>
+
             <a href="/unlistedProducts"><button type="submit" class="btn btn-danger ms-2">
-              unlisted products
-            </button></a>
-            
+                unlisted products
+              </button></a>
+
           </div>
-          
+
         </div>
         <!-- Table -->
         <div class="container-fluid mt-3">
           <div class="table-responsive ">
+            <% if(products.length>0) {%>
             <table class="table table-hover rounded ">
               <thead>
                 <tr>
@@ -137,39 +150,84 @@
                   <th>QTY</th>
                   <th>Category</th>
                   <th></th>
-                 
+
                 </tr>
               </thead>
               <tbody class="mb-2">
                 <% for(x in products){ %>
-                <tr>
-                  <th>
-                    <img src="uploads/<%= products[x].image[0] %>" style="width: 4rem;object-fit: cover;">
-                  </th>
-                  <td class="fixed-td">
-                    <h6><%=products[x].productName%></h6>
-                    <p class="card-text"><%=products[x].discountPrice%><del class="text-black-50"><%=products[x].price%></del></p>
-                  </td>
-                  <td><%=products[x].quantity%></td>
-                  <td><%=products[x].category.categoryName%></td>
-                  <td class="">
+                  <tr>
+                    <th>
+                      <img src="uploads/<%= products[x].image[0] %>" style="width: 4rem;object-fit: cover;">
+                    </th>
+                    <td class="fixed-td">
+                      <h6>
+                        <%=products[x].productName%>
+                      </h6>
+                      <p class="card-text">
+                        <%=products[x].discountPrice%><del class="text-black-50">
+                            <%=products[x].price%>
+                          </del>
+                      </p>
+                    </td>
+                    <td>
+                      <%=products[x].quantity%>
+                    </td>
+                    <td>
+                      <%=products[x].category.categoryName%>
+                    </td>
+                    <td class="">
 
-                    <div class="d-flex justify-content-center">
-                      <a class="icon-link icon-link-hover" href="/updateProduct?productId=<%= products[x]._id %>">
-                        <button class="btn">
-                          <i class="bi bi-pencil-square"></i>
-                        </button>
-                      </a>
+                      <div class="d-flex justify-content-center">
+                        <a class="icon-link icon-link-hover"
+                          href="/updateProduct?product=<%= products[x].productName %>">
+                          <button class="btn">
+                            <i class="bi bi-pencil-square"></i>
+                          </button>
+                        </a>
                         <button class="btn delete_product" data-id="<%=products[x]._id %>" type="submit">
                           <i class="bi bi-trash-fill"></i>
                         </button>
-                    </div>
-                    
-                  </td>
-                </tr>
-                <% } %>
+                      </div>
+
+                    </td>
+                  </tr>
+                  <% } %>
+
               </tbody>
+
             </table>
+            <% if(totalPages.totalPages) {%>
+              <tfoot class="bg-white">
+                <nav aria-label="Page navigation example" class="d-flex justify-content-center mt-3">
+                  <ul class="pagination">
+                    <% for (let i=1; i <=totalPages.totalPages; i++) { %>
+                      <% if(totalPages.totalPages>1) {%>
+                        <li class="page-item <%= i.toString() == totalPages.pageNumber ? 'active' : '' %>">
+                          <a class="page-link"
+                            href="/adminproducts?<%= totalPages.path.replace(/(pageNumber=)[^&]*/, 'pageNumber=' + i) %>">
+                            <%= i %>
+                          </a>
+                        </li>
+                        <% } %>
+                          <% } %>
+
+
+                  </ul>
+                </nav>
+              </tfoot>
+              <% }else{ %>
+                <div class="text-center">
+                  \(^Д^)/
+                  No Products.
+                </div>
+                <% } %>
+
+                <% }else{ %>
+                  <div class="text-center">
+                    \(^Д^)/
+                    No Products.
+                  </div>
+                  <% } %>
           </div>
         </div>
       </div>
@@ -179,6 +237,7 @@
 
   </div>
 
-<%- include('../include/adminfooter') %>
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="js/deleteProduct.js"></script>
+  <%- include('../include/adminfooter') %>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/deleteProduct.js"></script>
