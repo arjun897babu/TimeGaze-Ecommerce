@@ -53,6 +53,8 @@ $(document).ready(function () {
       error: function (xhr, textStatus, errorThrown) {
         if (xhr.status === 400) {
           console.log('updation failed:', xhr.responseText)
+        }if(xhr.status===404){
+          window.location.href = '/login'
         }
       }
     })
@@ -76,6 +78,9 @@ $(document).ready(function () {
       error: function (xhr, textStatus, errorThrown) {
         if (xhr.status === 400) {
           console.log('updation failed:', xhr.responseText)
+        }
+        if(xhr.status===404){
+          window.location.href = '/login'
         }
       }
     })
@@ -200,6 +205,9 @@ function updatePassword(password) {
       Swal.fire(data);
     },
     error: function (xhr, textStatus, errorThrown) {
+      if(xhr.status===404){
+        window.location.href = '/login'
+      }
       console.error('Error updating the category');
       console.log('Response:', xhr.responseText);
     }

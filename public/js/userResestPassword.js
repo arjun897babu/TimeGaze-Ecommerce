@@ -1,5 +1,6 @@
+document.addEventListener('DOMContentLoaded',function(){
+  
 const forms = document.querySelectorAll('.requires-validation');
-
 Array.from(forms).forEach(form => {
   Array.from(form.elements).forEach((element) => {
     element.addEventListener('input', () => {
@@ -21,10 +22,12 @@ Array.from(forms).forEach(form => {
 
 function checkInputValidity(form, element) {
   let passwordRegex = /^.{4,20}$/;
+  let email = form.elements['email'];
   let passwordInput = form.elements['validatePassword'];
   let passwordInput2 = form.elements['validatePassword2']
   let passwordInputValue = passwordInput.value;
   let passwordInputValue2 = passwordInput2.value;
+
   //for checking passowrd
   let erroMessage = {
 
@@ -94,6 +97,5 @@ function clearMessage(element) {
   errorMessageElement.innerHTML = ('')
 }
 
-function updatePassword(){
-  
-}
+})
+

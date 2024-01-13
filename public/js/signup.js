@@ -37,7 +37,7 @@
       let emailRegex = /^[A-Za-z0-9_\-\.]+@gmail+\.[A-Za-z]{3}$/;
       let nameRegex = /^[a-zA-Z]+ [a-zA-Z]+$/;
       let passwordRegex = /^.{4,20}$/;
-      let numberRegex = /^\d{10}$/;
+      let numberRegex = /^[0-9]\d{9}$/;
 
       console.log('called')
       //input field

@@ -90,7 +90,7 @@ function changeOrderStatus(orderId, orderStatus, statusDiv, btn) {
                 </del>
             </p>
           </td>
-          <td class="status"> ${newStatus.orderStatus}</td>
+          <td class="status">${newStatus.orderStatus}</td>
           <td class="">
           <div class="justify-content-between d-flex">
           <span class="text-danger">Order ${newStatus.orderStatus}.</span>
@@ -116,7 +116,7 @@ function changeOrderStatus(orderId, orderStatus, statusDiv, btn) {
                   </del>
               </p>
             </td>
-            <td class="status"> ${newStatus.orderStatus}</td>
+            <td class="status">${newStatus.orderStatus}</td>
             <td class="">
             <div class="justify-content-between d-flex">
             <span class="text-success">Order ${newStatus.orderStatus}.</span>

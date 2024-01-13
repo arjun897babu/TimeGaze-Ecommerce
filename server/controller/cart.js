@@ -66,7 +66,7 @@ exports.addToCart = async (req, res, next) => {
       await newCart.save()
     }
 
-    res.status(200).redirect(`/singleProduct?product=${availableProduct.productName}`);
+    res.status(200).redirect(`/singleProduct?pid=${availableProduct._id}&product=${availableProduct.productName}`);
 
   } catch (error) {
     console.log(error.message)
@@ -174,8 +174,7 @@ exports.cartQuantity = async (req, res, next) => {
     const userId = req.session.userId;
     const { cartItem } = req.params;
     const { newQuantity } = req.body;
-    console.log(newQuantity);
-
+   
     if (userId !== 'undefined' && userId !== '' && cartItem !== 'undefined' && cartItem !== '' && newQuantity) {
       const existCartItem = await Cart.findOne({
         userId: userId
@@ -185,7 +184,7 @@ exports.cartQuantity = async (req, res, next) => {
         const indexOfItem = existCartItem.cartItem.findIndex((item) =>
           item.product._id.equals(new mongoose.Types.ObjectId(cartItem))
         );
-        console.log(existCartItem.cartItem[indexOfItem])
+        // console.log(existCartItem.cartItem[indexOfItem])
         if (existCartItem.cartItem[indexOfItem].product.quantity >= newQuantity) {
           existCartItem.cartItem[indexOfItem].quantity = newQuantity;
           const newCartTotal = existCartItem.cartItem.reduce((total, item) => {
@@ -196,13 +195,13 @@ exports.cartQuantity = async (req, res, next) => {
           await existCartItem.save();
           res.status(200).send('quantity changed');
         } else {
-          res.status(404).send('Out of stock');
+          res.status(400).send('Out of stock');
         }
       }
     } else {
       res.status(400).send('Missing parameters');
     }
   } catch (error) {
-    next(error);
+    res.send(error)
   }
 };

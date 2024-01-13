@@ -19,7 +19,7 @@
 
 
   <!-- css style sheet link -->
-  <link rel="stylesheet" href="css/header_footer.css">
+  <link rel="stylesheet" href="/css/header_footer.css">
 
 
   <style>
@@ -169,29 +169,29 @@
             <div class="card-header">
               <span class="h5">Details</span>
             </div>
-            <div class="card-body p-2"> <!-- Adjusted padding here -->
+            <div class="card-body p-2"> 
               <div class="row d-flex justify-content-between">
+                <% order = order[0]  %>
                 <div class="col-sm-6">
                   <div class="mb-1">
-                    <h6 class="fw-bold">Arjun Babu</h6>
-                    <p class="mb-0">arjunkan22@gmail.com</p>
-                    <p class="mb-0" style="max-width: 320px;">Anjali house Vappolithazham, chevarambalm(PO), Via
-                      valakulam - vappolithazham road, Post no:T 52/5 Kozhikode - 673017, Kerala</p>
+                    <h6 class="fw-bold"><%=order.address.name  %></h6>
+                    <p class="mb-0"><%=order.user[0].email  %></p>
+                    <p class="mb-0" style="max-width: 320px;"><%=order.address.address  %></p>
                   </div>
                   <div>
                     <h6 class="fw-bold">Phone number</h6>
-                    <p>9074880023, 8943428897</p>
+                    <p><%=order.address.mobileNumber %>,<%=order.user[0].phonenumber  %></p>
                   </div>
                 </div>
                 <div class="col-sm-6">
                   <div class="mb-1">
-                    <img src="image/tweg18502_3.jpg" style="height: 96px; width: 96px;" class="img-fluid" />
+                    <img src="uploads/<%= order.orderItems[0].image[0] %>" style="height: 96px; width: 96px;" class="img-fluid" />
                   </div>
                   <div>
                     <h6 class="fw-bold">Product Information</h6>
-                    <p>Product Name: Example Product</p>
-                    <p>Quantity: 2</p>
-                    <p>Price: $50.00 each</p>
+                    <p>Product Name: <%= order.orderItems[0].productName %></p>
+                    <p>Quantity: <%= order.orderItems[0].quantity %></p>
+                    <p>Price: ₹<%= order.orderItems[0].discountPrice %> each</p>
                   </div>
                 </div>
                 <!-- <div class="col-md-5">

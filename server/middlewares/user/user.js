@@ -52,6 +52,7 @@ exports.notUser = (req, res, next) => {
     next();
 
   } else {
+    
     res.redirect('/login');
   }
 };
@@ -121,48 +122,59 @@ exports.isOrder = async (req, res, next) => {
     else res.status(401).redirect('/');
 
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
+    next(error)
   }
 }
 
 
 exports.singleProduct = async (req, res, next) => {
-  const {pid='' } = req.query;
-  if(!mongoose.Types.ObjectId.isValid(pid)){
-    return res.redirect('/productList');
+
+  try{
+    const { pid = '' } = req.query;
+    if (!mongoose.Types.ObjectId.isValid(pid)) {
+      return res.redirect('/productList');
+      
+    }
+  
+    const existingProduct = await Product.aggregate([
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'category',
+          foreignField: '_id',
+          as: 'category'
+        }
+      },
+      { $unwind: '$category' },
+      {
+        $match: {
+          $and: [
+            {
+              _id: new mongoose.Types.ObjectId(pid),
+              unlisted: false
+            },
+            {
+              'category.unlisted': false
+            }
+          ]
+        }
+      }
+    ]);
+  
+    if (existingProduct.length === 1) next();
+  
+    else return res.redirect('/productList');
+
+  }catch(error){
+    next(error)
   }
 
-  const existingProduct = await Product.aggregate([
-    {
-      $lookup: {
-        from: 'categories',
-        localField: 'category',
-        foreignField: '_id',
-        as: 'category'
-      }
-    },
-    { $unwind: '$category' },
-    {
-      $match: {
-        $and: [
-          {
-           _id:new mongoose.Types.ObjectId(pid),
-            unlisted: false
-          },
-          {
-            'category.unlisted': false
-          }
-        ]
-      }
-    }
-  ]);
-
-  if (existingProduct.length === 1) next();
-    
-  else return res.redirect('/productList');
- 
-
-  
 }
 
+exports.isUserEmail = (req, res, next)=>{
+  if (req.session.useremail) {
+    next()
+  } else {
+    res.redirect('/login')
+  }
+}

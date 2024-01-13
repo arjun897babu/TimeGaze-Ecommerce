@@ -55,8 +55,8 @@ app.use((err, req, res, next) => {
     console.log(err.stack)
     res.status(404).render('error');
   } else {
-    console.error(err);
-    res.status(500).send('Internal Server Error');
+    console.log(err.stack)
+    res.status(500).render('error500');
   }
 });
 

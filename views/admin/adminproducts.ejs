@@ -71,12 +71,12 @@
             <span class="text">Orders</span>
           </a>
         </li>
-        <li>
+        <!-- <li>
           <a href="#">
             <i class='bx bxs-edit-alt'></i>
             <span class="text">banner management</span>
           </a>
-        </li>
+        </li> -->
         <li>
           <a href="#">
             <i class='bx bxs-offer'></i>
@@ -179,7 +179,7 @@
 
                       <div class="d-flex justify-content-center">
                         <a class="icon-link icon-link-hover"
-                          href="/updateProduct?product=<%= products[x].productName %>">
+                          href="/updateProduct?pid=<%=products[x]._id%>&product=<%=products[x].productName%>">
                           <button class="btn">
                             <i class="bi bi-pencil-square"></i>
                           </button>

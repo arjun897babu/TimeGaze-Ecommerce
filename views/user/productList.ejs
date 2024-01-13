@@ -167,15 +167,15 @@
                     </div> -->
                   </div>
                   <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingThree">
+                    <h2 class="accordion-header" id="headingOne">
                       <button class="accordion-button text-dark bg-light" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#panelsStayOpen-collapseFour" aria-expanded="false"
-                        aria-controls="panelsStayOpen-collapseFour">
+                        data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="false"
+                        aria-controls="panelsStayOpen-collapseOne">
                         categories
                       </button>
                     </h2>
-                    <div id="panelsStayOpen-collapseFour" class="accordion-collapse collapse show"
-                      aria-labelledby="headingThree">
+                    <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show"
+                      aria-labelledby="headingOne">
                       <div class="accordion-body">
                         <% for(x of categories) {%>
                           <% const decodedString=decodeURIComponent(totalPages.path); %>
@@ -237,7 +237,7 @@
                           <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="caseDiameter" value="<%=caseDiameter %>" id="<%=caseDiameter %>"  <%=(selected.caseDiameter&&selected.caseDiameter.includes(caseDiameter.toString()))? 'checked' : '' %>  />
                             <label class="form-check-label" for="<%=caseDiameter %>">
-                              <%=caseDiameter %>
+                              <%=caseDiameter %> <small>mm</small>
                             </label>
                             <span class="badge badge-secondary float-end">120</span>
                           </div>
@@ -324,10 +324,11 @@
 
                         </a>
                         <div class="card-body p-0">
-                          <h5 class="card-title m-1" style="font-size: 0.8rem;">
-                            <%=products[i].productName%>
+                          <h5 class="card-title m-1" style="font-size: 0.8rem; text-transform: capitalize;">
+                            <%=products[i].productName%> 
                           </h5>
-                          <p class="card-text m-1">₹<%=products[i].discountPrice%> <del>₹<%=products[i].price%></del>
+                      
+                          <p class="card-text m-1 ps-1">₹<%=products[i].discountPrice%> <del class="text-black-50">₹<%=products[i].price%></del>
                           </p>
                         </div>
                         <div class=" ps-3 pe-3">

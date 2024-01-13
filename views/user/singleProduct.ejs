@@ -157,7 +157,7 @@
        </aside>
           <main class="col-sm-6">
             <div class="p-3">
-              <h4 class="title text-dark">
+              <h4 class="title text-dark text-capitalize">
                 <%=products.productName %>Fashion <%=products.category.categoryName%>'s <%=products.caseShape%> Case
                       Watch <br />
 
@@ -247,35 +247,40 @@
         <tr>
           <th class="pe-4">Product</th>
           <td>:</td>
-          <td class="ps-4">
+          <td class="ps-4  text-capitalize">
             <%=products.productName%>
+          </td>
+        </tr>
+        <tr>
+          <th class="pe-4">Brand</th>
+          <td>:</td>
+          <td class="ps-4 text-capitalize">
+            <%=products.brand%>
           </td>
         </tr>
         <tr>
           <th class="pe-4">Case Diameter</th>
           <td>:</td>
-          <td class="ps-4">
-            <%=products.caseDiameter%> mm
+          <td class="ps-4 text-capitalize">
+            <%=products.caseDiameter%> <small class="text-lowercase" >mm</small>
           </td>
         </tr>
         <tr>
           <th class="pe-4">Case Shape</th>
           <td>:</td>
-          <td class="ps-4">
+          <td class="ps-4 text-capitalize">
             <%=products.caseShape%>
           </td>
         </tr>
         <tr>
           <th class="pe-4">Display Type</th>
           <td>:</td>
-          <td class="ps-4">Analogue</td>
+          <td class="ps-4 text-capitalize">Analogue</td>
         </tr>
       </table>
       <h1></h1>
       <hr>
     </div>
-
-
 
     <%- include("../include/footer") %>
       <script src="js/togglebutton.js"> </script>

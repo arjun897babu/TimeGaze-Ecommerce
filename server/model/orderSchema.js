@@ -45,6 +45,9 @@ const OrderSchema = new mongoose.Schema({
       type: String,
       default: 'placed',
       index: true,
+    },
+    cancelReason:{
+      type:String
     }
 
   }],

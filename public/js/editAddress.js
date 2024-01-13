@@ -27,9 +27,11 @@ function updateAddress(newData, selected) {
     }
     },
     error: function (xhr, textStatus, errorThrown) {
-      if (xhr.status === 404) {
+      if (xhr.status === 400) {
         console.log('Document not found:', xhr.responseText);
-      } 
+      } if(xhr.status===404){
+        window.location.href = '/login'
+      }
     }
   });
 }

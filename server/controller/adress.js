@@ -212,6 +212,7 @@ exports.editAddress = async (req, res) => {
 
   const selectedId = req.query.selected;
   const { addressId } = req.params;
+  console.log('editapi',selectedId,addressId)
 
   if (!selectedId || !addressId) return res.send('not found or not logged in ');
   const trueAddress = await Address.aggregate(
@@ -229,7 +230,7 @@ exports.editAddress = async (req, res) => {
       }
     ]
   );
-
+    console.log(trueAddress)
   if (trueAddress) {
     res.send(trueAddress);
   } else {
@@ -287,7 +288,7 @@ exports.updateAddress = async (req, res) => {
         }
       }
     } else {
-      res.status(404).send('not found')
+      res.status(400).send('not found')
     }
   } catch (error) {
     console.error(error);
@@ -310,11 +311,7 @@ exports.makeDefault = async (req, res, next) => {
       { 'address._id': 1, 'address.defaultAdress': 1 }
     );
 
-    if (!existingAddressDocument) {
-      let error = new Error('Item not found');
-      error.status = 404;
-      return next(error);
-    }
+    
 
     const selectedIndex = existingAddressDocument.address.findIndex(item => item._id.equals(selectedId));
 

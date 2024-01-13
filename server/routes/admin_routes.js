@@ -16,10 +16,10 @@ adminRoute.get('/addproducts', adminServices.adminaddproducts);//product add pag
 adminRoute.get('/adminusers', adminMiddleWare.isAdmin, adminServices.adminusers);//list users on admin side
 adminRoute.get('/adminCategory', adminMiddleWare.isAdmin, adminServices.adminCategory);//list categories on admin side
 adminRoute.get('/addCategory', adminMiddleWare.isAdmin, adminServices.addCategory);//add categories
-adminRoute.get('/updateCategory', adminMiddleWare.isAdmin, adminServices.updateCategory)//update category
+adminRoute.get('/updateCategory', adminMiddleWare.isAdmin,adminMiddleWare.isCategory, adminServices.updateCategory)//update category
 adminRoute.get('/unlistedCategory', adminMiddleWare.isAdmin, adminServices.unlistedCategory)//unlisted categories
 adminRoute.get('/unlistedProducts', adminMiddleWare.isAdmin, adminServices.unlistedProducts);//unlsited products
-adminRoute.get('/updateProduct',  adminServices.adminEditProduct);//edit product
+adminRoute.get('/updateProduct', adminMiddleWare.isAdmin,adminMiddleWare.isProduct, adminServices.adminEditProduct);//edit product
 adminRoute.get('/order',adminMiddleWare.isAdmin,adminServices.order);//admin order management
 
 

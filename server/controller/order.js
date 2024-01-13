@@ -69,8 +69,8 @@ exports.createOrder = async (req, res, next) => {
     const isValid = valid.every(bolean => bolean);
 
     if (existingAddress.length === 0 || !isValid) {
-      
-      return res.status(404).json({status:'failed',message:'some product is outOf stock',redirectUrl:'/cart'})
+
+      return res.status(404).json({ status: 'failed', message: 'some product is outOf stock', redirectUrl: '/cart' })
     }
 
     //creating billing address
@@ -79,6 +79,7 @@ exports.createOrder = async (req, res, next) => {
       mobileNumber: existingAddress[0].address.mobileNumber,
       district: existingAddress[0].address.district,
       pincode: existingAddress[0].address.pincode,
+      address: existingAddress[0].address.address,
       locality: existingAddress[0].address.locality,
       state: existingAddress[0].address.state,
       addressType: existingAddress[0].address.addressType
@@ -134,7 +135,7 @@ exports.createOrder = async (req, res, next) => {
 
       await Product.bulkWrite(bulkoperation);
       req.session.isOrder = true;
-      res.status(200).json({message:'order placed successFully',status:'success',redirectUrl:'/orderSuccess'})
+      res.status(200).json({ message: 'order placed successFully', status: 'success', redirectUrl: '/orderSuccess' })
 
     }
     else {
@@ -164,6 +165,7 @@ exports.getOrderDetails = async (req, res, next) => {
         ,
         { $unwind: '$orderItems' }
         ,
+        {$sort:{orderDate:-1}},
         {
           $project: {
             'orderItems._id': 1,
@@ -204,6 +206,7 @@ exports.getAllOrderDetails = async (req, res, next) => {
         },
         { $unwind: '$orderItems' }
         ,
+        {$sort:{orderDate:-1}},
         {
           $project:
           {
@@ -227,12 +230,12 @@ exports.getAllOrderDetails = async (req, res, next) => {
 exports.changeStatus = async (req, res, next) => {
   try {
     const { orderId } = req.params;
-    const { orderStatus } = req.body;
-    console.log(req.body.orderStatus)
-    console.log(orderId,orderStatus)
+    const { orderStatus, cancelReason } = req.body;
+    console.log(cancelReason)
+    console.log(orderId, orderStatus)
 
     if (!orderStatus) return res.status(400).send('all fields required');
-    
+
     const updatedOrder = await Order.findOneAndUpdate(
       {
         'orderItems':
@@ -243,7 +246,7 @@ exports.changeStatus = async (req, res, next) => {
       },
       {
         $set:
-          { 'orderItems.$.orderStatus': orderStatus }
+          { 'orderItems.$.orderStatus': orderStatus, 'orderItems.$.cancelReason': cancelReason }
       },
       {
         new: true,
@@ -263,7 +266,7 @@ exports.changeStatus = async (req, res, next) => {
             break;
           }
         }
-     
+
 
         await Product.findByIdAndUpdate(
           product._id,
@@ -271,18 +274,61 @@ exports.changeStatus = async (req, res, next) => {
             $inc:
               { quantity: product.quantity }
           },
-          
+
         );
       }
-      const updatedItem = updatedOrder.orderItems.find(items=>items._id.equals(new mongoose.Types.ObjectId(orderId)));
+      const updatedItem = updatedOrder.orderItems.find(items => items._id.equals(new mongoose.Types.ObjectId(orderId)));
       console.log(updatedItem)
-      res.status(200).json({response:updatedItem,status:'success'});
+      res.status(200).json({ response: updatedItem, status: 'success' });
 
     } else {
-      res.status(400).json({message:'not found'})
+      res.status(400).json({ message: 'not found' })
     }
   }
   catch (error) {
     next(error)
+  }
+}
+
+exports.getSingleOrderDetails = async (req, res, next) => {
+  try {
+
+    const { soid } = req.params;
+    const singleOrder = await Order.aggregate([
+      {
+        $match: {
+          'orderItems': {
+            $elemMatch: { _id: new mongoose.Types.ObjectId(soid) }
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user'
+        }
+      },
+      {
+        $project: {
+          'user._id': 0,
+          userId: 0,
+          'user.password': 0,
+          'user.isBlocked': 0,
+          'user.isVerified': 0,
+          'user.__v': 0,
+          'user.adress': 0,
+        }
+      }
+    ]);
+
+    //  await Order.findOne({ 'orderItems': { $elemMatch: { _id: soid } } })
+
+    res.json(singleOrder)
+
+  } catch (error) {
+    console.log(error.messagge)
+    res.send(error.message)
   }
 }

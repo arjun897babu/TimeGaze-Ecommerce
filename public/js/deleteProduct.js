@@ -19,12 +19,12 @@ $(document).ready(function () {
       if (result.isConfirmed) {
         $.ajax({
           url: `http://localhost:3000/api/deleteProduct/${productId}`,
-          type: 'PUT', 
+          type: 'PUT',
           contentType: 'application/json',
           success: function (data) {
             const newData = data.product;
             console.log(newData)
-            container.empty();
+
             const Toast = Swal.mixin({
               toast: true,
               position: "bottom",
@@ -40,7 +40,9 @@ $(document).ready(function () {
               icon: "success",
               title: "Product delted"
             });
-            // location.reload()
+            setTimeout(function () {
+              location.reload();
+            }, 1000);
           },
           error: function (error) {
             console.error(error.message)

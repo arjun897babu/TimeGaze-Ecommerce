@@ -1,17 +1,28 @@
-$('.changeOrder').click(function (event) {
+$('.changeOrder').click(async function (event) {
   event.preventDefault();
   event.stopPropagation();
   let btn = $(this);
   let statusDiv =btn.closest('.row').find('.status');
   let orderStatus = btn.val();
   let orderId = btn.attr('data-id');
-  btn.prop('disabled', true)
   console.log(orderId, orderStatus,statusDiv);
-  changeOrderStatus(orderId, btn, statusDiv, orderStatus)
+  const { value: text } = await Swal.fire({
+    input: "textarea",
+    inputLabel: "Message",
+    inputPlaceholder: "Type your message here...",
+    inputAttributes: {
+      "aria-label": "Type your message here"
+    },
+    showCancelButton: true
+  });
+  if (text) {
+    changeOrderStatus(orderId, btn, statusDiv, orderStatus,text)
 
+  }
+ 
 })
 
-function changeOrderStatus(orderId, btn, statusDiv, orderStatus) {
+function changeOrderStatus(orderId, btn, statusDiv, orderStatus,text) {
   Swal.fire({
     title: "Are you sure?",
     showCancelButton: true,
@@ -24,7 +35,7 @@ function changeOrderStatus(orderId, btn, statusDiv, orderStatus) {
       $.ajax({
         url: `/api/changeOrderStatus/${orderId}`,
         type: 'PUT',
-        data: JSON.stringify({ orderStatus: orderStatus }),
+        data: JSON.stringify({ orderStatus: orderStatus,cancelReason:text }),
         contentType: 'application/json',
         success: function (data, textStatus, xhr) {
           if (xhr.status === 200) {
@@ -54,13 +65,13 @@ function changeOrderStatus(orderId, btn, statusDiv, orderStatus) {
           if (xhr.status === 400){ console.log(xhr.responseText)
 
           }
-          btn.prop('disabled', false);
+        
         }
 
 
       })
     } else {
-      btn.prop('disabled', false);
+   
     }
   });
 

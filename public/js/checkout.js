@@ -14,6 +14,9 @@ function makeAddressDefualt(selectedId) {
       location.reload()
     },
     error: function (error) {
+      if(xhr.status===404){
+        window.location.href = '/login'
+      }
 
       console.error(error);
     }
@@ -92,7 +95,9 @@ function checkInputValidity(form, element) {
   };
 
   let nameRegex = /^(?=[a-zA-Z ]{3,30}$)[a-zA-Z]+ [a-zA-Z]+$/;
-  let numberRegex = /^\d{10}$/;
+  let districtRegex = /^[A-Za-z\s\-]{3,20}$/
+
+  let numberRegex = /^[0-9]\d{9}$/;
   let addressRegex = /^[^\s][a-zA-Z0-9\s,'-]*$/;
 
   let isValid = true;
@@ -117,7 +122,7 @@ function checkInputValidity(form, element) {
     clearError(numberInput);
   } else if (numberInput.value.trim() === '') {
     isValid = false;
-    displayError(numberInput, errorMessage.phonenumber.required);
+    displayError(numberInput, errorMessage.common.required);
   } else {
     isValid = false;
     displayError(numberInput, errorMessage.phonenumber.invalid);
@@ -128,7 +133,7 @@ function checkInputValidity(form, element) {
   if (districtInput.value.trim() === '') {
     displayError(districtInput, errorMessage.common.required);
     isValid = false;
-  } else if (!nameRegex.test(districtInput.value)) {
+  } else if (!districtRegex.test(districtInput.value)) {
     displayError(districtInput, errorMessage.district.invalid);
     isValid = false;
   } else {
@@ -150,7 +155,7 @@ function checkInputValidity(form, element) {
   if (localityInput.value.trim() === '') {
     displayError(localityInput, errorMessage.locality.invalid);
     isValid = false;
-  } else if (!nameRegex.test(localityInput.value)) {
+  } else if (!districtRegex.test(localityInput.value)) {
     displayError(localityInput, errorMessage.locality.invalid);
     isValid = false;
   } else {
@@ -175,7 +180,7 @@ function checkInputValidity(form, element) {
   if (stateInput.value.trim() === '') {
     displayError(stateInput, errorMessage.common.required);
     isValid = false;
-  } else if (!nameRegex.test(stateInput.value)) {
+  } else if (!districtRegex.test(stateInput.value)) {
     displayError(stateInput, errorMessage.state.invalid);
     isValid = false;
   } else {
@@ -224,8 +229,11 @@ function updateAddress(newData, selected) {
       }
     },
     error: function (xhr, textStatus, errorThrown) {
-      if (xhr.status === 404) {
+      if (xhr.status === 400) {
         console.log('Document not found:', xhr.responseText);
+      }
+      if(xhr.status===404){
+        window.location.href = '/login'
       }
     }
   });
@@ -269,7 +277,9 @@ function makePurchase(selectedAddressId, PaymentOption) {
 
     },
     error: function () {
-
+      if(xhr.status===404){
+        window.location.href = '/login'
+      }
     }
 
   })
@@ -288,3 +298,12 @@ function clearMessage(element) {
   errorMessageElement = element.parent().find('small');
   errorMessageElement.text('');
 }
+
+$('#addAddressModal').on('hidden.bs.modal',function(){
+  $('#addAddressModal input ').val('');
+  $('#addAddressModal input ').removeClass('is-valid is-invalid');
+  $('#addAddressModal textarea ').val('');
+  $('#addAddressModal textarea ').removeClass('is-valid is-invalid');
+  $('#addAddressModal small').text('');
+  
+})

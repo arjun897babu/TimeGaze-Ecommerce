@@ -150,25 +150,25 @@ exports.allProducts = async (req, res, next) => {
 
     
     if (category !== '' || brand !== '' || caseDiameter !== '' ) {
-      matchQuery.$and = [];
+      matchQuery.$or = [];
       if (category !== '') {
        
         const categories = category.split(',').map(cat => ({ 'category.categoryName': { $regex: `^${cat.trim()}$`, $options: 'i' } }));
 
         selected.category=category.split(',')
-        matchQuery.$and.push(...categories);
+        matchQuery.$or.push(...categories);
       }
     
       if (brand !== '') {
        
         const brands = brand.split(',').map(b=>({brand:{$regex:`^${b.trim()}$`,$options:'i'}}))
         selected.brands = brand.split(',')
-        matchQuery.$and.push(...brands);
+        matchQuery.$or.push(...brands);
       }
       if (caseDiameter !== '') {
         const caseDiameters = caseDiameter.split(',').map(caseD => ({caseDiameter:Number(caseD)}));
         selected.caseDiameter = caseDiameter.split(',')
-        matchQuery.$and.push(...caseDiameters);
+        matchQuery.$or.push(...caseDiameters);
       
       }
     }
@@ -360,6 +360,7 @@ exports.singleProduct = async (req, res, next) => {
   } catch (error) {
     console.log(error.message);
     next(error);
+   
   }
 };
 

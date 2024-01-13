@@ -42,11 +42,9 @@ function deleteCartItem(cartItemId) {
         },
         error: function (xhr, textStatus, errorThrown) {
 
-          if (xhr.status === 404) {
-            console.log(xhr.responseText);
-            console.log(data)
+          if(xhr.status===404){
+            window.location.href = '/login'
           }
-
         }
 
       })
@@ -73,6 +71,9 @@ function quantityManageMent(cartItem, newQuantity) {
     }, error: function (xhr, textStatus) {
       if (xhr.status === 400) {
         console.log('updation failed:', xhr.responseText)
+      }
+      if(xhr.status===404){
+        window.location.href = '/login'
       }
     }
   })

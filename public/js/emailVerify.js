@@ -59,3 +59,56 @@ function clearMessage(element) {
   errorMessageElement = element.parentElement.querySelector('small');
   errorMessageElement.innerHTML = ('')
 }
+
+let timeLeft = 60;
+let text = document.querySelector('p');
+let coutDownDiv = document.getElementById('otpCountDown');
+let otpVerify = document.getElementById('otpVerify');
+let resendButton = document.getElementById('otpResend')
+let timerId;
+let email = document.querySelector('input[name="email"]').value;
+
+if (email) { timerId = setInterval(countDown, 1000) };
+
+
+function countDown() {
+
+  if (timeLeft === -1) {
+    clearInterval(timerId);
+    coutDownDiv.innerHTML = ``;
+    text.style.display = 'none'
+    otpVerify.classList.add('disabled')
+    resendButton.classList.remove('disabled');
+    timeLeft = 60
+
+  } else {
+    coutDownDiv.innerHTML = ` Time remaing : ${timeLeft}s  `;
+    --timeLeft;
+  }
+}
+
+resendButton.addEventListener('click', () => {
+  otpVerify.classList.remove('disabled');
+  resendOtp()
+});
+
+function resendOtp() {
+  $.ajax({
+    url: `/api/sendOTP?otpPurpose=resendOtp`,
+    method: 'post',
+    contentType: 'application/json',
+    data: JSON.stringify({ email: email }),
+    success: function () {
+      resendButton.classList.add('disabled');
+      if (email) { timerId = setInterval(countDown, 1000) };
+      text.style.display = 'block';
+    },
+    error: function () {
+      Swal.fire({
+        
+        icon: "error"
+      });
+    }
+  })
+}
+

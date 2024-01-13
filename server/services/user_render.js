@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { error } = require('console');
 const queryString = require('querystring')
 // const { response } = require('express');
 
@@ -38,7 +39,13 @@ module.exports = {
     });
   },
   signup: (req, res) => {
-    res.render('user/user_signup', { errorMessage: req.session.errorMessage, logged: req.session.isUserAuth });
+    res.render('user/user_signup', { errorMessage: req.session.errorMessage, logged: req.session.isUserAuth },(error,html)=>{
+      if (error) {
+        return res.send(error)
+      }
+      delete req.session.invalidMessage;
+      res.send(html);
+    });
   },
   emailverify: (req, res) => {
 
@@ -46,7 +53,7 @@ module.exports = {
       if (error) {
         res.send(error.message)
       }
-      delete req.session.useremail
+      // delete req.session.useremail
       delete req.session.errorMessage
       res.send(html)
     });
@@ -72,7 +79,7 @@ module.exports = {
       res.send(html)
     });
   },
-  singleProduct: (req, res) => { 
+  singleProduct: (req, res,next) => { 
     const userId = req.session.userId
     const query = queryString.stringify(req.query);
 
@@ -89,8 +96,10 @@ module.exports = {
         res.status(200).render('user/singleProduct', { logged: req.session.isUserAuth, products: products.existingProduct, isCart: products.isCart, categories })
       }))
       .catch((error) => {
-        console.error('Error in adminEditProduct:', error);
-        res.status(500).send('Internal Server Error');
+        // console.error('Error in adminEditProduct:', error);
+        // res.status(500).send('Internal Server Error');
+        next(error)
+       
       });
 
   },
@@ -168,7 +177,7 @@ module.exports = {
       .then(axios.spread((categoryResponse, addressResponse) => {
         const allCategories = categoryResponse.data;
         const address = addressResponse.data;
-
+        console.log('sss',address)
         res.status(200).render('user/userEditAddress', { logged: req.session.isUserAuth, categories: allCategories, address: address })
 
       }))
@@ -250,17 +259,21 @@ module.exports = {
         console.log(error)
         res.status(500).send(error.message)
       })
-  },
-  ordersingle: (req, res) => {
-    const { userId } = req.session
-    axios.all([
-      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
-
+    },
+    ordersingle: (req, res) => {
+      const { userId } = req.session
+      const {soid} = req.query;
+      axios.all([
+        axios.get(`http://localhost:${process.env.PORT}/api/categories`),
+        axios.get(`http://localhost:${process.env.PORT}/api/getSingleOrder/${soid}`),
+        
     ])
-      .then(axios.spread((categoryResponse) => {
+      .then(axios.spread((categoryResponse,orderResponse) => {
 
         const categories = categoryResponse.data
-        res.status(200).render('user/ordersingle', { logged: req.session.isUserAuth, categories: categories })
+        const order = orderResponse.data;
+        console.log('dddddd',order)
+        res.status(200).render('user/ordersingle', { logged: req.session.isUserAuth, categories: categories,order:order })
       }))
       .catch((error) => {
         console.log(error)
@@ -268,14 +281,14 @@ module.exports = {
       })
   },
   orderSuccess: (req, res) => {
-    const { userId } = req.session
+    const { userId } = req.session;
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/categories`),
 
     ])
       .then(axios.spread((categoryResponse) => {
-
         const categories = categoryResponse.data
+       
         res.status(200).render('user/orderSuccess', { logged: req.session.isUserAuth, categories: categories }, (error, html) => {
           if (error) {
             return res.send(error)
@@ -293,8 +306,6 @@ module.exports = {
 
   },
 
-  // errorPage: (req, res) => {
-  //   res.status(404).render('error')
-  // }
+
 }
 
