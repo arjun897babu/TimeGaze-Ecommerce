@@ -14,7 +14,7 @@ let erroMessage = {
   },
   caseDiameterInput: {
     invalid: 'enter a valid case diameter(upto 50mm)',
-    invalid2:'enter a valid number'
+    invalid2: 'enter a valid number'
   },
   caseShapeInput: {
 
@@ -39,7 +39,7 @@ let erroMessage = {
     invalid: 'please choose at least one image',
     invalid2: 'please choose min four images',
     inavlid3: 'invalid file format',
-    invalid4:'minimum one image is required',
+    invalid4: 'minimum one image is required',
   }
 
 };
@@ -83,29 +83,29 @@ function updateProduct(form) {
   const productId = form.getAttribute('data-id');
   const formData = new FormData(form);
   $.ajax({
-    url:`/api/updateProduct/${productId}`,
-    method:'PUT',
-    data:formData,
-    contentType:false,
-    processData:false,
-    success:function(response){
+    url: `/api/updateProduct/${productId}`,
+    method: 'PUT',
+    data: formData,
+    contentType: false,
+    processData: false,
+    success: function (response) {
       window.location.href = '/adminProducts'
     },
-    error:function(xhr,textStatus,errorThrown){
-     
-      if(xhr.status===409){
+    error: function (xhr, textStatus, errorThrown) {
+
+      if (xhr.status === 409) {
         let input = form.elements['validateProductName'];
         $(input).addClass('is-invalid');
         let errorMessage = xhr.responseJSON.error
 
         $(input).siblings('.text-danger').text(errorMessage);
-        
+
       }
     }
-    
+
 
   })
- 
+
 }
 
 
@@ -121,7 +121,7 @@ console.log(imageElement);
 
 
 function checkInputValidity(form, element) {
-  let productName =/^[A-Za-z0-9\-]{3,20}( [0-9]+)?$/
+  let productName = /^[A-Za-z0-9\-]{3,20}( [0-9]+)?$/
   let brandName = /^[A-Za-z\s\-]{3,20}$/
   let price = /^[1-9]\d*$/
   let discount = /^(?:[1-9]|[1-9][0-9]|100)$/;
@@ -193,7 +193,7 @@ function checkInputValidity(form, element) {
     caseDiameterInput.classList.remove('is-valid');
     caseDiameterInput.classList.add('is-invalid');
   }
-  
+
   else if (!price.test(caseDiameterInputValue)) {
     displayErrorMessage(caseDiameterInput, erroMessage.caseDiameterInput.invalid2)
     caseDiameterInput.classList.remove('is-valid');
@@ -488,15 +488,15 @@ $(document).ready(function () {
     const productId = $(this).attr('data-id');
     const image = $(this).parent().find('img').attr('src').split('/').pop();
     console.log(productId, image);
-    if (imageElement.length + fileInput.files.length + currentList.length > 1) {
+    if (imageElement.length > 1) {
       delteImage(productId, image);
-    }else{
+    } else {
       event.preventDefault();
-      displayErrorMessage(fileInput,erroMessage.fileInput.invalid4);
+      displayErrorMessage(fileInput, erroMessage.fileInput.invalid4);
       fileInput.classList.add('is-invalid');
       fileInput.classList.remove('is-valid');
     }
-   
+
   })
 })
 
@@ -512,12 +512,15 @@ function delteImage(productId, image) {
     success: function (data, textStatus, xhr) {
       if (xhr.status === 200) {
         console.log(data);
-       window.location.href = '/adminproducts'
+        location.reload();
+        
       }
     }, error: function (xhr, textStatus, errorThrown) {
       if (xhr.status === 400) {
         console.log(xhr.responseText);
-        location.reload()
+       
+      }if(xhr.status===404){
+        window.location.href = '/adminProduct'
       }
     }
   })

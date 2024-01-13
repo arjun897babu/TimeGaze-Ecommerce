@@ -10,7 +10,7 @@ exports.addCategory = async (req, res,next) => {
       req.session.errorMessage = 'All fields required'
       return res.redirect('/addCategory');
     }
-    const existingCateogry = await category.findOne({ categoryName: name });
+    const existingCateogry = await category.findOne({ categoryName: {$regex:`^${name}`,$options:'i' }});
 
     if (existingCateogry) {
       req.session.errorMessage = 'category exists'
@@ -46,7 +46,7 @@ exports.findAllCategory = async (req, res,next) => {
 
   } catch (error) {
     next(error)
-    // res.status(500).send(error.message);
+    
   }
 };
 

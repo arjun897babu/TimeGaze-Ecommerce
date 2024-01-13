@@ -60,7 +60,7 @@ function clearMessage(element) {
   errorMessageElement.innerHTML = ('')
 }
 
-let timeLeft = 60;
+let timeLeft = 120;
 let text = document.querySelector('p');
 let coutDownDiv = document.getElementById('otpCountDown');
 let otpVerify = document.getElementById('otpVerify');
@@ -79,7 +79,7 @@ function countDown() {
     text.style.display = 'none'
     otpVerify.classList.add('disabled')
     resendButton.classList.remove('disabled');
-    timeLeft = 60
+    timeLeft = 120
 
   } else {
     coutDownDiv.innerHTML = ` Time remaing : ${timeLeft}s  `;

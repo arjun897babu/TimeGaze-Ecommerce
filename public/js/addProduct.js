@@ -80,7 +80,7 @@ let erroMessage = {
 
 
 function checkInputValidity(form, element) {
-  let productName = /^[a-zA-Z][a-zA-Z ']{2,20}(?:\d{1,})?[a-zA-Z]$/;
+  let productName =/^[A-Za-z0-9\-]{3,20}( [0-9]+)?$/;
   let brandName = /^[a-zA-Z][a-zA-Z ']{2,20}[a-zA-Z]$/;
   let price = /^[1-9]\d*$/
   let discount = /^(?:[1-9]|[1-9][0-9]|100)$/;
