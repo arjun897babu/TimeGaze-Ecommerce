@@ -199,8 +199,8 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-4 d-flex align-items-center status">
-                    <span class="me-3">Status:</span>
+                  <div class="col-md-4 d-flex align-items-center status <%=(items.orderItems.orderStatus==='canceled')?"text-danger":(items.orderItems.orderStatus==='delivered')?"text-success":'' %>">
+                    <span class="me-3 text-dark">Status:</span>
                     <%=items.orderItems.orderStatus %>
                   </div>
                   <div class="col-md-2 d-flex align-items-center justify-content-end">

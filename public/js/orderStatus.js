@@ -64,6 +64,8 @@ function changeOrderStatus(orderId, btn, statusDiv, orderStatus,text) {
         error: function (xhr, textStatus, errorThrown) {
           if (xhr.status === 400){ console.log(xhr.responseText)
 
+          }if(xhr.status===404){
+            window.location.href='/loign'
           }
         
         }

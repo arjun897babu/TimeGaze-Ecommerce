@@ -6,16 +6,58 @@ $('.remove-item').click(function (event) {
   if (cartItemId) {
     deleteCartItem(cartItemId);
   }
-})
-
-$('.cart-quantity').change(function(event){
-  event.preventDefault();
-  const cartItem = $(this).attr('data-id');
-  const newQuantity = $(this).val();
-  quantityManageMent(cartItem,newQuantity);
-})
+});
 
 
+function updateQuantity(value, availableQuantity) {
+  let maxLimit = 5
+  let inputField = document.getElementById('quanityInput');
+  let event = new Event('input', { bubbles: true });
+  let currentValue = parseInt(inputField.value, 10);
+  let newQuantity = currentValue + value;
+
+  if (newQuantity > availableQuantity) {
+    toastMessage("Maximum quantity exceeded")
+  }
+  else if(newQuantity > maxLimit){
+   toastMessage("We're sorry! Only 5 unit(s) allowed in each order")
+  }
+  else if (newQuantity >= inputField.min && newQuantity <= availableQuantity) {
+    inputField.value = newQuantity;
+    inputField.dispatchEvent(event);
+    const cartItem =inputField.getAttribute('data-id');
+    quantityManageMent(cartItem, newQuantity);
+  }
+ 
+}
+
+
+function quantityManageMent(cartItem, newQuantity) {
+ 
+  $.ajax({
+    url: `/api/cartQuantiy/${cartItem}`,
+    type: 'PUT',
+    contentType: 'application/json',
+    data: JSON.stringify({
+      newQuantity: newQuantity
+    }),
+    success: function (data, textStatus, xhr) {
+      if (xhr.status === 200) {
+        console.log('name update:', data);
+        location.reload();
+      }
+
+
+    }, error: function (xhr, textStatus) {
+      if (xhr.status === 400) {
+        console.log('updation failed:', xhr.responseText)
+      }
+      if (xhr.status === 404) {
+        window.location.href = '/login'
+      }
+    }
+  })
+};
 
 function deleteCartItem(cartItemId) {
   console.log('function is called');
@@ -42,7 +84,7 @@ function deleteCartItem(cartItemId) {
         },
         error: function (xhr, textStatus, errorThrown) {
 
-          if(xhr.status===404){
+          if (xhr.status === 404) {
             window.location.href = '/login'
           }
         }
@@ -53,29 +95,20 @@ function deleteCartItem(cartItemId) {
 
 }
 
-function quantityManageMent(cartItem, newQuantity) {
-  $.ajax({
-    url: `/api/cartQuantiy/${cartItem}`,
-    type: 'PUT',
-    contentType: 'application/json',
-    data: JSON.stringify({
-      newQuantity: newQuantity
-    }),
-    success: function (data, textStatus, xhr) {
-      if (xhr.status === 200) {
-        console.log('name update:', data);
-        location.reload();
-      }
-
-
-    }, error: function (xhr, textStatus) {
-      if (xhr.status === 400) {
-        console.log('updation failed:', xhr.responseText)
-      }
-      if(xhr.status===404){
-        window.location.href = '/login'
-      }
+function toastMessage (message){
+  const Toast = Swal.mixin({
+    toast: true,
+    position: "bottom",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.onmouseenter = Swal.stopTimer;
+      toast.onmouseleave = Swal.resumeTimer;
     }
-  })
-};
-
+  });
+  Toast.fire({
+    icon: "error",
+    title: message,
+  });
+}

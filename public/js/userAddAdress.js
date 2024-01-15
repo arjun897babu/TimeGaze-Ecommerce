@@ -21,6 +21,9 @@ function checkInputValidity(form, element) {
     ['name', 'mobileNumber', 'district', 'pincode', 'locality', 'address', 'state', 'addressType']
       .map(inputName => form.elements[inputName]);
 
+      console.log('state:',stateInput.value);
+      console.log('district:',districtInput.value);
+
   let checkedAddressType = Array.from(addressTypeInput)
     .find(input => input.checked)
 
@@ -36,9 +39,7 @@ function checkInputValidity(form, element) {
     phonenumber: {
       invalid: 'Enter a 10 digit phonenumber',
     },
-    district: {
-      invalid: 'Enter a valid district',
-    },
+   
     pincode: {
       invalid: 'Invalid pincode',
     },
@@ -47,9 +48,6 @@ function checkInputValidity(form, element) {
     },
     address: {
       invalid: 'Enter a valid address',
-    },
-    state: {
-      invalid: 'Invalid district name',
     },
     addressType: {
       invalid: 'Select one option',
@@ -95,10 +93,7 @@ function checkInputValidity(form, element) {
   if (districtInput.value.trim() === '') {
     displayError(districtInput, errorMessage.common.required);
     isValid = false;
-  } else if (!districtRegex.test(districtInput.value)) {
-    displayError(districtInput, errorMessage.district.invalid);
-    isValid = false;
-  } else {
+  }  else {
     clearError(districtInput);
   }
 
@@ -141,9 +136,6 @@ function checkInputValidity(form, element) {
 
   if (stateInput.value.trim() === '') {
     displayError(stateInput, errorMessage.common.required);
-    isValid = false;
-  } else if (!districtRegex.test(stateInput.value)) {
-    displayError(stateInput, errorMessage.state.invalid);
     isValid = false;
   } else {
     clearError(stateInput);

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Address = require('../model/addressSchema');
 const User = require('../model/userModelSchema');
 const address = require('../model/addressSchema');
+const axios = require('axios')
 
 exports.createAdress = async (req, res, next) => {
 
@@ -106,6 +107,11 @@ exports.getAllAdress = async (req, res, next) => {
       return res.send('user not logged in ')
     }
     const user = await User.findOne({ email: userEmail }, { _id: 0, adress: 1 });
+    const allStates = await axios.post(`https://countriesnow.space/api/v0.1/countries/states`, {
+      country: 'India'
+    });
+    console.log(allStates.data.data.states)
+
 
     if (user.adress) {
 
@@ -119,8 +125,9 @@ exports.getAllAdress = async (req, res, next) => {
         ]
       );
 
- 
-      res.send(allAddress)
+
+      // res.send(allAddress)
+      res.status(200).json({ address: allAddress, allStates: allStates.data.data.states })
     } else {
       return res.send(null)
     }
@@ -212,7 +219,7 @@ exports.editAddress = async (req, res) => {
 
   const selectedId = req.query.selected;
   const { addressId } = req.params;
-  console.log('editapi',selectedId,addressId)
+  console.log('editapi', selectedId, addressId)
 
   if (!selectedId || !addressId) return res.send('not found or not logged in ');
   const trueAddress = await Address.aggregate(
@@ -230,7 +237,7 @@ exports.editAddress = async (req, res) => {
       }
     ]
   );
-    console.log(trueAddress)
+  console.log(trueAddress)
   if (trueAddress) {
     res.send(trueAddress);
   } else {
@@ -243,12 +250,12 @@ exports.editAddress = async (req, res) => {
 exports.updateAddress = async (req, res) => {
   try {
 
-    console.log('this s jjdj',req.body)
+    console.log('this s jjdj', req.body)
     const newData = { ...req.body };
     const { selected } = req.params;
     const { source } = req.query
     const addressId = req.session.addressId;
-    if(!selected||!source||!newData) return res.status().send('bad request')
+    if (!selected || !source || !newData) return res.status().send('bad request')
     console.log(newData, source, selected)
 
     const existing = await Address.findOne(
@@ -311,7 +318,7 @@ exports.makeDefault = async (req, res, next) => {
       { 'address._id': 1, 'address.defaultAdress': 1 }
     );
 
-    
+
 
     const selectedIndex = existingAddressDocument.address.findIndex(item => item._id.equals(selectedId));
 

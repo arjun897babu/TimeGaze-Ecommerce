@@ -26,6 +26,11 @@
       outline: 0;
       box-shadow: none;
     }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      appearance: none;
+    }
   </style>
 
 </head>
@@ -52,11 +57,11 @@
                         <div class="col-md-6 ">
                           <div class="">
                             <div class="row">
-                              <div class="col-4">
+                              <div class=" col-5 col-sm-3 mb-2">
                                 <img src="uploads/<%=cart[carts].cartItem.product.image[0]   %>" class="border rounded"
                                   style=" object-fit: cover; height: 5rem;;" />
                               </div>
-                              <div class="col-8">
+                              <div class="col-7 col-sm-5">
                                 <a href="#" class="nav-link">
                                   <%=cart[carts].cartItem.product.productName%>
                                 </a>
@@ -73,52 +78,61 @@
                                   </p>
                                   <% } %>
                               </div>
+                              <div class="col-3 px-2 me-2 ">
+                                <% let availableQuantity=cart[carts].cartItem.product.quantity%>
+                                  <div class="d-flex " style="width: 100px;">
+                                    <button class="btn px-2" onclick="updateQuantity(-1,'<%= availableQuantity %>')">
+                                      <i class="bi bi-dash"></i>
+                                    </button>
+
+                                    <input id="quanityInput" min="1" name=""
+                                      data-id="<%=cart[carts].cartItem.product._id%>"
+                                      value="<%=cart[carts].cartItem.quantity%>" type="number"
+                                      class="form-control form-control-sm cart-quantity" 
+                                      readonly/>
+
+                                    <button class="btn px-2" onclick="updateQuantity(1,'<%= availableQuantity %>')">
+                                      <i class="bi bi-plus"></i>
+                                    </button>
+                                  </div>
+
+                              </div>
+
                             </div>
                           </div>
                         </div>
-                      
-                          <% if(cart[carts].cartItem.product.quantity>0) {%>
-                            <div class="col-lg-2 col-sm-6 col-6 d-flex flex-row flex-lg-column flex-xl-row text-nowrap">
-                              <div class="">
-                                <select style="width: 100px;" data-id="<%=cart[carts].cartItem.product._id%>"
-                                  class="form-select me-4 cart-quantity" name="quantity">
-                                  <% const maxOrder=5; %>
-                                    <% const availableQuantity=cart[carts].cartItem.product.quantity; %>
-                                      <% const displayQuantity=Math.min(maxOrder, availableQuantity); %>
-                                        <% for (let i=1; i <=displayQuantity; i++) { %>
-                                          <option value="<%= i  %>" <%=cart[carts].cartItem.quantity===i ? 'selected'
-                                            : '' %>>
-                                            <%= i %>
-                                          </option>
-                                          <% } %>
-                                </select>
-                              </div>
-                              <div class="">
-                                <text class="h6">₹
-                                  <%=cart[carts].cartItem.product.discountPrice*cart[carts].cartItem.quantity%>
-                                </text>
-                                <small class="text-success">
-                                  <%=cart[carts].cartItem.product.offer%>% off
-                                </small> <br />
-                                <small class="text-muted text-nowrap"> ₹ <%=cart[carts].cartItem.product.discountPrice%>
-                                    /
-                                    per item </small>
+
+
+                        <% if(cart[carts].cartItem.product.quantity>0) {%>
+                          <div class="col-lg-2 col-sm-6 col-6 d-flex flex-row flex-lg-column flex-xl-row text-nowrap">
+
+                            <div class="">
+                              <text class="h6">₹
+                                <%=cart[carts].cartItem.product.discountPrice*cart[carts].cartItem.quantity%>
+                              </text>
+                              <small class="text-success">
+                                <%=cart[carts].cartItem.product.offer%>% off
+                              </small> <br />
+                              <small class="text-muted text-nowrap"> ₹ <%=cart[carts].cartItem.product.discountPrice%>
+                                  /
+                                  per item </small>
+                            </div>
+                          </div>
+                          <% } %>
+
+                            <div
+                              class="col-lg col-sm-6 d-flex justify-content-sm-center justify-content-md-start justify-content-lg-center justify-content-xl-end mb-2">
+                              <div class="float-md-end">
+                                <button data-id="<%=cart[carts].cartItem._id %>"
+                                  class="btn btn-light border text-danger icon-hover-danger remove-item"> Remove
+                                </button>
                               </div>
                             </div>
-                            <% } %>
-                              
-                                <div
-                                  class="col-lg col-sm-6 d-flex justify-content-sm-center justify-content-md-start justify-content-lg-center justify-content-xl-end mb-2">
-                                  <div class="float-md-end">
-                                    <button data-id="<%=cart[carts].cartItem._id %>"
-                                      class="btn btn-light border text-danger icon-hover-danger remove-item"> Remove
-                                    </button>
-                                  </div>
-                                </div>
                       </div>
                     </div>
                   </div>
                   <% } %>
+
                     <div class="border-top pt-2 mx-2 mb-2">
                       <p><i class="fas fa-truck text-muted fa-lg"></i> Free Delivery within 1-2 weeks</p>
                     </div>
@@ -212,7 +226,8 @@
             <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
             <script src="js/cart.js"></script>
-            <script src="js/togglebutton.js"></script>
+            <script src="/js/togglebutton.js"></script>
+           
 </body>
 
 </html>

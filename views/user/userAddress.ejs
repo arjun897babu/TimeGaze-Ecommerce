@@ -89,7 +89,6 @@
       color: rgb(0, 0, 0) !important;
       font-size: inherit;
     }
-   
   </style>
 
 </head>
@@ -184,30 +183,49 @@
 
                         <div class="col-md-6">
                           <label for="validateName" class="form-label"> name</label>
-                          <input  type="text" class="form-control " name='name' id="validateName">
+                          <input type="text" class="form-control " name='name' id="validateName">
                           <small class="text-danger"></small>
                         </div>
 
                         <div class="col-md-6">
                           <label for="validateMobileNumber" class="form-label"> mobileNumber</label>
-                          <input  type="number" name="mobileNumber" class="form-control " id="validateMobileNumber">
+                          <input type="number" name="mobileNumber" class="form-control " id="validateMobileNumber">
                           <small class="text-danger"></small>
                         </div>
 
-                        <div class="col-5">
+                        <div class="col-md-4">
+                          <!-- <label for="validateOffer" class="form-label">state</label>
+                          <input type="text" name="state" class="form-control " id="validateOffer">
+                        -->
+                          <label for="state" class="form-label">State</label>
+                          <select class="form-select" name="state" id="state">
+                            <option value="" disabled selected>Select state</option>
+                            <% for(x of allStates) {%>
+                              <option value="<%=x.name  %>">
+                                <%=x.name %>
+                              </option>
+                              <% } %>
+                          </select>
+
+                          <small class="text-danger"></small>
+
+                        </div>
+
+                        <div class="col-md-4">
+                          <label for="district" class="form-label">district</label>
+                          <select class="form-select" name="district" id="district">
+                            <option value="" disabled selected>Select district</option>
+                           
+                          </select>
+                          <!--                           
                           <label for="inputAddress" class="form-label">District</label>
-                          <input  type="text" name="district" class="form-control " id="validateCaseDiameter">
+                          <input type="text" name="district" class="form-control " id="validateCaseDiameter"> -->
                           <small class="text-danger"></small>
-                        </div>
 
-                        <div class="col-3">
-                          <label for="validateCaseShape" class="form-label">Pincode</label>
-                          <input  type="number" name="pincode" class="form-control " id="validateCaseShape">
-                          <small class="text-danger"></small>
                         </div>
-                        <div class="col-4">
-                          <label for="validateCaseShape" class="form-label">Locality</label>
-                          <input  type="text" name="locality" class="form-control " id="validateCaseShape">
+                        <div class="col-md-4">
+                          <label for="locality" class="form-label">Locality</label>
+                          <input type="text" name="locality" class="form-control " id="locality">
                           <small class="text-danger"></small>
                         </div>
 
@@ -224,9 +242,9 @@
 
                         </div>
                         <div class="col-md-12">
-                          <div class="col-3">
-                            <label for="validateOffer" class="form-label">state</label>
-                            <input  type="text" name="state" class="form-control " id="validateOffer">
+                          <div class="col-5">
+                            <label for="validateCaseShape" class="form-label">Pincode</label>
+                            <input type="number" name="pincode" class="form-control " id="validateCaseShape">
                             <small class="text-danger"></small>
                           </div>
                         </div>
@@ -234,11 +252,11 @@
                           <div class="col-2 d-flex flex-column ">
                             <label class="form-label">AdressType</label>
                             <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                              <input  type="radio" name="addressType" class="btn-check" id="home" autocomplete="off"
+                              <input type="radio" name="addressType" class="btn-check" id="home" autocomplete="off"
                                 value="Home">
                               <label class="btn btn-outline-dark" for="home">Home</label>
 
-                              <input  type="radio" name="addressType" class="btn-check" id="office" autocomplete="off"
+                              <input type="radio" name="addressType" class="btn-check" id="office" autocomplete="off"
                                 value="Office">
                               <label class="btn btn-outline-dark" for="office">Office</label>
                             </div>
@@ -246,7 +264,7 @@
                           </div>
                         </div>
                       </div>
-                      
+
 
                       <div class="d-flex justify-content-center mt-3">
                         <button type="submit" class="btn btn-outline-dark col-6">Add adress</button>
@@ -257,52 +275,52 @@
               </div>
             </div>
           </div>
-          
+
           <% if(address.length>0){ %>
             <% address.forEach(function (element,index) { %>
               <div class="container">
-                
+
                 <div class="container-fluid">
-                  
+
                   <div class="row border mb-3">
                     <div class="col-md-9 p-1">
                       <div class="d-flex ">
                         <%if (element.address.defaultAdress) {%>
-                        <div class="d-flex justify-content-between align-items-center">
-                          <input type="radio" name="defaultAdress" id="defaultAdress" class="ms-2 defaultAddress"
-                            data-id="<%=element._id  %>" value="<%=element.address._id %>"
-                            <%=(element.address.defaultAdress)?'checked':''%>>
-                          <!-- <label for="defaultAdress" class="ms-1">Default</label> -->
-                        </div>
-                        <% } %>
-
-                        <div class=" ms-5 d-flex flex-column">
-                          <div class="d-flex align-content-center">
-                            <span class=" me-3 m-0">
-                              <%= element.address.name%>
-                            </span>
-                            <span class="me-3 bg-secondary-subtle">
-                              <%= element.address.addressType%>
-                            </span>
-                            <span>
-                              <%= element.address.mobileNumber%>
-                            </span>
+                          <div class="d-flex justify-content-between align-items-center">
+                            <input type="radio" name="defaultAdress" id="defaultAdress" class="ms-2 defaultAddress"
+                              data-id="<%=element._id  %>" value="<%=element.address._id %>"
+                              <%=(element.address.defaultAdress)?'checked':''%>>
+                            <!-- <label for="defaultAdress" class="ms-1">Default</label> -->
                           </div>
-                          <address style="font-size: 0.8rem;white-space: nowrap;
+                          <% } %>
+
+                            <div class=" ms-5 d-flex flex-column">
+                              <div class="d-flex align-content-center">
+                                <span class=" me-3 m-0">
+                                  <%= element.address.name%>
+                                </span>
+                                <span class="me-3 bg-secondary-subtle">
+                                  <%= element.address.addressType%>
+                                </span>
+                                <span>
+                                  <%= element.address.mobileNumber%>
+                                </span>
+                              </div>
+                              <address style="font-size: 0.8rem;white-space: nowrap;
                           overflow: hidden;
                           text-overflow: ellipsis;
                           max-width: 220px;">
-                            <%= element.address.address%>
-                          </address>
-                        </div>
+                                <%= element.address.address%>
+                              </address>
+                            </div>
 
 
                       </div>
 
                     </div>
                     <div class="col-md-3 d-flex align-items-center justify-content-md-end gap-2">
-                      <a href="/editAddress?selected=<%= element.address._id%>" class="btn btn-outine-dark" value="<%= element.address._id%>"
-                        data-id="<%=element._id  %>">
+                      <a href="/editAddress?selected=<%= element.address._id%>" class="btn btn-outine-dark"
+                        value="<%= element.address._id%>" data-id="<%=element._id  %>">
                         <i class="bi bi-pencil-fill"></i>
                       </a>
 
@@ -319,7 +337,7 @@
 
       </div>
     </section>
-    
+
     <!-- footer -->
     <%- include('../include/footer') %>
       <!-- footer -->
@@ -328,6 +346,37 @@
       <script src="js/togglebutton.js"></script>
       <script src="/js/userAddAdress.js"></script>
       <script src="js/deleteAddress.js"></script>
+      <script>
+
+        $("#state").on("change", function () {
+          var selectedState = $(this).val();
+          fetchCities(selectedState);
+        });
+
+        function fetchCities(selectedState) {
+          $.ajax({
+            url: "https://countriesnow.space/api/v0.1/countries/state/cities",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+              country: "India",
+              state: selectedState
+            }),
+            success: function (response) {
+
+              var districtDropdown = $("#district");
+              districtDropdown.empty();
+              districtDropdown.append('<option value="" disabled selected>Select district</option>');
+              for (let city of response.data) {
+                districtDropdown.append(`<option value="${city}">${city}</option>`);
+              }
+            },
+            error: function (error) {
+              console.error("Error fetching cities:", error);
+            }
+          });
+        }
+      </script>
 </body>
 
 </html>

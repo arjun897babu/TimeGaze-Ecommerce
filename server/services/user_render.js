@@ -148,16 +148,17 @@ module.exports = {
 
   },
   userAddress: (req, res) => {
-
+   
     const userEmail = req.session.email
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/getAddressDetails?userEmail=${userEmail}`),
       axios.get(`http://localhost:${process.env.PORT}/api/categories`)
     ])
       .then(axios.spread((addressResponse, categoryResponse) => {
-        const allAddress = addressResponse.data
+        const allAddress = addressResponse.data.address
+        const allStates = addressResponse.data.allStates
         const categories = categoryResponse.data
-        res.status(200).render('user/userAddress', { address: allAddress, logged: req.session.isUserAuth, categories: categories })
+        res.status(200).render('user/userAddress', { address: allAddress, logged: req.session.isUserAuth, categories: categories,allStates:allStates })
       }))
       .catch((error) => {
         console.log(error)
@@ -223,7 +224,8 @@ module.exports = {
 
       .then(axios.spread((categoryResponse, addressResponse, cartResponse) => {
         const categories = categoryResponse.data;
-        const addressData = addressResponse.data;
+        const addressData = addressResponse.data.address;
+        const allStates = addressResponse.data.allStates
 
 
         const address = {
@@ -234,7 +236,7 @@ module.exports = {
         const cartItems = cartResponse.data;
 
 
-        res.status(200).render('user/checkout', { categories: categories, logged: req.session.isUserAuth, address: address, cartItems: cartItems })
+        res.status(200).render('user/checkout', { categories: categories, logged: req.session.isUserAuth, address: address, cartItems: cartItems,allStates:allStates  })
       }))
 
       .catch((error) => {

@@ -138,9 +138,6 @@ exports.createOrder = async (req, res, next) => {
       res.status(200).json({ message: 'order placed successFully', status: 'success', redirectUrl: '/orderSuccess' })
 
     }
-    else {
-      throw new Error('order is canceld')
-    }
 
 
   }
@@ -231,8 +228,7 @@ exports.changeStatus = async (req, res, next) => {
   try {
     const { orderId } = req.params;
     const { orderStatus, cancelReason } = req.body;
-    console.log(cancelReason)
-    console.log(orderId, orderStatus)
+   
 
     if (!orderStatus) return res.status(400).send('all fields required');
 

@@ -169,52 +169,150 @@
             <div class="card-header">
               <span class="h5">Details</span>
             </div>
-            <div class="card-body p-2"> 
+            <div class="card-body p-2">
               <div class="row d-flex justify-content-between">
-                <% order = order[0]  %>
-                <div class="col-sm-6">
-                  <div class="mb-1">
-                    <h6 class="fw-bold"><%=order.address.name  %></h6>
-                    <p class="mb-0"><%=order.user[0].email  %></p>
-                    <p class="mb-0" style="max-width: 320px;"><%=order.address.address  %></p>
-                  </div>
-                  <div>
-                    <h6 class="fw-bold">Phone number</h6>
-                    <p><%=order.address.mobileNumber %>,<%=order.user[0].phonenumber  %></p>
-                  </div>
-                </div>
-                <div class="col-sm-6">
-                  <div class="mb-1">
-                    <img src="uploads/<%= order.orderItems[0].image[0] %>" style="height: 96px; width: 96px;" class="img-fluid" />
-                  </div>
-                  <div>
-                    <h6 class="fw-bold">Product Information</h6>
-                    <p>Product Name: <%= order.orderItems[0].productName %></p>
-                    <p>Quantity: <%= order.orderItems[0].quantity %></p>
-                    <p>Price: ₹<%= order.orderItems[0].discountPrice %> each</p>
-                  </div>
-                </div>
-                <!-- <div class="col-md-5">
-                  <span class="h5">More actions</span>
-                  <div class="row mt-2">
-                    <div class="col-md-6">
-                      <button class="btn btn-primary">Download Invoice</button>
+                <% order=order[0] %>
+                  <div class="col-sm-6">
+                    <div class="mb-1">
+                      <h6 class="fw-bold">
+                        <%=order.address.name %>
+                      </h6>
+                      <p class="mb-0">
+                        <%=order.user[0].email %>
+                      </p>
+                      <p class="mb-0" style="max-width: 320px;">
+                        <%=order.address.address %>
+                      </p>
                     </div>
-                    <div class="col-md-6">
-                      <button class="btn btn-success">Download</button>
+                    <div>
+                      <h6 class="fw-bold">Phone number</h6>
+                      <p>
+                        <%=order.address.mobileNumber %>,<%=order.user[0].phonenumber %>
+                      </p>
                     </div>
                   </div>
-                </div> -->
+                  <div class="col-sm-6 d-flex">
+                    <div>
+                      <h6 class="fw-bold">Product Information</h6>
+                      <p>Product Name: <%= order.orderItems[0].productName %>
+                      </p>
+                      <p>Quantity: <%= order.orderItems[0].quantity %>
+                      </p>
+                      <p>Price: ₹<%= order.orderItems[0].discountPrice %> each</p>
+                    </div>
+                    <div class="mb-1">
+                      <img src="uploads/<%= order.orderItems[0].image[0] %>" style="height: 96px; width: 96px;"
+                        class="img-fluid" />
+                    </div>
+
+                  </div>
+                  <div class="">
+                    <% if(order.orderItems[0].orderStatus==='delivered' ) {%>
+                      <button class="btn btn-dark rounded-0" id="invoice" style="font-size: 0.6rem;">download
+                        Invoice</button>
+                      <button class="btn btn-dark rounded-0" id="return-status" data-id="<%= order.orderItems[0]._id %>"
+                        value="returned" style="font-size: 0.6rem;">
+                        Return
+                      </button>
+                      <% } %>
+                      <%  if(order.orderItems[0].orderStatus==='returned' )  {%>
+                        <span> 
+                          Your item has been returned  
+                          <i class="bi bi-check-circle text-success"></i>
+                        </span>
+                        <% } %>
+                        
+                  </div>
               </div>
             </div>
           </div>
-
         </div>
+
+      </div>
       </div>
     </section>
     <%- include('../include/footer') %>
       <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <script>
+        $('#return-status').click(async function (event) {
+          event.preventDefault();
+          let btn = $(this);
+          let orderStatus = btn.val();
+          let orderId = btn.attr('data-id');
+          console.log(orderId, orderStatus);
+          const { value: text } = await Swal.fire({
+            input: "textarea",
+            inputLabel: "Message",
+            inputPlaceholder: "Type your message here...",
+            inputAttributes: {
+              "aria-label": "Type your message here"
+            },
+            showCancelButton: true
+          });
+          if (text) {
+            changeOrderStatus(orderId, btn, text)
+
+          }
+
+
+        })
+
+        function changeOrderStatus(orderId, btn, statusDiv, orderStatus, text) {
+          Swal.fire({
+            title: "Are you sure?",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Cancel Order!"
+          }).then((result) => {
+            if (result.isConfirmed) {
+
+              $.ajax({
+                url: `/api/changeOrderStatus/${orderId}`,
+                type: 'PUT',
+                data: JSON.stringify({ orderStatus: orderStatus, cancelReason: text }),
+                contentType: 'application/json',
+                success: function (data, textStatus, xhr) {
+                  if (xhr.status === 200) {
+                    let newStatus = data.response.orderStatus;
+
+                    const Toast = Swal.mixin({
+                      toast: true,
+                      position: "bottom",
+                      showConfirmButton: false,
+                      timer: 2000,
+                      timerProgressBar: true,
+                      didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                      }
+                    });
+                    Toast.fire({
+                      icon: "success",
+                      title: "Order returned"
+                    });
+                    btn.hide()
+                  }
+
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                  if (xhr.status === 400) {
+                    console.log(xhr.responseText)
+
+                  } if (xhr.status === 404) {
+                    window.location.href = '/loign'
+                  }
+
+                }
+
+
+              })
+            }
+          });
+
+        }
+      </script>
 </body>
 
 </html>

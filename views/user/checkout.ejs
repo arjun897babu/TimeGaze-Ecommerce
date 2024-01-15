@@ -117,7 +117,8 @@
                           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body p-1">
-                          <form class="requires-validation" data-id="<%=address.defaultAddress.address._id %>"novalidate  >
+                          <form class="requires-validation" data-id="<%=address.defaultAddress.address._id %>"
+                            novalidate>
                             <div class="row p-1">
 
                               <div class="col-md-6 mb-1">
@@ -136,17 +137,24 @@
                                 <small class="text-danger"></small>
                               </div>
 
-                              <div class="col-5 mb-1">
-                                <label for="validateDistrict" class="form-label form-fontSize">District</label>
-                                <input type="text" name="district" value="<%=address.defaultAddress.address.district %>"
-                                  class="form-control inputfiled-size" id="validateDistrict">
+                              <div class="col-md-4 mb-1">
+                                <label for="state" class="form-label">State</label>
+                                <select class="form-select" name="state" id="state">
+                                  <option value="">Select state</option>
+                                  <% for(x of allStates) { %>
+                                    <option value="<%= x.name %>"
+                                      <%=address.defaultAddress.address.state===x.name? 'selected' : '' %>>
+                                      <%= x.name %>
+                                    </option>
+                                    <% } %>
+                                </select>
                                 <small class="text-danger"></small>
                               </div>
 
-                              <div class="col-6 col-md-3 mb-1">
-                                <label for="validatePincode" class="form-label form-fontSize">Pincode</label>
-                                <input type="number" name="pincode" value="<%=address.defaultAddress.address.pincode %>"
-                                  class="form-control inputfiled-size" id="validatePincode">
+                              <div class="col-md-4 mb-1">
+                                <label for="district" class="form-label">district</label>
+                                <select class="form-select" name="district" id="district">
+                                </select>
                                 <small class="text-danger"></small>
                               </div>
                               <div class="col-6 col-md-4 mb-1">
@@ -165,9 +173,10 @@
 
                               <div class="col-md-12 mb-1">
                                 <div class="col-5">
-                                  <label for="validateState" class="form-label form-fontSize">State</label>
-                                  <input type="text" name="state" value="<%=address.defaultAddress.address.state %>"
-                                    class="form-control inputfiled-size" id="validateState">
+                                  <label for="validatePincode" class="form-label form-fontSize">Pincode</label>
+                                  <input type="number" name="pincode"
+                                    value="<%=address.defaultAddress.address.pincode %>"
+                                    class="form-control inputfiled-size" id="validatePincode">
                                   <small class="text-danger"></small>
                                 </div>
                               </div>
@@ -193,9 +202,8 @@
                             </div>
 
                             <div class="d-flex justify-content-center mt-3">
-                              <button type="submit" id="updateAddress"
-                                
-                                class="btn btn-outline-dark col-6">save Address</button>
+                              <button type="submit" id="updateAddress" class="btn btn-outline-dark col-6">save
+                                Address</button>
                             </div>
                           </form>
 
@@ -286,20 +294,33 @@
                               <small class="text-danger"></small>
                             </div>
 
-                            <div class="col-5">
-                              <label for="validateDistrict1" class="form-label">District</label>
-                              <input type="text" name="district" class="form-control " id="validateDistrict1">
+                            <div class="col-md-4">
+                              <label for="state2" class="form-label">State</label>
+                              <select class="form-select" name="state" id="state2">
+                                <option value="" disabled selected>Select state</option>
+                                <% for(x of allStates) {%>
+                                  <option value="<%=x.name  %>">
+                                    <%=x.name %>
+                                  </option>
+                                  <% } %>
+                              </select>
                               <small class="text-danger"></small>
                             </div>
+                            <div class="col-md-4">
+                              <label for="district2" class="form-label">district</label>
+                              <select class="form-select" name="district" id="district2">
+                                <option value="" disabled selected>Select district</option>
 
-                            <div class="col-3">
-                              <label for="validatePincode" class="form-label">Pincode</label>
-                              <input type="number" name="pincode" class="form-control " id="validatePincode">
+                              </select>
+                              <!--                           
+                              <label for="inputAddress" class="form-label">District</label>
+                              <input type="text" name="district" class="form-control " id="validateCaseDiameter"> -->
                               <small class="text-danger"></small>
+
                             </div>
-                            <div class="col-4">
-                              <label for="validatelocality1" class="form-label">Locality</label>
-                              <input type="text" name="locality" class="form-control " id="validatelocality1">
+                            <div class="col-md-4">
+                              <label for="locality" class="form-label">Locality</label>
+                              <input type="text" name="locality" class="form-control " id="locality">
                               <small class="text-danger"></small>
                             </div>
 
@@ -316,9 +337,9 @@
 
                             </div>
                             <div class="col-md-12">
-                              <div class="col-3">
-                                <label for="validateState1" class="form-label">state</label>
-                                <input type="text" name="state" class="form-control " id="validateState1">
+                              <div class="col-5">
+                                <label for="validateCaseShape" class="form-label">Pincode</label>
+                                <input type="number" name="pincode" class="form-control " id="validateCaseShape">
                                 <small class="text-danger"></small>
                               </div>
                             </div>
@@ -469,7 +490,49 @@
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
       <script src="js/checkout.js"></script>
       <script src="js/togglebutton.js"></script>
-     
+      <script>
+
+        getCities($('#state').val(), 'district');//for document onload 
+
+        //event listener for edit address
+        $("#state").on("change", function () {
+          getCities($(this).val(),'district');
+        });
+        
+        
+        //event listener for add address
+        $("#state2").on("change", function () {
+          getCities($(this).val(),'district2');
+        });
+
+        function getCities(selectedState, dropdownId) {
+          console.log(dropdownId, 'ajaxx')
+          $.ajax({
+            url: "https://countriesnow.space/api/v0.1/countries/state/cities",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+              country: "India",
+              state: selectedState
+            }),
+            success: function (response) {
+
+
+              var districtDropdown = $("#"+dropdownId)
+              districtDropdown.empty();
+              districtDropdown.append('<option value="" >Select district</option>');
+              for (let city of response.data) {
+                let isSelected = city === '<%=address.defaultAddress.address.district %>';
+                districtDropdown.append(`<option value="${city}" ${isSelected ? 'selected' : ''}>${city}</option>`);
+              }
+            },
+            error: function (error) {
+              console.error("Error fetching cities:", error);
+            }
+          });
+        }
+      </script>
+
 </body>
 
 </html>

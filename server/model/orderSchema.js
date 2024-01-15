@@ -48,8 +48,11 @@ const OrderSchema = new mongoose.Schema({
     },
     cancelReason:{
       type:String
+    },
+    ReturnReason:{
+      type:String
     }
-
+    
   }],
   address: {
     name: {

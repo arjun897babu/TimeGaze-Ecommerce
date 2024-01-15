@@ -74,9 +74,6 @@ function checkInputValidity(form, element) {
     phonenumber: {
       invalid: 'Enter a 10 digit phonenumber',
     },
-    district: {
-      invalid: 'Enter a valid district',
-    },
     pincode: {
       invalid: 'Invalid pincode',
     },
@@ -85,9 +82,6 @@ function checkInputValidity(form, element) {
     },
     address: {
       invalid: 'Enter a valid address',
-    },
-    state: {
-      invalid: 'Invalid district name',
     },
     addressType: {
       invalid: 'Select one option',
@@ -133,10 +127,7 @@ function checkInputValidity(form, element) {
   if (districtInput.value.trim() === '') {
     displayError(districtInput, errorMessage.common.required);
     isValid = false;
-  } else if (!districtRegex.test(districtInput.value)) {
-    displayError(districtInput, errorMessage.district.invalid);
-    isValid = false;
-  } else {
+  }  else {
     clearError(districtInput);
   }
 
@@ -180,10 +171,7 @@ function checkInputValidity(form, element) {
   if (stateInput.value.trim() === '') {
     displayError(stateInput, errorMessage.common.required);
     isValid = false;
-  } else if (!districtRegex.test(stateInput.value)) {
-    displayError(stateInput, errorMessage.state.invalid);
-    isValid = false;
-  } else {
+  }else {
     clearError(stateInput);
   }
 
@@ -299,11 +287,8 @@ function clearMessage(element) {
   errorMessageElement.text('');
 }
 
-$('#addAddressModal').on('hidden.bs.modal',function(){
-  $('#addAddressModal input ').val('');
-  $('#addAddressModal input ').removeClass('is-valid is-invalid');
-  $('#addAddressModal textarea ').val('');
-  $('#addAddressModal textarea ').removeClass('is-valid is-invalid');
+$('#addAddressModal').on('hidden.bs.modal', function () {
+  $('#addAddressModal input, #addAddressModal textarea').val('').removeClass('is-valid is-invalid');
   $('#addAddressModal small').text('');
-  
-})
+  $('#state,#district').val('').removeClass('is-valid is-invalid');
+});
