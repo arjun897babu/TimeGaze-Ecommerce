@@ -3,8 +3,9 @@ const adminControll = require('../controller/admin');
 const productControll = require('../controller/product');
 const cateogryControll = require('../controller/category')
 const orderControll = require('../controller/order');
+const coupenControll = require('../controller/coupen');
 const adminMiddleWare = require('../middlewares/admin/admin');
-const imageUpload = require('../middlewares/admin/multerMIddleWare')
+const imageUpload = require('../middlewares/admin/multerMIddleWare');
 
 const express = require('express');
 const adminRoute = express.Router();
@@ -21,6 +22,8 @@ adminRoute.get('/unlistedCategory', adminMiddleWare.isAdmin, adminServices.unlis
 adminRoute.get('/unlistedProducts', adminMiddleWare.isAdmin, adminServices.unlistedProducts);//unlsited products
 adminRoute.get('/updateProduct', adminMiddleWare.isAdmin,adminMiddleWare.isProduct, adminServices.adminEditProduct);//edit product
 adminRoute.get('/order',adminMiddleWare.isAdmin,adminServices.order);//admin order management
+adminRoute.get('/adminCoupen',adminServices.coupen);//admin coupen management
+
 
 
 adminRoute.post('/api/adminLogin', adminControll.adminLogin);//for admin login 
@@ -52,6 +55,8 @@ adminRoute.put('/api/updateProduct/:productId', imageUpload.upload.array('images
 
 adminRoute.get('/api/getAllOrder',orderControll.getAllOrderDetails)//to get all orderDetails
 adminRoute.put('/api/changeOrderStatus/:orderId',orderControll.changeStatus)//control order status
+
+adminRoute.post('/api/addCoupen',coupenControll.CreateCoupen);//to add(create) a coupen
 
 
 

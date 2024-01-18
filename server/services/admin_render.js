@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { response } = require('express');
 require('dotenv').config();
-const queryString  = require('querystring')
+const queryString = require('querystring')
 module.exports = {
 
   adminLogin: (req, res) => {
@@ -16,7 +16,7 @@ module.exports = {
   },
 
   adminHome: (req, res) => {
-   
+
 
     res.render('admin/adminHome')
   },
@@ -24,14 +24,14 @@ module.exports = {
   adminproducts: (req, res) => {
 
     const query = queryString.stringify(req.query);
-    
+
     axios.get(`http://localhost:${process.env.PORT}/api/allProducts?${query}`)
       .then((productResponse) => {
         const products = productResponse.data.products;
         const totalPages = productResponse.data.totalPages;
-          console.log(totalPages)
-          
-        res.status(200).render('admin/adminproducts', { products,totalPages})
+        console.log(totalPages)
+
+        res.status(200).render('admin/adminproducts', { products, totalPages })
       })
       .catch((error) => {
         res.status(500).send(error.message)
@@ -42,9 +42,9 @@ module.exports = {
 
     axios.get(`http://localhost:${process.env.PORT}/api/categories`)
       .then((response) => {
-        
-        console.log('dd',req.session.errorMessage)
-        res.status(200).render('admin/addproduct', { categories: response.data,errorMessage:req.session.errorMessage },(error,html)=>{
+
+        console.log('dd', req.session.errorMessage)
+        res.status(200).render('admin/addproduct', { categories: response.data, errorMessage: req.session.errorMessage }, (error, html) => {
           if (error) {
             res.send(error.message)
           }
@@ -70,7 +70,7 @@ module.exports = {
         const products = productResponse.data.result;
         const categories = categoriesResponse.data;
 
-        res.status(200).render('admin/editproduct', { products:products.existingProduct, categories });
+        res.status(200).render('admin/editproduct', { products: products.existingProduct, categories });
       }))
       .catch((error) => {
         console.error('Error in adminEditProduct:', error.message);
@@ -142,19 +142,24 @@ module.exports = {
         res.send(error.message)
       })
   },
-  order:(req,res)=>{
+  order: (req, res) => {
     axios.get(`http://localhost:${process.env.PORT}/api/getAllOrder`)
-    .then((response) => {
-      const order = response.data;
-      console.log(order)
-      res.status(200).render('admin/adminOrder', { orders: order })
-    })
-    .catch(error => {
-      res.send(error.message)
-    })
-   
+      .then((response) => {
+        const order = response.data;
+        console.log(order)
+        res.status(200).render('admin/adminOrder', { orders: order })
+      })
+      .catch(error => {
+        res.send(error.message)
+      })
+
   },
-  errorPage:(req,res)=>{
+  coupen: (req, res, next) => {
+    
+    res.status(200).render('admin/adminCoupen')
+  },
+
+  errorPage: (req, res) => {
     res.status(404).render('error')
   }
 }

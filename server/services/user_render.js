@@ -236,7 +236,15 @@ module.exports = {
         const cartItems = cartResponse.data;
 
 
-        res.status(200).render('user/checkout', { categories: categories, logged: req.session.isUserAuth, address: address, cartItems: cartItems,allStates:allStates  })
+        res.status(200).render('user/checkout', { categories: categories, logged: req.session.isUserAuth, address: address, cartItems: cartItems,allStates:allStates  }, (error, html) => {
+
+          if (error) {
+            return res.send(error)
+          }
+          delete req.session.coupon;
+          res.send(html);
+    
+        })
       }))
 
       .catch((error) => {
@@ -307,7 +315,29 @@ module.exports = {
       })
 
   },
+  wallet:(req,res)=>{
+    const { userId } = req.session;
+    axios.all([
+      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
+
+    ])
+      .then(axios.spread((categoryResponse) => {
+        const categories = categoryResponse.data
+       
+        res.status(200).render('user/userWallet', { logged: req.session.isUserAuth, categories: categories }, (error, html) => {
+          if (error) {
+            return res.send(error)
+          }
+          res.send(html);
+
+        })
+      }))
+      .catch((error) => {
+        console.log(error)
+        res.status(500).send(error.message)
+      })
+
+  }
 
 
 }
-

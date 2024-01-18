@@ -429,55 +429,51 @@
 
             <!-- summary -->
             <div class="col-md-3 mt-2">
-              <!-- <div class="card mb-1 border shadow-0">
-              <div class="card-body">
-                <form>
-                  <div class="form-group">
-                    <label class="form-label">Have coupon?</label>
-                    <div class="input-group ">
-                      <input type="text" class="form-control border" name="" placeholder="Coupon code">
-                      <button class="btn btn-light border">Apply</button>
+              <div class="card mb-1 border shadow-0 ">
+                <div class="card-body coupenDiv">
+                  <form>
+                    <div class="form-group">
+                      <label class="form-label">Have coupon?</label>
+                      <div class="input-group ">
+                        <input type="text" class="form-control border" name="code" placeholder="Coupon code">
+                        <button class="btn btn-light border" data-cartId="<%=cartItems[0]._id %>"
+                          id="coupenCode">Apply</button>
+                      </div>
+                      <small class="text-danger"></small>
+                    </div>
+                  </form>
+                </div>
+
+                <div class="card shadow-0 border">
+                  <div class="card-body p-2 cartSummary">
+                    <div class="d-flex justify-content-between">
+                      <p class="mb-0">Price (<%=cartItems.length %> items)</p>
+                      <p class="mb-0">₹<%=cartItems[0].cartTotal %>
+                      </p>
+                    </div>
+
+                    <div class="d-flex justify-content-between " >
+                      <p class="mb-0">Discount:</p>
+                      <p class="mb-0 text-success discount">0</p>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                      <p class="mb-0">Delivery</p>
+                      <p class="mb-0 text-success">Free</p>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between">
+                      <p class="mb-0 ">Total price:</p>
+                      <p class="mb-0 fw-bold finalPrice" id="cartTotal">₹<%=cartItems[0].cartTotal %>
+                      </p>
                     </div>
                   </div>
-                </form>
-              </div>-->
-
-              <div class="card shadow-0 border">
-                <div class="card-body p-2">
-                  <div class="d-flex justify-content-between">
-                    <p class="mb-0">Price (<%=cartItems.length %> items)</p>
-                    <p class="mb-0">₹<%=cartItems[0].cartTotal %>
-                    </p>
-                  </div>
-                  <!--
-                  <div class="d-flex justify-content-between">
-                      <p class="mb-0">Discount:</p>
-                      <p class="mb-0 text-success">-₹60.00</p>
-                  </div>
-                  -->
-                  <div class="d-flex justify-content-between">
-                    <p class="mb-0">Delivery</p>
-                    <p class="mb-0 text-success">Free</p>
-                  </div>
-                  <hr />
-                  <div class="d-flex justify-content-between">
-                    <p class="mb-0">Total price:</p>
-                    <p class="mb-0 fw-bold">₹<%=cartItems[0].cartTotal %>
-                    </p>
-                  </div>
-
-                  <div class="mt-2">
-                    <!-- <a href="#" class="btn btn-dark w-100 shadow-0 mb-1">Make Purchase</a> -->
-                    <!-- <a href="/" class="btn btn-light w-100 border mt-1">Back to shop</a> -->
-                  </div>
                 </div>
+
               </div>
 
             </div>
-            <!-- summary -->
-
           </div>
-        </div>
       </section>
       <!-- checkout + summary -->
 
@@ -496,13 +492,13 @@
 
         //event listener for edit address
         $("#state").on("change", function () {
-          getCities($(this).val(),'district');
+          getCities($(this).val(), 'district');
         });
-        
-        
+
+
         //event listener for add address
         $("#state2").on("change", function () {
-          getCities($(this).val(),'district2');
+          getCities($(this).val(), 'district2');
         });
 
         function getCities(selectedState, dropdownId) {
@@ -518,7 +514,7 @@
             success: function (response) {
 
 
-              var districtDropdown = $("#"+dropdownId)
+              var districtDropdown = $("#" + dropdownId)
               districtDropdown.empty();
               districtDropdown.append('<option value="" >Select district</option>');
               for (let city of response.data) {
@@ -530,6 +526,67 @@
               console.error("Error fetching cities:", error);
             }
           });
+        }
+
+        //for coupon
+
+        $('#coupenCode').on('click', function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          let cartId = $(this).attr('data-CartId')
+          let coupenDiv = $(this).closest('.coupenDiv');
+          let cartSummary = $('.cartSummary');
+          let codeInput = coupenDiv.find('input')
+          if (!codeInput.val()) {
+
+            codeInput.removeClass('is-valid')
+            codeInput.addClass('is-invalid');
+            coupenDiv.find('small').text('Enter a coupen code')
+          }
+          else {
+            coupenDiv.find('button').addClass('disabled');
+            coupenDiv.find('small').text('')
+            console.log(codeInput.val())
+            applyCoupen(cartId, codeInput.val(), cartSummary, coupenDiv, codeInput);
+          }
+        })
+
+
+        function applyCoupen(cartId, code, cartSummary, coupenDiv, codeInput) {
+          console.log(code)
+          console.log(cartId)
+          $.ajax({
+            url: `/api/applyCoupen/${cartId}`,
+            type:"post",
+            contentType:"application/json",
+            data: JSON.stringify({
+              code: code,
+            }),
+            success: function (data, TextResponse, xhr) {
+              if (xhr.status == 200) {
+                let { discountPrice, discount, message } = JSON.parse(xhr.responseText);
+                codeInput.removeClass('is-invalid')
+                codeInput.addClass('is-valid');
+                codeInput.attr('readonly',true)
+                cartSummary.find('.discount').html( `-${discountPrice}`);
+                cartSummary.find('.finalPrice').html( discount);
+
+              }
+            },
+            error: function (xhr, TextResponse, errorThrown) {
+              if (xhr.status === 404) {
+                window.location.href = '/'
+              }
+              if (xhr.status === 400) {
+                let { message } = JSON.parse(xhr.responseText);
+                codeInput.addClass('is-invalid');
+                codeInput.removeClass('is-valid');
+                coupenDiv.find('button').removeClass('disabled');
+                coupenDiv.find('small').text(message);
+
+              }
+            }
+          })
         }
       </script>
 

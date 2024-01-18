@@ -101,17 +101,14 @@ exports.getAllAdress = async (req, res, next) => {
 
   try {
 
-    const userEmail = req.query.userEmail;
+    const {userEmail} = req.query
 
-    if (!userEmail) {
-      return res.send('user not logged in ')
-    }
     const user = await User.findOne({ email: userEmail }, { _id: 0, adress: 1 });
-    const allStates = await axios.post(`https://countriesnow.space/api/v0.1/countries/states`, {
+    const {data} = await axios.post(`https://countriesnow.space/api/v0.1/countries/states`, {
       country: 'India'
     });
-    console.log(allStates.data.data.states)
 
+    const allStates = data.data.states;
 
     if (user.adress) {
 
@@ -125,9 +122,7 @@ exports.getAllAdress = async (req, res, next) => {
         ]
       );
 
-
-      // res.send(allAddress)
-      res.status(200).json({ address: allAddress, allStates: allStates.data.data.states })
+      res.status(200).json({ address: allAddress, allStates: allStates })
     } else {
       return res.send(null)
     }

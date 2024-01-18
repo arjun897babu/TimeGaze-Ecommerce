@@ -46,13 +46,13 @@ const OrderSchema = new mongoose.Schema({
       default: 'placed',
       index: true,
     },
-    cancelReason:{
-      type:String
+    cancelReason: {
+      type: String
     },
-    ReturnReason:{
-      type:String
+    ReturnReason: {
+      type: String
     }
-    
+
   }],
   address: {
     name: {
@@ -89,7 +89,23 @@ const OrderSchema = new mongoose.Schema({
   orderDate: {
     type: Date,
     default: Date.now()
+  },
+  coupon: {
+    type: String,
+    default: null
+  },
+  discount: {
+    type: Number,
+  },
+  total: {
+    type: Number
+  },
+  shipping: {
+    type: String,
+    default: 'Free'
   }
+
+
 
 });
 

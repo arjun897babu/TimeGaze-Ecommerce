@@ -88,9 +88,7 @@ exports.isBlocked = async (req, res, next) => {
 //orderPage middle ware
 exports.cartIsTrue = async (req, res, next) => {
   try {
-    console.log(req.originalUrl)
     const { userId } = req.session;
-    console.log(userId);
 
     const cartExists = await Cart.exists({
       userId: userId,

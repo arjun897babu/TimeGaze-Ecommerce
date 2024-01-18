@@ -4,7 +4,8 @@ const userMiddleWare = require('../middlewares/user/user');
 const addressController = require('../controller/adress');
 const productController = require('../controller/product');
 const cartController = require('../controller/cart');
-const orderController = require('../controller/order')
+const orderController = require('../controller/order');
+const coupenControll = require('../controller/coupen')
 
 
 const express = require('express');
@@ -26,7 +27,7 @@ route.get('/checkout', userMiddleWare.isBlocked, userMiddleWare.notUser, userMid
 route.get('/orderHistory', userMiddleWare.isBlocked, userMiddleWare.notUser, services.orderHistory)//orderHistory page
 route.get('/orderSingle', userMiddleWare.isBlocked, userMiddleWare.notUser, services.ordersingle)//ordersingle page
 route.get('/orderSuccess', userMiddleWare.isBlocked, userMiddleWare.notUser, userMiddleWare.isOrder, services.orderSuccess)//confirmation page for order
-
+route.get('/wallet', userMiddleWare.isBlocked, userMiddleWare.notUser, services.wallet)//wallet page
 
 
 route.post('/api/users', controller.createUser);//api for register a usr
@@ -56,6 +57,8 @@ route.put('/api/cartQuantiy/:cartItem', cartController.cartQuantity);//control c
 route.post('/api/createOrder/:selectedAddressId', userMiddleWare.notUser, orderController.createOrder);// create user order details
 route.get('/api/getUserOrder/:userId', orderController.getOrderDetails)//get user order details.
 route.get('/api/getSingleOrder/:soid',orderController.getSingleOrderDetails)//get single orderDetails.
+
+route.post('/api/applyCoupen/:cartId',coupenControll.applyCoupen);
 
 
 route.post('/logout', controller.userLogout);//user logout

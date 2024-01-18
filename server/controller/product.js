@@ -172,7 +172,7 @@ exports.allProducts = async (req, res, next) => {
       
       }
     }
-
+    // return res.json(matchQuery)
     const productQuery = [
       {
         $lookup: {

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- boostrap css cdn link -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+  <!-- bootstrap icon cdn link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+
+  <!-- Boxicons -->
+  <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+  <!-- My CSS -->
+
+  <link rel="stylesheet" href="css/adminproducts.css">
+
+  <title>AdminHub</title>
+  <style>
+    label {
+      font-size: 0.8rem;
+      color: black;
+    }
+
+    ::placeholder {
+      font-size: 0.6rem
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      appearance: none;
+    }
+
+    .form-control:focus {
+      color: var(--bs-body-color);
+      background-color: var(--bs-body-bg);
+      border-color: none;
+      outline: 0;
+      box-shadow: none;
+    }
+
+    .btn-close:focus {
+      color: var(--bs-body-color);
+      background-color: var(--bs-body-bg);
+      border-color: none;
+      outline: 0;
+      box-shadow: none;
+    }
+  </style>
+</head>
+
+
+
+<body class="">
+
+  <div class="container-fluid  d-flex p-0 ">
+
+    <!-- SIDEBAR -->
+    <div id="sidebar" class="pe-0 col-md-3 ">
+      <a href="/adminHome" class="brand">
+        <i class='bx bxs-smile'></i>
+        <span class="text">Admin</span>
+      </a>
+
+
+      <ul class="side-menu top">
+        <li>
+          <a href="/adminHome">
+            <i class='bx bxs-dashboard'></i>
+            <span class="text">Dashboard</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="/adminproducts">
+            <i class='bx bxs-shopping-bags'></i>
+            <span class="text">products</span>
+          </a>
+        </li>
+        <li>
+          <a href="/adminusers">
+            <i class='bx bxs-user'></i>
+            <span class="text">users</span>
+          </a>
+        </li>
+        <li>
+          <a href="/order">
+            <i class='bx bx-basket'></i>
+            <span class="text">Orders</span>
+          </a>
+        </li>
+        <!-- <li>
+          <a href="#">
+            <i class='bx bxs-edit-alt'></i>
+            <span class="text">banner management</span>
+          </a>
+        </li> -->
+        <li class="active">
+          <a href="/adminCoupen">
+            <i class='bx bxs-offer'></i>
+            <span class="text">coupon management</span>
+          </a>
+        </li>
+        <li>
+          <a href="/adminCategory">
+            <i class='bx bxs-book'></i>
+            <span class="text">category management</span>
+          </a>
+        </li>
+        <li>
+          <form action="/logout" method="post" class="py3 d-flex align-items-center justify-content-center">
+            <i class='bx bxs-log-out-circle text-danger'></i>
+            <button type="submit" class="btn "><span class="text-danger">LOG OUT</span></button>
+          </form>
+        </li>
+      </ul>
+
+    </div>
+    <!-- SIDEBAR -->
+
+    <!-- CONTENT -->
+    <div class=" col-12 col-md-9 ">
+      <div class="ps-0 ">
+        <!-- NAVBAR -->
+        <nav>
+          <div class="p-2 navbar" style="background-color: #F9F9F9;">
+            <div class="mobile_brand">
+              <a href="/adminHome">
+                <i class='bx bxs-smile'></i>
+                <span class="text">Admin</span>
+              </a>
+            </div>
+            <img src="image/timegazelogo.png" alt="timegaze logo" style="width: 9rem;">
+          </div>
+
+        </nav>
+
+        <!-- NAVBAR -->
+        <nav aria-label="breadcrumb " class="p-4">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/adminHome">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">coupens</li>
+          </ol>
+        </nav>
+
+        <div class="container-fluid ">
+          <div class="container d-flex justify-content-end">
+            <button class="btn btn-dark rounded-0  " style="font-size: 0.6rem;" data-bs-toggle="modal"
+              data-bs-target="#addCoupen">
+              Add coupen +
+            </button>
+            <div class="modal fade" id="addCoupen" tabindex="-1" aria-labelledby="addCoupenLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content rounded-0">
+                  <div class="modal-header p-2" style="font-size: 1rem;">
+                    <h5 class="modal-title ">Add Coupon</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <form action="" class="row g-3 requires-validation" novalidate>
+                      <div class=" mb-1">
+                        <label for="cupenCode" class="form-label">Coupon Code</label>
+                        <input type="text" name="code" class="form-control rounded-0 " id="cupenCode"
+                          placeholder="Enter coupon code" required>
+                        <small class="text-danger"></small>
+                      </div>
+                      <div class=" mb-1">
+                        <input type="checkbox" class="rounded-0 form-check-input" name="isPercentage" id="percentage"
+                          onchange="setDiscount()" title="Set discount in Percentage" required>
+                        <label class="form-check-label" for="isPercentage" title="Set discount in Percentage">In
+                          Percentage</label>
+                        <small class="text-danger"></small>
+                      </div>
+                      <div class="col-md-6 mb-1 maxDiscountDiv" style="display: none;">
+                        <label for="maxDiscount" class="form-label">Max discount price</label>
+                        <input type="text" name="maxDiscount" class="form-control rounded-0" id="maxDiscount"
+                          placeholder="Enter maxDiscount" required>
+                        <small class="text-danger"></small>
+                      </div>
+                      <div class="col-md-6 mb-1">
+                        <label for="discount" class="form-label">Discount</label>
+                        <input type="text" name="discount" class="form-control rounded-0" id="discount"
+                          placeholder="Enter discount" required>
+                        <small class="text-danger"></small>
+                      </div>
+                      <div class="col-md-6 mb-1">
+                        <label for="expiry" class="form-label">Expiry Date</label>
+                        <input name="expiry" type="datetime-local" class="form-control rounded-0" id="expiry" required>
+                        <small class="text-danger"></small>
+                      </div>
+                      <div class=" mb-1">
+                        <div class="col-md-6">
+                          <label for="minAmount" class="form-label">Min Purchase Amount</label>
+                          <input type="number" name="minAmount" min="1" class="form-control rounded-0" id="minAmount"
+                            placeholder="Enter min amount" required>
+                          <small class="text-danger"></small>
+                        </div>
+
+                      </div>
+                      <!-- <div class=" mb-1">
+                        <input type="checkbox" class="rounded-0 form-check-input" name="oneTime" id="oneTime"
+                          title="Make the coupen for one time" onchange="toggleLimit()" required>
+                        <label class="form-check-label" for="oneTime" title="Make the coupen for one time">One
+                          Time</label>
+                        <small class="text-danger"></small>
+                      </div> -->
+                      <div class="col-md-6 mb-1">
+                        <div id='limitdiv'>
+                          <label for="limit" class="form-label text-capitalize ">Limit</label>
+                          <input type="number" name="limit" class="form-control rounded-0" id="limit"
+                            placeholder="Enter limit" required>
+                          <small class="text-danger"></small>
+                        </div>
+
+                      </div>
+                      <div class="col-12 d-flex justify-content-end">
+                        <button class="btn btn-dark rounded-0" type="submit" style="font-size: 0.6rem;">Submit
+                          form</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <a href="/unlistedProducts"><button type="submit" class="btn btn-danger ms-2">
+                expired coupens
+              </button></a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <%- include('../include/adminfooter') %>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <script>
+          window.onload = function () {
+            let toast = localStorage.getItem('coupen');
+            if (toast) {
+              const Toast = Swal.mixin({
+                toast: true,
+                position: "bottom",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                  toast.onmouseenter = Swal.stopTimer;
+                  toast.onmouseleave = Swal.resumeTimer;
+                }
+              });
+              Toast.fire({
+                icon: "success",
+                title: "Coupon created successfully"
+              });
+              localStorage.removeItem('coupen');
+            }
+          }
+
+
+
+          let numberRegex = /^(?:[1-9]\d{0,2}|[1-4]\d{3}|5000)$/
+
+          // function toggleLimit() {
+          //   let limitLabel = document.getElementById('limitdiv');
+
+          //   if (document.getElementById('oneTime').checked) {
+          //     limitLabel.style.display = 'none'
+
+          //   } else {
+          //     limitLabel.style.display = 'block'
+
+          //   }
+          // }
+
+          function setDiscount() {
+            let maxDiscount = document.querySelector('.maxDiscountDiv')
+            if (document.getElementById('percentage').checked) {
+              numberRegex = /^(?:[1-9]\d?|100)$/;
+              maxDiscount.style.display = 'block'
+            } else {
+              numberRegex = /^(?:[1-9]\d{0,2}|[1-4]\d{3}|5000)$/
+
+              maxDiscount.style.display = 'none'
+            }
+          }
+          const form = document.querySelector('.requires-validation')
+
+
+          form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            let isValidate = Array.from(form.elements).every(function (element) {
+              return checkInputValidity(form, element)
+            });
+            if (isValidate) {
+              const formData = $(form).serializeArray();
+              const data = {};
+              formData.forEach((element) => {
+                data[element.name] = element.value;
+              })
+
+              createCoupen(data, form);
+
+            }
+          })
+
+          function checkInputValidity(form, elements) {
+
+            const errorMessage = {
+              common: {
+                required: 'all fields are required'
+              },
+              code: {
+                error1: 'Enter a vaid code (5 to 15 including alphets and number)'
+              },
+              discount: {
+                error1: 'discount must between 1 to 100',
+                error2: 'enter a amount upto 5000'
+              },
+              limit: {
+                error1: 'enter upto five'
+              },
+              minPurchase: {
+                error1: 'must be greater than discount price'
+              }
+            }
+
+            let coupenRegex = /^[a-zA-Z0-9]{5,15}$/
+            let isValid = true
+            let [codeInput, isPercentageInput, maxDiscountInput, discountInput, expiryInput, minAmountInput, limitInput] =
+              ['code', 'isPercentage', 'maxDiscount', 'discount', 'expiry', 'minAmount','limit']
+                .map(inputName => form.elements[inputName]);
+
+            //check for codevalue
+            if (codeInput.value.trim() === '') {
+              displayError(codeInput, errorMessage.common.required);
+              isValid = false
+            }
+            else if (!coupenRegex.test(codeInput.value)) {
+              displayError(codeInput, errorMessage.code.error1)
+              isValid = false
+
+            } else {
+              clearError(codeInput)
+            }
+
+            //check for maxDiscount
+            if (isPercentageInput.checked) {
+              if (maxDiscountInput.value.trim() === '') {
+                displayError(maxDiscountInput, errorMessage.common.required);
+                isValid = false
+              } else if (!(/^(?:[1-9]\d{0,2}|[1-4]\d{3}|5000)$/).test(maxDiscountInput.value)) {
+                displayError(maxDiscountInput, 'enter a valid input');
+                isValid = false
+              } else {
+                clearError(maxDiscountInput)
+              }
+            }
+
+            //check for discount
+            if (discountInput.value.trim() === '') {
+              displayError(discountInput, errorMessage.common.required);
+              isValid = false
+
+            } else if (!numberRegex.test(discountInput.value)) {
+              displayError(discountInput, isPercentageInput.checked ? errorMessage.discount.error1 : errorMessage.discount.error2);
+              isValid = false
+
+            } else {
+              clearError(discountInput)
+            }
+
+            //check for date
+
+            if (expiryInput.value === '') {
+              displayError(expiryInput, errorMessage.common.required);
+              isValid = false
+            } else {
+              clearError(expiryInput)
+            }
+
+            //check for mininput
+
+
+            if (minAmountInput.value === '') {
+              displayError(minAmountInput, errorMessage.common.required);
+              isValid = false;
+            } else if (!(/^(?:[1-9]\d{0,2}|[1-4]\d{3}|5000)$/).test(minAmountInput.value)) {
+
+              displayError(minAmountInput, errorMessage.discount.error2);
+              isValid = false;
+            }
+            else {
+              clearError(minAmountInput)
+            }
+
+            //check for limit 
+       
+              if (limitInput.value.trim() === '') {
+                displayError(limitInput, errorMessage.common.required);
+                isValid = false
+              } else if (!(limitInput.value % 1 === 0) || !(limitInput.value <= 5) || !(limitInput.value >= 1)) {
+                displayError(limitInput, 'maximum limit is 5');
+                isValid = false
+              } else {
+                clearError(limitInput)
+              }
+            
+
+            if (!(isPercentageInput.checked)) {
+              if (parseInt(minAmountInput.value) <= parseInt(discountInput.value) || minAmountInput.value.trim() === '') {
+                displayError(minAmountInput, errorMessage.minPurchase.error1);
+                isValid = false
+              } else {
+                clearError(minAmountInput)
+              }
+            }
+
+
+            return isValid
+          }
+
+
+          function createCoupen(data, form) {
+            console.log('callled');
+            $.ajax({
+              url: `/api/addCoupen`,
+              type: 'post',
+              contentType: 'application/json',
+              data: JSON.stringify(data),
+              success: function (data, textStatus, xhr) {
+                if (xhr.status === 200) {
+                  let { message } = JSON.parse(xhr.responseText)
+                  localStorage.setItem("coupen", message);
+                  location.reload();
+                }
+              },
+              error: function (xhr, textStatus, errorThrown) {
+                
+                if (xhr.status === 404) {
+                  window.location.href = '/adminlogin'
+                }
+                if (xhr.status === 409) {
+                  let { message } = JSON.parse(xhr.responseText);
+                  displayError(form.elements['code'], message);
+                }
+              }
+            })
+          }
+
+
+          $('#addCoupen').on('hidden.bs.modal', function () {
+            $('#addCoupen input').val('').removeClass('is-valid is-invalid');
+            $('#addCoupen small').text('');
+            $('#addCoupen input[type="checkbox"]').prop('checked', false);
+          });
+
+          function displayError(element, message) {
+            let errorMessageElement = element.parentElement.querySelector('small');
+
+            errorMessageElement.innerHTML = message;
+
+            element.classList.remove('is-valid');
+            element.classList.add('is-invalid');
+          }
+          function clearError(element) {
+            let errorMessageElement = element.parentElement.querySelector('small');
+            errorMessageElement.innerHTML = '';
+
+            element.classList.remove('is-invalid')
+            element.classList.add('is-valid');
+          }
+        </script>

@@ -69,7 +69,7 @@ exports.addToCart = async (req, res, next) => {
     res.status(200).redirect(`/singleProduct?pid=${availableProduct._id}&product=${availableProduct.productName}`);
 
   } catch (error) {
-    console.log(error.message)
+    console.error(error.message)
     next(error)
   }
 }
@@ -141,7 +141,7 @@ exports.getUserCart = async (req, res, next) => {
 exports.removeCartItem = async (req, res, next) => {
   try {
     const { cartItemId } = req.params;
-    const userId = req.session.userId;
+    const {userId} = req.session;
     console.log(cartItemId, userId);
     const userCart = await Cart.findOne({ userId: userId }).populate('cartItem.product');
 

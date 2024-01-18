@@ -9,31 +9,31 @@ $('.remove-item').click(function (event) {
 });
 
 
-function updateQuantity(value, availableQuantity) {
+function updateQuantity(currentElement, value, availableQuantity) {
   let maxLimit = 5
-  let inputField = document.getElementById('quanityInput');
-  let event = new Event('input', { bubbles: true });
-  let currentValue = parseInt(inputField.value, 10);
+  let inputField = currentElement.closest('.d-flex').querySelector('.cart-quantity')
+  let currentValue = parseInt(inputField.value);
+  console.log(currentValue, value)
   let newQuantity = currentValue + value;
+  console.log(newQuantity)
 
   if (newQuantity > availableQuantity) {
     toastMessage("Maximum quantity exceeded")
   }
-  else if(newQuantity > maxLimit){
-   toastMessage("We're sorry! Only 5 unit(s) allowed in each order")
+  else if (newQuantity > maxLimit) {
+    toastMessage("We're sorry! Only 5 unit(s) allowed in each order")
   }
   else if (newQuantity >= inputField.min && newQuantity <= availableQuantity) {
-    inputField.value = newQuantity;
-    inputField.dispatchEvent(event);
-    const cartItem =inputField.getAttribute('data-id');
+
+    const cartItem = inputField.getAttribute('data-id');
     quantityManageMent(cartItem, newQuantity);
   }
- 
+
 }
 
 
 function quantityManageMent(cartItem, newQuantity) {
- 
+
   $.ajax({
     url: `/api/cartQuantiy/${cartItem}`,
     type: 'PUT',
@@ -43,7 +43,7 @@ function quantityManageMent(cartItem, newQuantity) {
     }),
     success: function (data, textStatus, xhr) {
       if (xhr.status === 200) {
-        console.log('name update:', data);
+       
         location.reload();
       }
 
@@ -95,7 +95,7 @@ function deleteCartItem(cartItemId) {
 
 }
 
-function toastMessage (message){
+function toastMessage(message) {
   const Toast = Swal.mixin({
     toast: true,
     position: "bottom",

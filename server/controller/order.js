@@ -4,15 +4,15 @@ const Product = require('../model/productSchema');
 const User = require('../model/userModelSchema');
 const Cart = require('../model/cartSchema');
 const Address = require('../model/addressSchema');
+const coupenHelper = require('../utilities/coupen')
 
 exports.createOrder = async (req, res, next) => {
   try {
 
-    const { userId, addressId } = req.session;
+    const { userId, addressId, coupon } = req.session;
     const { selectedAddressId } = req.params;
     const { PaymentOption } = req.body
 
-    console.log(userId, addressId, selectedAddressId, PaymentOption)
     if (!PaymentOption || !selectedAddressId) return res.status(400).send('all field are required');
 
     //checking the address is the defualt address
@@ -106,12 +106,19 @@ exports.createOrder = async (req, res, next) => {
       };
     });
 
+    //calculate discount price
+
+    const discountPrice = coupenHelper.calculateDiscount(coupon, existingCart[0].cartTotal);
+
     //creating new order
     const newOrder = new Order({
       userId: userId,
       orderItems: cartItems,
       address: billingAddress,
-      paymentMethod: PaymentOption
+      paymentMethod: PaymentOption,
+      coupon: coupon ? coupon.code : null,
+      discount: coupon ? discountPrice : 0,
+      total: coupon ? existingCart[0].cartTotal - discountPrice : existingCart[0].cartTotal
     })
 
     const savedOrder = await newOrder.save();
@@ -120,7 +127,7 @@ exports.createOrder = async (req, res, next) => {
 
       await Cart.updateOne(
         { userId: userId },
-        { $set: { cartItem: [] } }
+        { $set: { cartItem: [], cartTotal: 0 } }
       );
 
       const bulkoperation = cartItems.map(function (items) {
@@ -135,7 +142,14 @@ exports.createOrder = async (req, res, next) => {
 
       await Product.bulkWrite(bulkoperation);
       req.session.isOrder = true;
-      res.status(200).json({ message: 'order placed successFully', status: 'success', redirectUrl: '/orderSuccess' })
+      delete req.session.coupon
+      res.status(200).json(
+        {
+          message: 'order placed successFully',
+          status: 'success',
+          redirectUrl: '/orderSuccess'
+        }
+      )
 
     }
 
@@ -149,7 +163,7 @@ exports.createOrder = async (req, res, next) => {
 exports.getOrderDetails = async (req, res, next) => {
   try {
     const { userId } = req.params
-    console.log(userId)
+
     if (!userId) return res.send('user not logged in')
     const getOrderDetails = await Order.aggregate(
       [
@@ -162,7 +176,7 @@ exports.getOrderDetails = async (req, res, next) => {
         ,
         { $unwind: '$orderItems' }
         ,
-        {$sort:{orderDate:-1}},
+        { $sort: { orderDate: -1 } },
         {
           $project: {
             'orderItems._id': 1,
@@ -203,7 +217,7 @@ exports.getAllOrderDetails = async (req, res, next) => {
         },
         { $unwind: '$orderItems' }
         ,
-        {$sort:{orderDate:-1}},
+        { $sort: { orderDate: -1 } },
         {
           $project:
           {
@@ -228,7 +242,7 @@ exports.changeStatus = async (req, res, next) => {
   try {
     const { orderId } = req.params;
     const { orderStatus, cancelReason } = req.body;
-   
+
 
     if (!orderStatus) return res.status(400).send('all fields required');
 
@@ -308,8 +322,8 @@ exports.getSingleOrderDetails = async (req, res, next) => {
       },
       {
         $project: {
-          'user._id': 0,
           userId: 0,
+          'user._id': 0,
           'user.password': 0,
           'user.isBlocked': 0,
           'user.isVerified': 0,
@@ -318,8 +332,6 @@ exports.getSingleOrderDetails = async (req, res, next) => {
         }
       }
     ]);
-
-    //  await Order.findOne({ 'orderItems': { $elemMatch: { _id: soid } } })
 
     res.json(singleOrder)
 

@@ -81,17 +81,16 @@
                               <div class="col-3 px-2 me-2 ">
                                 <% let availableQuantity=cart[carts].cartItem.product.quantity%>
                                   <div class="d-flex " style="width: 100px;">
-                                    <button class="btn px-2" onclick="updateQuantity(-1,'<%= availableQuantity %>')">
+                                    <button class="btn px-2"
+                                      onclick="updateQuantity(this,-1,'<%= availableQuantity %>')">
                                       <i class="bi bi-dash"></i>
                                     </button>
 
-                                    <input id="quanityInput" min="1" name=""
-                                      data-id="<%=cart[carts].cartItem.product._id%>"
+                                    <input min="1" name="" data-id="<%=cart[carts].cartItem.product._id%>"
                                       value="<%=cart[carts].cartItem.quantity%>" type="number"
-                                      class="form-control form-control-sm cart-quantity" 
-                                      readonly/>
+                                      class="form-control form-control-sm cart-quantity" readonly />
 
-                                    <button class="btn px-2" onclick="updateQuantity(1,'<%= availableQuantity %>')">
+                                    <button class="btn px-2" onclick="updateQuantity(this,1,'<%= availableQuantity %>')">
                                       <i class="bi bi-plus"></i>
                                     </button>
                                   </div>
@@ -227,7 +226,10 @@
             <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
             <script src="js/cart.js"></script>
             <script src="/js/togglebutton.js"></script>
-           
+            <script>
+             
+            </script>
+
 </body>
 
 </html>

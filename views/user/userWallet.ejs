@@ -19,10 +19,78 @@
 
 
   <!-- css style sheet link -->
-  <link rel="stylesheet" href="css/header_footer.css">
+  <link rel="stylesheet" href="/css/header_footer.css">
 
 
   <style>
+    /* wallet */
+    
+   
+
+
+.header {
+  height: 30%;
+  background-color: #f0f0f0;
+  border-bottom-right-radius: 40px;
+    border-bottom-left-radius: 40px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+   overflow: hidden;
+}
+
+.header::before{
+  content:"";
+  height: 200px;
+  width: 200px;
+  background-color: #1a000d;
+
+  border-radius: 50%;
+  position:absolute;
+  top: -60px;
+  left: -100px;
+  z-index: 2;
+}
+
+.header::after {
+  content:"";
+  height: 100px;
+  width: 100px;
+  background-color: #1a000d;
+  border-radius: 50%;
+  position:absolute;
+  right: -20px;
+  bottom: -30px;
+  z-index: 2;
+ 
+}
+
+.header-summary {
+  display: flex;
+  flex-direction: column;
+font-family: 'Montserrat', sans-serif;
+  color: rgb(6, 5, 5);
+  z-index: 3;
+}
+
+.summary-text {
+  font-size: 1.2rem;
+  font-weight: 300;
+  margin-bottom: 1.5rem;
+}
+
+.summary-balance {
+  font-size: 2rem;
+  letter-spacing: 1.5px;
+  margin-bottom: 0.8rem;
+  
+}
+
+
+
+    /* wallet */
     .is-activeMobile {
       background-color: white;
       color: black !important;
@@ -89,16 +157,6 @@
       color: rgb(0, 0, 0) !important;
       font-size: inherit;
     }
-
-    .cart-container::-webkit-scrollbar {
-      display: none;
-    }
-
-    .cart-container {
-
-      overflow-y: auto;
-      max-height: 440px;
-    }
   </style>
 
 </head>
@@ -117,8 +175,7 @@
       <nav aria-label="breadcrumb " class="p-4">
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="/">Home</a></li>
-
-          <li class="breadcrumb-item active" aria-current="page">orders</li>
+          <li class="breadcrumb-item active" aria-current="page">wallet</li>
         </ol>
       </nav>
     </div>
@@ -143,12 +200,12 @@
                   <span class="text">address</span>
                 </a>
               </li>
-              <li class="is-active ">
-                <a href="orderHistory">
+              <li class=" ">
+                <a href="/orderHistory">
                   <span class="text">orders</span>
                 </a>
               </li>
-              <li class="">
+              <li class="is-active ">
                 <a href="/wallet">
                   <span class="text">wallet</span>
                 </a>
@@ -173,72 +230,41 @@
               <div class="text-white  ">address</div>
             </a>
             <a href="/orderHistory">
-              <div class="text-white is-activeMobile ">orders</div>
+              <div class="text-white  ">orders</div>
             </a>
             <a href="/wallet">
-              <div class="text-white ">wallet</div>
+              <div class="text-white is-activeMobile ">wallet</div>
             </a>
 
 
           </div>
         </div>
-
-        <div class="col-md-9 cart-container">
-          <% if(order.length>0) {%>
-            <% for(items of order) {%>
-              <div class="card mb-3 rounded-0 border p-2">
-                <div class="row">
-                  <div class="col-md-6">
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="m-1">
-                          <a href="/orderSingle?soid=<%=items.orderItems._id  %>" class="card-body">
-                            <img src="uploads/<%=items.orderItems.image[0]  %>" style="height: 48; width: 48px;"
-                              class="img-sm rounded border" alt="Product Image">
-                          </a>
-                        </div>
-                      </div>
-                      <div class="col-md-6 d-flex align-items-center">
-                        <div>
-                          <span class="d-block text-capitalize">
-                            <%=items.orderItems.productName %>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+        <div class="col-md-9">
+          <div class="container">
+            <div class="iphone">
+              <div class="header">
+                <div class="header-summary">
+                  <div class="summary-text">
+                    My Balance
                   </div>
-                  <div class="col-md-4 d-flex align-items-center status <%=(items.orderItems.orderStatus==='canceled')?"text-danger":(items.orderItems.orderStatus==='delivered')?"text-success":'' %>">
-                    <span class="me-3 text-dark">Status:</span>
-                    <%=items.orderItems.orderStatus %>
+                  <div class="summary-balance">
+                    &#8377; 0 .00
                   </div>
-                  <div class="col-md-2 d-flex align-items-center justify-content-end">
-                    <div>
-                      <% if(items.orderItems.orderStatus!=='canceled'&& items.orderItems.orderStatus!=='delivered') {%>
-                        <div class="delivery-status">
-                          <div class="status-icon"></div>
-                          <button class="btn btn-dark btn-sm changeOrder" value="canceled"
-                            data-id="<%=items.orderItems._id  %>" style="font-size: 0.6rem;">cancel</button>
-                        </div>
-                        <% } %>
-                    </div>
-                  </div>
+                 
                 </div>
+              
               </div>
-              <% } %>
-                <% }else{ %>
-                  <div class="text-center">
-                    \(^Д^)/<br>
-                    No Orders.
-                  </div>
-                  <% } %>
+            </div>
+          </div>
         </div>
 
+      </div>
       </div>
     </section>
     <%- include('../include/footer') %>
       <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-      <script src="js/orderStatus.js"></script>
+     
 </body>
 
 </html>
