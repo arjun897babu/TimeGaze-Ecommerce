@@ -4,7 +4,14 @@ const Product = require('../model/productSchema');
 const User = require('../model/userModelSchema');
 const Cart = require('../model/cartSchema');
 const Address = require('../model/addressSchema');
-const coupenHelper = require('../utilities/coupen')
+const coupenHelper = require('../utilities/coupen');
+
+const instance = new Razorpay(
+  {
+    key_id: process.env.rzp_key,
+    key_secret: process.env.rzp_secret
+  }
+);
 
 exports.createOrder = async (req, res, next) => {
   try {
@@ -241,10 +248,21 @@ exports.getAllOrderDetails = async (req, res, next) => {
 exports.changeStatus = async (req, res, next) => {
   try {
     const { orderId } = req.params;
-    const { orderStatus, cancelReason } = req.body;
+    const { orderStatus, cancelReason, returnReason } = req.body;
+    // console.log(orderStatus, cancelReason, returnReason)
 
-
-    if (!orderStatus) return res.status(400).send('all fields required');
+    if (orderStatus === 'cancel' && cancelReason === '') return res.status(400).json(
+      {
+        status: 'error',
+        message: 'Please provide a reason for the cancel'
+      }
+    );
+    if (orderStatus === 'return_requested' && returnReason === '') return res.status(400).json(
+      {
+        status: 'error',
+        message: 'Please provide a reason for the return'
+      }
+    );
 
     const updatedOrder = await Order.findOneAndUpdate(
       {
@@ -256,7 +274,11 @@ exports.changeStatus = async (req, res, next) => {
       },
       {
         $set:
-          { 'orderItems.$.orderStatus': orderStatus, 'orderItems.$.cancelReason': cancelReason }
+        {
+          'orderItems.$.orderStatus': orderStatus,
+          'orderItems.$.cancelReason': cancelReason,
+          'orderItems.$.ReturnReason': returnReason
+        }
       },
       {
         new: true,
@@ -265,7 +287,7 @@ exports.changeStatus = async (req, res, next) => {
 
     if (updatedOrder) {
 
-      if (orderStatus === 'canceled') {
+      if (orderStatus === 'canceled' || orderStatus === 'returned') {
 
         let product = {};
 
@@ -287,12 +309,14 @@ exports.changeStatus = async (req, res, next) => {
 
         );
       }
-      const updatedItem = updatedOrder.orderItems.find(items => items._id.equals(new mongoose.Types.ObjectId(orderId)));
-      console.log(updatedItem)
-      res.status(200).json({ response: updatedItem, status: 'success' });
 
-    } else {
-      res.status(400).json({ message: 'not found' })
+      return res.status(200).json(
+        {
+          status: 'success',
+          message: orderStatus
+        }
+      );
+
     }
   }
   catch (error) {

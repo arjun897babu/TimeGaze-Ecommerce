@@ -213,7 +213,7 @@
                   </div>
                   <div class="col-md-2 d-flex align-items-center justify-content-end">
                     <div>
-                      <% if(items.orderItems.orderStatus!=='canceled'&& items.orderItems.orderStatus!=='delivered') {%>
+                      <% if(items.orderItems.orderStatus==='placed'||items.orderItems.orderStatus==='pending'||items.orderItems.orderStatus==='shipped') {%>
                         <div class="delivery-status">
                           <div class="status-icon"></div>
                           <button class="btn btn-dark btn-sm changeOrder" value="canceled"

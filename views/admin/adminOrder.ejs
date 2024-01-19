@@ -169,7 +169,7 @@
 
 
                         <div class="justify-content-between d-flex">
-                          <% if(order.orderItems.orderStatus !== 'delivered' && order.orderItems.orderStatus !== 'canceled') { %>
+                          <% if(order.orderItems.orderStatus !== 'delivered' && order.orderItems.orderStatus !== 'canceled'&&order.orderItems.orderStatus !== 'return_requested' && order.orderItems.orderStatus !== 'returned') { %>
                             <select name="orderStatus" id="" class="me-1">
                               <option value="placed" <%=order.orderItems.orderStatus==='placed' ? 'selected' : '' %>>placed</option>
                               <option value="pending" <%=order.orderItems.orderStatus==='pending' ? 'selected' : '' %>>pending</option>
@@ -180,14 +180,19 @@
                             <button data-id="<%=order.orderItems._id%>" style="font-size: 0.6rem;" class="btn btn-dark me-1 changeOrder">submit</button>
                           <% } else if(order.orderItems.orderStatus === 'canceled') { %>
                             <span class="text-danger">order canceled.</span>
-                          <% } else { %>
+                          <% } else if(order.orderItems.orderStatus === 'delivered') { %>
                             <span class="text-success">order delivered.</span>
-                          <% } %>
+                          <% }else if(order.orderItems.orderStatus === 'return_requested'){ %>
+                            <button data-id="<%= order.orderItems._id %>" value="returned" style="font-size: 0.6rem;" class="btn btn-dark me-1 changeOrder">accept</button>
+                          <% }else{%>
+                            <i class="bi bi-check-circle text-success"></i>
+                            <% } %>
+                         
                         </div>
                       </td>
                     </tr>
-                    <% } %>
-                      <% } %>
+                  <% } %>
+                <% } %>
               </tbody>
             </table>
           </div>
@@ -199,7 +204,31 @@
 
   </div>
 
-  <%- include('../include/adminfooter') %>
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="js/adminOrderStatus.js"></script>
+    <script>
+      let message = localStorage.getItem('message');
+      console.log(message)
+        if (message) {
+
+          const Toast = Swal.mixin({
+            toast: true,
+            position: "bottom",
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            }
+          });
+          Toast.fire({
+            icon: "success",
+            title: `Order ${message} `
+          });
+          localStorage.removeItem('message')
+        }
+    </script>
+    
+            <%- include('../include/adminfooter') %>
