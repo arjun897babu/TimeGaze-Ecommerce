@@ -5,6 +5,8 @@ const User = require('../model/userModelSchema');
 const Cart = require('../model/cartSchema');
 const Address = require('../model/addressSchema');
 const coupenHelper = require('../utilities/coupen');
+const Razorpay = require('razorpay');
+const crypto = require("crypto");
 
 const instance = new Razorpay(
   {
@@ -113,13 +115,15 @@ exports.createOrder = async (req, res, next) => {
       };
     });
 
+    //random orderId
+    const orderID = Math.floor(Math.random() * 1000000).toString();
     //calculate discount price
-
     const discountPrice = coupenHelper.calculateDiscount(coupon, existingCart[0].cartTotal);
 
     //creating new order
     const newOrder = new Order({
       userId: userId,
+      orderId: orderID,
       orderItems: cartItems,
       address: billingAddress,
       paymentMethod: PaymentOption,
@@ -128,16 +132,18 @@ exports.createOrder = async (req, res, next) => {
       total: coupon ? existingCart[0].cartTotal - discountPrice : existingCart[0].cartTotal
     })
 
-    const savedOrder = await newOrder.save();
 
-    if (savedOrder) {
+    if (PaymentOption === 'cashOnDelivery') {
+
+      const savedOrder = await newOrder.save();
+      console.log('savedorder',savedOrder)
 
       await Cart.updateOne(
         { userId: userId },
         { $set: { cartItem: [], cartTotal: 0 } }
       );
-
-      const bulkoperation = cartItems.map(function (items) {
+      console.log('new order',newOrder.orderItems)
+      const bulkoperation = newOrder.orderItems.map(function (items) {
         return {
           updateOne: {
             filter: { _id: items.product },
@@ -145,21 +151,39 @@ exports.createOrder = async (req, res, next) => {
           }
         }
       });
-
+      
+      console.log('new bulkoperation',bulkoperation)
 
       await Product.bulkWrite(bulkoperation);
       req.session.isOrder = true;
       delete req.session.coupon
-      res.status(200).json(
+      console.log('session for order',req.session.isOrder)
+       res.status(200).json(
         {
+          paymentMethod: PaymentOption,
           message: 'order placed successFully',
           status: 'success',
           redirectUrl: '/orderSuccess'
         }
       )
-
     }
+    if (PaymentOption === 'onlinePayment') {
+      const options = {
+        amount: newOrder.total * 100,
+        currency: "INR",
+        receipt: "" + newOrder.orderId,
+      };
+      const order = await instance.orders.create(options);
+      console.log(order)
+      req.session.newOrder = newOrder;
 
+       res.json({
+        order,
+        payMethode: "onlinePayment",
+        razorKey: process.env.rzp_key,
+
+      });
+    }
 
   }
   catch (error) {
@@ -364,3 +388,43 @@ exports.getSingleOrderDetails = async (req, res, next) => {
     res.send(error.message)
   }
 }
+exports.payOnline = async (req, res, next) => {
+  try {
+  
+    const {userId} = req.session
+    const hmac = crypto.createHmac("sha256", process.env.rzp_secret);
+      hmac.update(
+        req.body.razorpay_order_id + "|" + req.body.razorpay_payment_id
+      );
+     
+      if (hmac.digest("hex") === req.body.razorpay_signature) {
+        const newOrder = new Order(req.session.newOrder);
+      
+        const savedOrder = await newOrder.save();
+  
+        await Cart.updateOne(
+          { userId: userId },
+          { $set: { cartItem: [], cartTotal: 0 } }
+        );
+        const bulkoperation = newOrder.orderItems.map(function (items) {
+          return {
+            updateOne: {
+              filter: { _id: items.product },
+              update: { $inc: { quantity: -(items.quantity) } }
+            }
+          }
+        });
+        await Product.bulkWrite(bulkoperation);
+        req.session.isOrder = true;
+        delete req.session.coupon
+        return res.status(200).redirect("/orderSuccess");
+      } else {
+        return res.send("Order Failed");
+      }
+    
+  } catch (error) {
+    next(error);
+  }
+}
+
+

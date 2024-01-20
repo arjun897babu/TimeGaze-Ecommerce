@@ -59,7 +59,7 @@ route.get('/api/getUserOrder/:userId', orderController.getOrderDetails)//get use
 route.get('/api/getSingleOrder/:soid',orderController.getSingleOrderDetails)//get single orderDetails.
 
 route.post('/api/applyCoupen/:cartId',coupenControll.applyCoupen);
-
+route.post('/api/payOnline',orderController.payOnline)
 
 route.post('/logout', controller.userLogout);//user logout
 

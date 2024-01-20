@@ -260,7 +260,36 @@ function makePurchase(selectedAddressId, PaymentOption) {
     data: JSON.stringify(PaymentOption),
     success: function (data, textStatus, xhr) {
       if (xhr.status === 200) {
-        window.location.href = data.redirectUrl
+       let {message,redirectUrl,order,razorKey} = JSON.parse(xhr.responseText);
+       console.log(redirectUrl)
+       if(!order) window.location.href = redirectUrl;
+       else{
+        const options = {
+          "key": razorKey,
+          "amount": order.amount,
+          "currency": "INR",
+          "name": "Time Gaze",
+          "description": "Test Transaction",
+          "order_id": order.id, 
+          "callback_url": "/api/payOnline", 
+          "prefill": { 
+              "name": "Timegaze", 
+              "email": "arjunkan22@example.com",
+              "contact": "8943428897" 
+          },
+          "notes": {
+              "address": "Razorpay Corporate Office"
+          },
+          "theme": {
+              "color": "#3399cc"
+          }
+        };
+    
+        const rzp1 = new Razorpay(options);
+    
+        rzp1.open();
+        
+       }
       }
 
     },
