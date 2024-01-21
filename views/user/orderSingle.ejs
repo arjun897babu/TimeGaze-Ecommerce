@@ -218,7 +218,7 @@
                   <p>Date:<%= new Date(order.orderDate).toLocaleDateString('en-US',{timeZone:'Asia/kolkata'}) %></p>
                   <div class="">
                     <% if(order.orderItems[0].orderStatus==='delivered'||order.orderItems[0].orderStatus==='return_requested'||order.orderItems[0].orderStatus==='returned'  ) {%>
-                      <button class="btn btn-dark rounded-0" id="invoice" style="font-size: 0.6rem;">download
+                      <button class="btn btn-dark rounded-0" data-id="<%=order._id  %>" id="invoice" style="font-size: 0.6rem;">download
                         Invoice</button>
                       <% if(order.orderItems[0].orderStatus!=='return_requested'&& order.orderItems[0].orderStatus!=='returned') {%>
                         <button class="btn btn-dark rounded-0" id="return-status"
@@ -247,6 +247,8 @@
     <%- include('../include/footer') %>
       <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <script src="https://unpkg.com/easyinvoice/dist/easyinvoice.min.js"></script>
+
       <script>
 
         $('#return-status').click(async function (event) {
@@ -331,6 +333,42 @@
           });
 
         }
+
+       $('#invoice').click(function(event){
+        event.preventDefault();
+        $(this).addClass('disabled')
+        let orderId = $(this).attr('data-id');
+        console.log(orderId,this)
+        if(orderId)downloadInvoice(orderId,this);
+       
+       })
+
+
+       function downloadInvoice(orderId,btn){
+        console.log(btn)
+
+        $.ajax({
+          url:`api/invoice/${orderId}`,
+          type:'post',
+          contentType:'application/json',
+          success:function(data,textStatus,xhr){  
+            if(xhr.status===200){
+              let {invoice,invoiceNumber} = JSON.parse(xhr.responseText);
+              easyinvoice.download(`${invoiceNumber}.pdf`, invoice.pdf);
+              $(btn).removeClass('disabled')
+            }
+          },
+          error(xhr,textStatus,errorThrown){
+            if(xhr.status==400){
+              $(btn).removeClass('disabled')
+            }
+            if(xhr.status==404){
+              window.location.href='/'
+            }
+          }
+        })
+       }
+
       </script>
 </body>
 

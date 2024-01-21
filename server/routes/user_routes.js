@@ -5,7 +5,8 @@ const addressController = require('../controller/adress');
 const productController = require('../controller/product');
 const cartController = require('../controller/cart');
 const orderController = require('../controller/order');
-const coupenControll = require('../controller/coupen')
+const coupenControll = require('../controller/coupen');
+const invoiceController = require('../controller/invoice')
 
 
 const express = require('express');
@@ -59,6 +60,7 @@ route.get('/api/getUserOrder/:userId', orderController.getOrderDetails)//get use
 route.get('/api/getSingleOrder/:soid',orderController.getSingleOrderDetails)//get single orderDetails.
 route.put('/api/cancelOrder/:orderItemsId',orderController.cancelOrder);//for bulk canceling
 route.put('/api/returnRequest/:orderItemsId',orderController.returnOrder);//for bulk return
+route.post('/api/invoice/:orderId',invoiceController.invoice)
 
 route.post('/api/applyCoupen/:cartId',coupenControll.applyCoupen);
 route.post('/api/payOnline',orderController.payOnline)
