@@ -57,6 +57,8 @@ route.put('/api/cartQuantiy/:cartItem', cartController.cartQuantity);//control c
 route.post('/api/createOrder/:selectedAddressId', userMiddleWare.notUser, orderController.createOrder);// create user order details
 route.get('/api/getUserOrder/:userId', orderController.getOrderDetails)//get user order details.
 route.get('/api/getSingleOrder/:soid',orderController.getSingleOrderDetails)//get single orderDetails.
+route.put('/api/cancelOrder/:orderItemsId',orderController.cancelOrder);//for bulk canceling
+route.put('/api/returnRequest/:orderItemsId',orderController.returnOrder);//for bulk return
 
 route.post('/api/applyCoupen/:cartId',coupenControll.applyCoupen);
 route.post('/api/payOnline',orderController.payOnline)

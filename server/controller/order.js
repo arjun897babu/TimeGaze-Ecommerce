@@ -136,13 +136,13 @@ exports.createOrder = async (req, res, next) => {
     if (PaymentOption === 'cashOnDelivery') {
 
       const savedOrder = await newOrder.save();
-      console.log('savedorder',savedOrder)
+      console.log('savedorder', savedOrder)
 
       await Cart.updateOne(
         { userId: userId },
         { $set: { cartItem: [], cartTotal: 0 } }
       );
-      console.log('new order',newOrder.orderItems)
+      console.log('new order', newOrder.orderItems)
       const bulkoperation = newOrder.orderItems.map(function (items) {
         return {
           updateOne: {
@@ -151,14 +151,18 @@ exports.createOrder = async (req, res, next) => {
           }
         }
       });
-      
-      console.log('new bulkoperation',bulkoperation)
+
+
+      console.log('new bulkoperation', bulkoperation)
+
+
+      console.log('new bulkoperation', bulkoperation)
 
       await Product.bulkWrite(bulkoperation);
       req.session.isOrder = true;
       delete req.session.coupon
-      console.log('session for order',req.session.isOrder)
-       res.status(200).json(
+      console.log('session for order', req.session.isOrder)
+      res.status(200).json(
         {
           paymentMethod: PaymentOption,
           message: 'order placed successFully',
@@ -177,7 +181,7 @@ exports.createOrder = async (req, res, next) => {
       console.log(order)
       req.session.newOrder = newOrder;
 
-       res.json({
+      res.json({
         order,
         payMethode: "onlinePayment",
         razorKey: process.env.rzp_key,
@@ -273,7 +277,7 @@ exports.changeStatus = async (req, res, next) => {
   try {
     const { orderId } = req.params;
     const { orderStatus, cancelReason, returnReason } = req.body;
-    // console.log(orderStatus, cancelReason, returnReason)
+    console.log(orderStatus, cancelReason, returnReason)
 
     if (orderStatus === 'cancel' && cancelReason === '') return res.status(400).json(
       {
@@ -287,6 +291,43 @@ exports.changeStatus = async (req, res, next) => {
         message: 'Please provide a reason for the return'
       }
     );
+
+    if (orderStatus === 'canceled' ) {
+      const url = '/api/cancelOrder' 
+      const [usedCoupon] = await Order.aggregate([
+        {
+          $match: {
+            'orderItems': {
+              $elemMatch: { _id: new mongoose.Types.ObjectId(orderId) }
+            },
+            coupon: { $ne: null }
+          }
+        },
+        {
+          $group: {
+            
+            _id: {
+              _id: '$_id',
+              coupon: '$coupon',
+              total: '$total',
+              length:{$size:'$orderItems'}
+            }
+          }
+        }
+      ]);
+      
+      console.log(usedCoupon)
+      
+      if (usedCoupon&&usedCoupon._id.length>1) return res.status(202).json(
+        {
+          message: 'Canceling this order will also cancel all products purchased with the coupon',
+          url: url,
+          orderItemsId: usedCoupon._id._id
+
+        }
+      )
+    }
+
 
     const updatedOrder = await Order.findOneAndUpdate(
       {
@@ -309,39 +350,37 @@ exports.changeStatus = async (req, res, next) => {
       }
     );
 
-    if (updatedOrder) {
+    if (orderStatus === 'canceled') {
 
-      if (orderStatus === 'canceled' || orderStatus === 'returned') {
+      let product = {};
 
-        let product = {};
-
-        for (const items of updatedOrder.orderItems) {
-          if (items._id.equals(new mongoose.Types.ObjectId(orderId))) {
-            product.quantity = items.quantity;
-            product._id = items.product;
-            break;
-          }
+      for (const items of updatedOrder.orderItems) {
+        if (items._id.equals(new mongoose.Types.ObjectId(orderId))) {
+          product.quantity = items.quantity;
+          product._id = items.product;
+          break;
         }
-
-
-        await Product.findByIdAndUpdate(
-          product._id,
-          {
-            $inc:
-              { quantity: product.quantity }
-          },
-
-        );
       }
 
-      return res.status(200).json(
-        {
-          status: 'success',
-          message: orderStatus
-        }
-      );
 
+      await Product.findByIdAndUpdate(
+        product._id,
+        {
+          $inc:
+            { quantity: product.quantity }
+        },
+
+      );
     }
+
+
+    return res.status(200).json(
+      {
+        status: 'success',
+        message: orderStatus
+      }
+    );
+
   }
   catch (error) {
     next(error)
@@ -390,41 +429,142 @@ exports.getSingleOrderDetails = async (req, res, next) => {
 }
 exports.payOnline = async (req, res, next) => {
   try {
-  
-    const {userId} = req.session
+
+    const { userId } = req.session
     const hmac = crypto.createHmac("sha256", process.env.rzp_secret);
-      hmac.update(
-        req.body.razorpay_order_id + "|" + req.body.razorpay_payment_id
+    hmac.update(
+      req.body.razorpay_order_id + "|" + req.body.razorpay_payment_id
+    );
+
+    if (hmac.digest("hex") === req.body.razorpay_signature) {
+      const newOrder = new Order(req.session.newOrder);
+
+      const savedOrder = await newOrder.save();
+
+      await Cart.updateOne(
+        { userId: userId },
+        { $set: { cartItem: [], cartTotal: 0 } }
       );
-     
-      if (hmac.digest("hex") === req.body.razorpay_signature) {
-        const newOrder = new Order(req.session.newOrder);
-      
-        const savedOrder = await newOrder.save();
-  
-        await Cart.updateOne(
-          { userId: userId },
-          { $set: { cartItem: [], cartTotal: 0 } }
-        );
-        const bulkoperation = newOrder.orderItems.map(function (items) {
-          return {
-            updateOne: {
-              filter: { _id: items.product },
-              update: { $inc: { quantity: -(items.quantity) } }
-            }
+      const bulkoperation = newOrder.orderItems.map(function (items) {
+        return {
+          updateOne: {
+            filter: { _id: items.product },
+            update: { $inc: { quantity: -(items.quantity) } }
           }
-        });
-        await Product.bulkWrite(bulkoperation);
-        req.session.isOrder = true;
-        delete req.session.coupon
-        return res.status(200).redirect("/orderSuccess");
-      } else {
-        return res.send("Order Failed");
-      }
-    
+        }
+      });
+      await Product.bulkWrite(bulkoperation);
+      req.session.isOrder = true;
+      delete req.session.coupon
+      return res.status(200).redirect("/orderSuccess");
+    } else {
+      return res.send("Order Failed");
+    }
+
   } catch (error) {
     next(error);
   }
 }
+
+
+exports.cancelOrder = async (req, res, next) => {
+  try {
+    const { orderItemsId } = req.params;
+    const { orderStatus, cancelReason } = req.body;
+    console.log(orderItemsId, orderStatus, cancelReason);
+    if (orderStatus === 'canceled' && cancelReason === '') {
+      return res.status(400).json(
+        {
+          status: 'error',
+          message: 'Please provide a reason for the cancel'
+        }
+      );
+    }
+
+    const productDetails = await Order.aggregate([
+      {
+        $match: { _id: new mongoose.Types.ObjectId(orderItemsId) },
+      },
+      { $unwind: '$orderItems' }
+      ,
+      {
+        $group: {
+          _id: '$orderItems.product',
+          quantity: { $sum: '$orderItems.quantity' },
+          total: { $sum: '$total' },
+        }
+      },
+
+    ]);
+
+    const bulkoperation = productDetails.map(function (items) {
+      return {
+        updateOne: {
+          filter: { _id: items._id },
+          update: { $inc: { quantity: (items.quantity) } }
+        }
+      }
+    });
+ 
+    await Order.updateMany(
+      { _id: orderItemsId },
+      {
+        $set: {
+          'orderItems.$[].orderStatus': orderStatus,
+          'orderItems.$[].cancelReason': cancelReason
+        }
+      }
+    );
+
+    await Product.bulkWrite(bulkoperation)
+
+    res.status(200).json({
+      status:'success',
+      message: 'Order canceled Successfully'
+    })
+
+  } catch (error) {
+
+  }
+}
+
+exports.returnOrder = async (req, res, next) => {
+  try {
+    const { orderItemsId } = req.params;
+    const { orderStatus, returnReason } = req.body;
+    console.log(orderItemsId, orderStatus, returnReason);
+
+
+    if (orderStatus === 'return_requested' && returnReason === '') return res.status(400).json(
+      {
+        status: 'error',
+        message: 'Please provide a reason for the return'
+      }
+    );
+
+    await Order.updateMany(
+      { _id: orderItemsId },
+      {
+        $set: {
+          'orderItems.$[].orderStatus': orderStatus,
+          'orderItems.$[].returnReason': returnReason
+        }
+      }
+    );
+
+    res.status(200).json({
+      status:'success',
+      message: 'Order return requested Successfully'
+    })
+
+
+  } catch (error) {
+    next(error)
+  }
+}
+
+
+
+
 
 

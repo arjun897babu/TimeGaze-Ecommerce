@@ -1,10 +1,11 @@
-$(document).ready(function () {
-  if ($('select[name="orderStatus"]').val()) {
-    let fistValue = $('select[name="orderStatus"]').val();
-    $('.changeOrder').val(fistValue);
-  }
+// $(document).ready(function () {
+//   if ($('select[name="orderStatus"]').val()) {
+//     let fistValue = $('select[name="orderStatus"]').val();
+//     $('.changeOrder').val(fistValue);
+//   }
+//   console.log($('select[name="orderStatus"]').val())
 
-});
+// });
 
 
 $(document).on('click', 'select[name="orderStatus"]', function () {
