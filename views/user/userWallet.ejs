@@ -239,6 +239,7 @@ font-family: 'Montserrat', sans-serif;
 
           </div>
         </div>
+       
         <div class="col-md-9">
           <div class="container">
             <div class="iphone">
@@ -248,7 +249,7 @@ font-family: 'Montserrat', sans-serif;
                     My Balance
                   </div>
                   <div class="summary-balance">
-                    &#8377; 0 .00
+                    &#8377;<%= (wallet)?wallet.balance.toFixed(2):'0.00' %> 
                   </div>
                  
                 </div>

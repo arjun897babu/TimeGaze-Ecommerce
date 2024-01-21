@@ -65,7 +65,8 @@ function changeOrderStatus(orderId, btn, statusDiv, orderStatus, text) {
           if (xhr.status === 200) {
             let { message } = JSON.parse(xhr.responseText);
             statusDiv.empty();
-            statusDiv.html(`<span class="me-3 text-danger">Status:</span>${message}`);
+            $(statusDiv).addClass('text-danger')
+            statusDiv.html(`<span class="me-3">Status:</span>${message}`);
             const Toast = Swal.mixin({
               toast: true,
               position: "bottom",

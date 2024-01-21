@@ -7,6 +7,7 @@ const Address = require('../model/addressSchema');
 const coupenHelper = require('../utilities/coupen');
 const Razorpay = require('razorpay');
 const crypto = require("crypto");
+const Wallet = require('../model/walletSchema');
 
 const instance = new Razorpay(
   {
@@ -292,8 +293,8 @@ exports.changeStatus = async (req, res, next) => {
       }
     );
 
-    if (orderStatus === 'canceled' ) {
-      const url = '/api/cancelOrder' 
+    if (orderStatus === 'canceled') {
+      const url = '/api/cancelOrder'
       const [usedCoupon] = await Order.aggregate([
         {
           $match: {
@@ -305,20 +306,20 @@ exports.changeStatus = async (req, res, next) => {
         },
         {
           $group: {
-            
+
             _id: {
               _id: '$_id',
               coupon: '$coupon',
               total: '$total',
-              length:{$size:'$orderItems'}
+              length: { $size: '$orderItems' }
             }
           }
         }
       ]);
-      
+
       console.log(usedCoupon)
-      
-      if (usedCoupon&&usedCoupon._id.length>1) return res.status(202).json(
+
+      if (usedCoupon && usedCoupon._id.length > 1) return res.status(202).json(
         {
           message: 'Canceling this order will also cancel all products purchased with the coupon',
           url: url,
@@ -350,7 +351,7 @@ exports.changeStatus = async (req, res, next) => {
       }
     );
 
-    if (orderStatus === 'canceled') {
+    if (orderStatus === 'canceled' || orderStatus === 'returned') {
 
       let product = {};
 
@@ -371,8 +372,17 @@ exports.changeStatus = async (req, res, next) => {
         },
 
       );
+      if ((orderStatus === 'canceled' && updatedOrder.paymentMethod === 'onlinePayment') || orderStatus === 'returned') {
+        await Wallet.findOneAndUpdate(
+          { userId: updatedOrder.userId },
+          {
+            $inc: { balance: updatedOrder.total }
+          },
+          { upsert: true } 
+        );
+      }
+      
     }
-
 
     return res.status(200).json(
       {
@@ -469,6 +479,7 @@ exports.payOnline = async (req, res, next) => {
 
 exports.cancelOrder = async (req, res, next) => {
   try {
+    const {userId} = req.session;
     const { orderItemsId } = req.params;
     const { orderStatus, cancelReason } = req.body;
     console.log(orderItemsId, orderStatus, cancelReason);
@@ -505,7 +516,7 @@ exports.cancelOrder = async (req, res, next) => {
         }
       }
     });
- 
+
     await Order.updateMany(
       { _id: orderItemsId },
       {
@@ -516,10 +527,17 @@ exports.cancelOrder = async (req, res, next) => {
       }
     );
 
-    await Product.bulkWrite(bulkoperation)
+    await Product.bulkWrite(bulkoperation);
+    await Wallet.findOneAndUpdate(
+      { userId: userId },
+      {
+        $inc: { balance: productDetails[0].total }
+      },
+      { upsert: true } 
+    );
 
     res.status(200).json({
-      status:'success',
+      status: 'success',
       message: 'Order canceled Successfully'
     })
 
@@ -553,7 +571,7 @@ exports.returnOrder = async (req, res, next) => {
     );
 
     res.status(200).json({
-      status:'success',
+      status: 'success',
       message: 'Order return requested Successfully'
     })
 

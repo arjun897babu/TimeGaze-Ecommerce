@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { error } = require('console');
 const queryString = require('querystring')
-// const { response } = require('express');
+const Wallet = require('../utilities/wallet')
 
 
 module.exports = {
@@ -315,16 +315,17 @@ module.exports = {
       })
 
   },
-  wallet:(req,res)=>{
+  wallet: async(req,res)=>{
     const { userId } = req.session;
+    const [wallet] = await Wallet.userWallet(userId);
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/categories`),
 
     ])
       .then(axios.spread((categoryResponse) => {
         const categories = categoryResponse.data
-       
-        res.status(200).render('user/userWallet', { logged: req.session.isUserAuth, categories: categories }, (error, html) => {
+        console.log(wallet)
+        res.status(200).render('user/userWallet', { logged: req.session.isUserAuth, categories: categories,wallet:wallet }, (error, html) => {
           if (error) {
             return res.send(error)
           }
