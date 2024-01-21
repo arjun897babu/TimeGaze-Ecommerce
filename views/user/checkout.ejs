@@ -19,6 +19,13 @@
 
 
   <style>
+    table td{
+      font-size: 0.6rem;
+    }
+    table th{
+      
+      font-size: 0.8rem;
+    }
     .cart-container {
 
       overflow-y: auto;
@@ -433,7 +440,10 @@
                 <div class="card-body coupenDiv">
                   <form>
                     <div class="form-group">
-                      <label class="form-label">Have coupon?</label>
+                      <label class="form-label d-flex justify-content-between"><div>Have coupon?</div><div><button style="font-size: 0.6rem;" type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#couponModal">
+                        <i class="bi bi-info-circle"></i>
+                      </button></div></label>
+                      
                       <div class="input-group ">
                         <input type="text" class="form-control border" name="code" placeholder="Coupon code">
                         <button class="btn btn-light border" data-cartId="<%=cartItems[0]._id %>"
@@ -479,6 +489,46 @@
 
     </section>
 
+    <div class="modal modal-sm" id="couponModal" tabindex="-1">
+      <div class="modal-dialog ">
+        <div class="modal-content rounded-0">
+          <div class="modal-header">
+            
+            <button type="button" style="font-size: 0.6rem;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body "> 
+            <table class="table">
+              <thead>
+                <tr>
+                 
+                  <th>Coupon Code</th>
+                  <th>Discount</th>
+                  <th>Expiry Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Example Coupons (Replace this with your actual coupon data) -->
+                <% coupon.forEach((x,index)=>{ %>
+                  <% let expired = x.expiry<Date.now() %>
+                <% if(!expired) {%>
+                <tr>
+                  <td><%=x.code %></td>
+                  <td><%= !x.isPercentage ? '₹' + x.discount : x.discount + '%' %></td>
+                  <td><%= new Date(x.expiry).toLocaleDateString('en-US',{day: '2-digit', month: '2-digit', year: 'numeric',timezon:'Asia/kolkata'}) %></td>
+                </tr>
+                <% } %>
+              
+                <% }) %>
+                <!-- Add more coupon rows as needed -->
+              </tbody>
+            </table>  
+          </div>
+         
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-dialog modal-sm " id="" aria-hidden="">...</div>
     <!-- footer -->
     <%- include('../include/footer') %>
       <!-- footer -->

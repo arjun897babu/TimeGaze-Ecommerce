@@ -2,6 +2,7 @@ const axios = require('axios');
 const { error } = require('console');
 const queryString = require('querystring')
 const Wallet = require('../utilities/wallet')
+const coupenHelper = require('../utilities/coupen');
 
 
 module.exports = {
@@ -212,10 +213,12 @@ module.exports = {
 
 
   },
-  checkoutPage: (req, res) => {
+  checkoutPage: async (req, res) => {
     console.log(req.originalUrl)
     const userEmail = req.session.email;
     const userId = req.session.userId;
+    const coupen = await coupenHelper.getAllCoupon();
+
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/categories`),
       axios.get(`http://localhost:${process.env.PORT}/api/getAddressDetails?userEmail=${userEmail}`),
@@ -236,7 +239,7 @@ module.exports = {
         const cartItems = cartResponse.data;
 
 
-        res.status(200).render('user/checkout', { categories: categories, logged: req.session.isUserAuth, address: address, cartItems: cartItems,allStates:allStates  }, (error, html) => {
+        res.status(200).render('user/checkout', { categories: categories, logged: req.session.isUserAuth, address: address, cartItems: cartItems,allStates:allStates,coupon:coupen  }, (error, html) => {
 
           if (error) {
             return res.send(error)

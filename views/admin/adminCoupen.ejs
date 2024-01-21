@@ -19,6 +19,13 @@
 
   <title>AdminHub</title>
   <style>
+    table td{
+      font-size: 0.6rem;
+    }
+    table .h6{
+      
+      font-size: 0.8rem;
+    }
     label {
       font-size: 0.8rem;
       color: black;
@@ -141,7 +148,7 @@
         <nav aria-label="breadcrumb " class="p-4">
           <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/adminHome">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">coupens</li>
+            <li class="breadcrumb-item active" aria-current="page">coupons</li>
           </ol>
         </nav>
 
@@ -226,28 +233,62 @@
             </div>
 
 
-            <a href="/unlistedProducts"><button type="submit" class="btn btn-danger ms-2">
+            <!-- <a href="/unlistedProducts"><button type="submit" class="btn btn-danger ms-2">
                 expired coupens
-              </button></a>
+              </button></a> -->
 
+          </div>
+          <div class="container-fluid mt-3">
+            <div class="table-responsive ">
+              <table class="table table-hover rounded ">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th class="h6">coupon</th>
+                    <th class="h6">Discount <br><small>(max)</small></th>
+                    <th class="h6">MinAmount <br><small>(To purchase)</small></th>
+                    <th class="h6">expiry</th>
+                    <th class="h6">Usage Limit</th>
+                    <th class="h6">Status</th>
+                  </tr>
+                </thead>
+                <tbody class="mb-2">
+                  <tr>
+                    <% coupon.forEach((x, index) => { %>
+                      <% let expired = x.expiry<Date.now() %>
+                      <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= x.code %></td>
+                        <td>
+                          <%= !x.isPercentage ? '₹' + x.discount : x.discount + '%' %>
+                        </td>
+                         <td>₹<%= x.minAmount %></td>
+                        <td><%= new Date(x.expiry).toLocaleString('en-US',{timezon:'Asia/kolkata'}) %></td>
+                        <td><%= x.limit %> (times)</td>
+                        <td ><span class="btn rounded-0 <%= expired ? 'btn-danger' : 'btn-success'  %>" style="font-size: 0.6rem;"><%= expired ? 'expired' : 'Active' %></span></td>
+                      </tr>
+                    <% }); %>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
         </div>
-
+        
       </div>
 
-      <%- include('../include/adminfooter') %>
-        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-        <script>
-          window.onload = function () {
-            let toast = localStorage.getItem('coupen');
-            if (toast) {
-              const Toast = Swal.mixin({
-                toast: true,
-                position: "bottom",
-                showConfirmButton: false,
+<script>
+  window.onload = function () {
+    let toast = localStorage.getItem('coupen');
+    if (toast) {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "bottom",
+        showConfirmButton: false,
                 timer: 3000,
                 timerProgressBar: true,
                 didOpen: (toast) => {
@@ -266,7 +307,7 @@
 
 
           let numberRegex = /^(?:[1-9]\d{0,2}|[1-4]\d{3}|5000)$/
-
+          
           // function toggleLimit() {
           //   let limitLabel = document.getElementById('limitdiv');
 
@@ -309,7 +350,7 @@
 
             }
           })
-
+          
           function checkInputValidity(form, elements) {
 
             const errorMessage = {
@@ -334,7 +375,7 @@
             let coupenRegex = /^[a-zA-Z0-9]{5,15}$/
             let isValid = true
             let [codeInput, isPercentageInput, maxDiscountInput, discountInput, expiryInput, minAmountInput, limitInput] =
-              ['code', 'isPercentage', 'maxDiscount', 'discount', 'expiry', 'minAmount','limit']
+              ['code', 'isPercentage', 'maxDiscount', 'discount', 'expiry', 'minAmount', 'limit']
                 .map(inputName => form.elements[inputName]);
 
             //check for codevalue
@@ -362,22 +403,22 @@
                 clearError(maxDiscountInput)
               }
             }
-
+            
             //check for discount
             if (discountInput.value.trim() === '') {
               displayError(discountInput, errorMessage.common.required);
               isValid = false
-
+              
             } else if (!numberRegex.test(discountInput.value)) {
               displayError(discountInput, isPercentageInput.checked ? errorMessage.discount.error1 : errorMessage.discount.error2);
               isValid = false
-
+              
             } else {
               clearError(discountInput)
             }
 
             //check for date
-
+            
             if (expiryInput.value === '') {
               displayError(expiryInput, errorMessage.common.required);
               isValid = false
@@ -401,17 +442,17 @@
             }
 
             //check for limit 
-       
-              if (limitInput.value.trim() === '') {
-                displayError(limitInput, errorMessage.common.required);
-                isValid = false
-              } else if (!(limitInput.value % 1 === 0) || !(limitInput.value <= 5) || !(limitInput.value >= 1)) {
-                displayError(limitInput, 'maximum limit is 5');
-                isValid = false
-              } else {
-                clearError(limitInput)
-              }
             
+            if (limitInput.value.trim() === '') {
+              displayError(limitInput, errorMessage.common.required);
+              isValid = false
+            } else if (!(limitInput.value % 1 === 0) || !(limitInput.value <= 5) || !(limitInput.value >= 1)) {
+              displayError(limitInput, 'maximum limit is 5');
+              isValid = false
+            } else {
+              clearError(limitInput)
+            }
+
 
             if (!(isPercentageInput.checked)) {
               if (parseInt(minAmountInput.value) <= parseInt(discountInput.value) || minAmountInput.value.trim() === '') {
@@ -421,7 +462,7 @@
                 clearError(minAmountInput)
               }
             }
-
+            
 
             return isValid
           }
@@ -442,7 +483,7 @@
                 }
               },
               error: function (xhr, textStatus, errorThrown) {
-                
+
                 if (xhr.status === 404) {
                   window.location.href = '/adminlogin'
                 }
@@ -453,7 +494,7 @@
               }
             })
           }
-
+          
 
           $('#addCoupen').on('hidden.bs.modal', function () {
             $('#addCoupen input').val('').removeClass('is-valid is-invalid');
@@ -477,3 +518,4 @@
             element.classList.add('is-valid');
           }
         </script>
+            <%- include('../include/adminfooter') %>

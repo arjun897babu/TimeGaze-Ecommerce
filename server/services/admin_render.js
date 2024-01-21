@@ -1,7 +1,9 @@
 const axios = require('axios');
 const { response } = require('express');
 require('dotenv').config();
-const queryString = require('querystring')
+const queryString = require('querystring');
+const coupenHelper = require('../utilities/coupen');
+
 module.exports = {
 
   adminLogin: (req, res) => {
@@ -154,9 +156,10 @@ module.exports = {
       })
 
   },
-  coupen: (req, res, next) => {
-    
-    res.status(200).render('admin/adminCoupen')
+  coupen: async(req, res, next) => {
+    const coupen = await coupenHelper.getAllCoupon();
+    console.log(coupen)
+    res.status(200).render('admin/adminCoupen',{coupon:coupen})
   },
 
   errorPage: (req, res) => {
