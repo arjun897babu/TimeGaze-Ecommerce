@@ -67,6 +67,7 @@ let otpVerify = document.getElementById('otpVerify');
 let resendButton = document.getElementById('otpResend')
 let timerId;
 let email = document.querySelector('input[name="email"]').value;
+console.log(email)
 
 if (email) { timerId = setInterval(countDown, 1000) };
 

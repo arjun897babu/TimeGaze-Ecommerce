@@ -6,6 +6,7 @@ const orderControll = require('../controller/order');
 const coupenControll = require('../controller/coupen');
 const adminMiddleWare = require('../middlewares/admin/admin');
 const imageUpload = require('../middlewares/admin/multerMIddleWare');
+const chartController = require('../controller/dashbordChart')
 
 const express = require('express');
 const adminRoute = express.Router();
@@ -55,6 +56,8 @@ adminRoute.put('/api/updateProduct/:productId', imageUpload.upload.array('images
 
 adminRoute.get('/api/getAllOrder',orderControll.getAllOrderDetails)//to get all orderDetails
 adminRoute.put('/api/changeOrderStatus/:orderId',orderControll.changeStatus)//control order status
+
+adminRoute.get('/api/chartData',chartController.order); //get chart data to admin side based on the order
 
 adminRoute.post('/api/addCoupen',coupenControll.CreateCoupen);//to add(create) a coupen
 

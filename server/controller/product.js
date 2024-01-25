@@ -130,7 +130,7 @@ exports.updateProducts = async (req, res, next) => {
 exports.allProducts = async (req, res, next) => {
   try {
 
-    let { pageNumber = 1, category = '', brand = '', caseDiameter = '' } = req.query;
+    let { pageNumber = 1, category = '', brand = '', caseDiameter = '', search = '' } = req.query;
 
     if (!req.query.hasOwnProperty('pageNumber') || req.query.pageNumber === '' || req.query.pageNumber < 1) {
       req.query.pageNumber = 1;
@@ -148,28 +148,33 @@ exports.allProducts = async (req, res, next) => {
 
     let selected = {}
 
-    
-    if (category !== '' || brand !== '' || caseDiameter !== '' ) {
+
+    if (category !== '' || brand !== '' || caseDiameter !== '' || search !== '') {
       matchQuery.$or = [];
       if (category !== '') {
-       
+
         const categories = category.split(',').map(cat => ({ 'category.categoryName': { $regex: `^${cat.trim()}$`, $options: 'i' } }));
 
-        selected.category=category.split(',')
+        selected.category = category.split(',')
         matchQuery.$or.push(...categories);
       }
-    
+
       if (brand !== '') {
-       
-        const brands = brand.split(',').map(b=>({brand:{$regex:`^${b.trim()}$`,$options:'i'}}))
+
+        const brands = brand.split(',').map(b => ({ brand: { $regex: `^${b.trim()}$`, $options: 'i' } }))
         selected.brands = brand.split(',')
         matchQuery.$or.push(...brands);
       }
       if (caseDiameter !== '') {
-        const caseDiameters = caseDiameter.split(',').map(caseD => ({caseDiameter:Number(caseD)}));
+        const caseDiameters = caseDiameter.split(',').map(caseD => ({ caseDiameter: Number(caseD) }));
         selected.caseDiameter = caseDiameter.split(',')
         matchQuery.$or.push(...caseDiameters);
-      
+
+      };
+      if (search !== '') {
+        matchQuery.$or=[];
+        matchQuery.$or = [{'category.categoryName':{$regex: search.trim() ,$options:'i' }},{brand:{$regex: search.trim() ,$options:'i' }},{productName:{$regex: search.trim() ,$options:'i' }}];
+        selected.search = search
       }
     }
     // return res.json(matchQuery)
@@ -186,7 +191,7 @@ exports.allProducts = async (req, res, next) => {
       { $match: matchQuery },
 
     ];
-    
+
     const filter = await Product.aggregate([
 
       {
@@ -203,7 +208,7 @@ exports.allProducts = async (req, res, next) => {
           caseDiameters: { $sortArray: { input: "$caseDiameters", sortBy: 1 } }
         }
       }
-      
+
     ])
 
     const [products, count] = await Promise.all([
@@ -215,7 +220,7 @@ exports.allProducts = async (req, res, next) => {
     const totalCount = count.length > 0 ? count[0].totalCount : 0;
     const totalPages = Math.ceil(totalCount / perPage);
     const path = queryString.stringify(req.query);
-   
+
     return res.status(200).json({
       products,
       totalPages: {
@@ -360,7 +365,7 @@ exports.singleProduct = async (req, res, next) => {
   } catch (error) {
     console.log(error.message);
     next(error);
-   
+
   }
 };
 

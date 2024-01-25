@@ -19,3 +19,7 @@ window.addEventListener('scroll', function hideNavigation() {
     document.querySelector('.navigation-mobile-list').classList.remove('active');
   }
 })
+const search = new URLSearchParams(window.location.search).get('search')
+if(search){
+  document.querySelector('input[name=search]').value = search
+}

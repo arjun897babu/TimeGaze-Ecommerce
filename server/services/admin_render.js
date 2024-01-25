@@ -3,6 +3,8 @@ const { response } = require('express');
 require('dotenv').config();
 const queryString = require('querystring');
 const coupenHelper = require('../utilities/coupen');
+const userHelper = require('../utilities/user');
+const orderHelper = require('../utilities/order');
 
 module.exports = {
 
@@ -17,10 +19,11 @@ module.exports = {
     });
   },
 
-  adminHome: (req, res) => {
-
-
-    res.render('admin/adminHome')
+  adminHome: async(req, res) => {
+    const user = await userHelper.userCount();
+    const order = await orderHelper.profitAndOrder();
+    console.log(user,order)
+    res.render('admin/adminHome',{user:user,order:order})
   },
 
   adminproducts: (req, res) => {

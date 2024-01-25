@@ -16,10 +16,11 @@ module.exports = {
     ])
       .then(axios.spread((productResponse, categoriesResponse) => {
         const products = productResponse.data.products;
+        const selected = productResponse.data.selected;
         const categories = categoriesResponse.data;
         console.log('prodcuts:', products, 'categories', categories)
         console.log(req.session.email);
-        res.status(200).render('index', { logged: req.session.isUserAuth, products, categories });
+        res.status(200).render('index', { logged: req.session.isUserAuth, products, categories ,selected:selected});
       }))
       .catch((error) => {
         console.error('Error in adminEditProduct:', error.message);
@@ -92,9 +93,9 @@ module.exports = {
       .then(axios.spread((productResponse, categoriesResponse) => {
         const products = productResponse.data.result;
         const categories = categoriesResponse.data;
-        
+        const selected = productResponse.data.selected;
 
-        res.status(200).render('user/singleProduct', { logged: req.session.isUserAuth, products: products.existingProduct, isCart: products.isCart, categories })
+        res.status(200).render('user/singleProduct', { logged: req.session.isUserAuth, products: products.existingProduct, isCart: products.isCart, categories,selected:selected })
       }))
       .catch((error) => {
         // console.error('Error in adminEditProduct:', error);

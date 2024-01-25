@@ -1,25 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- boostrap css cdn link -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-
-  <!-- bootstrap icon cdn link -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
-
-  <!-- Boxicons -->
-  <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
-  <!-- My CSS -->
-
-  <link rel="stylesheet" href="css/adminhome.css">
-
-  <title>AdminHub</title>
-</head>  
-  
 <!DOCTYPE html>
 <html lang="en">
 
@@ -40,6 +19,11 @@
   <link rel="stylesheet" href="css/adminHome.css">
 
   <title>AdminHub</title>
+  <style>
+    #sort{
+      background-color: #F1D2D8;
+    }
+  </style>
 </head>
 
 <body class="">
@@ -62,7 +46,7 @@
           </a>
         </li>
 
-        <li >
+        <li>
           <a href="/adminproducts">
             <i class='bx bxs-shopping-bags'></i>
             <span class="text">products</span>
@@ -129,10 +113,10 @@
         <!-- NAVBAR -->
 
         <div class="container-fluid mt-3 d-flex justify-content-end top-content">
-          <a href="#" class="btn-download">
+          <!-- <a href="#" class="btn-download">
             <i class='bx bxs-cloud-download'></i>
             <span class="text">Download PDF</span>
-          </a>
+          </a> -->
           <div class="logout-mob ms-2">
             <form action="/logout" method="post" class="py3 d-flex align-items-center justify-content-center">
               <i class='bx bxs-log-out-circle text-danger'></i>
@@ -140,49 +124,124 @@
             </form>
           </div>
         </div>
-       
-       
+
+
         <div class="container-fluid">
           <ul class="box-info">
             <li>
               <i class='bx bxs-calendar-check'></i>
               <span class="text">
-                <h3>1020</h3>
-                <p>New Order</p>
+                <h3>
+                  <%=(order.length>0&&order[0].totalOrders)? order[0].totalOrders : '0'%>
+                </h3>
+                <p> Orders</p>
               </span>
             </li>
             <li>
               <i class='bx bxs-group'></i>
               <span class="text">
-                <h3>2834</h3>
+                <h3>
+                  <%=(user.length>0&&user[0].count)? user[0].count:0 %>
+                </h3>
                 <p>users</p>
               </span>
             </li>
             <li>
-              <i class='bx bxs-dollar-circle'></i>
+              <i class='bx bx-rupee'></i>
               <span class="text">
-                <h3>$2543</h3>
+                <h3>₹<%= (order.length>0&&order[0].totalAmount)?order[0].totalAmount.toLocaleString('en-US',
+                    {minimumFractionDigits: 2, maximumFractionDigits: 2}) :'0.00' %> </h3>
+
                 <p>Total Sales</p>
               </span>
             </li>
           </ul>
         </div>
-      
+        <div class="container-fluid">
+          <div>
+            <select name="sort" id="sort" class="rounded-0" >
+              <option class="rounded-0" value="year">Year</option>
+              <option class="rounded-0" value="month" selected>Month</option>
+              <option class="rounded-0" value="week">Week</option>
+            </select>
+          </div>
+          <canvas id="myChart"></canvas>
+        </div>
+
       </div>
     </div>
 
     <!-- CONTENT -->
 
   </div>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
+  <script>
+    let myChart;
+    let sortElement = document.getElementById('sort');
+    let sort = sortElement.value
+    chartData(sort)
+    sortElement.addEventListener('change', function (event) {
+      let sort = this.value;
+      console.log(sort);
+      myChart.destroy()
+      chartData(sort)
+    });
 
 
+    function chartData(sort) {
+      $.ajax({
+        url: `/api/chartData?sort=${sort}`,
+        type: 'get',
+        success: function (data, textResponse, xhr) {
+          if (xhr.status === 200) {
+            const { orderData } = JSON.parse(xhr.responseText);
+           
+            showChart(orderData);
+          }
+        },
+        error: function (textResponse, xhr, errorThrown) {
+          if (xhr.status === 404) {
+            window.location.href = '/adminHome'
+          }
+        }
+      })
+    };
+    function showChart(orderData) {
+      const chardiv = document.getElementById('myChart')
+      const labels = Object.keys(orderData)
+      const data = {
+        labels: labels,
+        datasets: [{
+          label: 'Order',
+          data:Object.values(orderData),
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+
+          ],
+          borderColor: [
+            'rgb(255, 99, 132)',
+          ],
+          borderWidth: 1
+        }]
+      };
+
+      const config = {
+        type: 'bar',
+        data: data,
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        },
+      };
+
+       myChart = new Chart(chardiv, config);
+    }
 
 
-  <!-- bootstrap js cdn link -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-    crossorigin="anonymous"></script>
- 
-</body>
+  </script>
 
   <%- include('../include/adminfooter') %>
