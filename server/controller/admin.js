@@ -1,7 +1,9 @@
 const { response } = require('express');
 const User = require('../model/userModelSchema');
 const { default: mongoose } = require('mongoose');
-
+const Order = require('../model/orderSchema');
+const Json2csvParser = require('@json2csv/plainjs').Parser;
+const fs = require('fs');
 
 
 const adminDetails = {
@@ -9,7 +11,7 @@ const adminDetails = {
   password: '1234'
 }
 
-exports.adminLogin = (req, res,next) => {
+exports.adminLogin = (req, res, next) => {
   const { email, password } = req.body;
 
 
@@ -60,17 +62,17 @@ exports.findAllUser = async (req, res) => {
 //block user
 exports.blockUser = async (req, res) => {
   try {
-  
+
     const { userId } = req.params;
     const user = await User.findByIdAndUpdate(userId, { isBlocked: true }, { new: true });
     if (user) {
       req.session.userBlocked = true;
-    
+
       res.status(200).send('User blocked successfully');
     } else {
       res.status(404).send('User not found');
     }
-   
+
 
   } catch (error) {
     console.error(error);
@@ -80,7 +82,7 @@ exports.blockUser = async (req, res) => {
 
 
 //unblock user
-exports.unblockUser = async (req, res,next) => {
+exports.unblockUser = async (req, res, next) => {
   try {
 
     const { userId } = req.params
@@ -97,6 +99,85 @@ exports.unblockUser = async (req, res,next) => {
   }
   catch (error) {
     res.status(500).send(error.message)
+
+  }
+}
+
+exports.salesReport = async (req, res, next) => {
+  try {
+
+    const fields = ['orderId',
+      'productName',
+      'quantity',
+      'productTotal',
+      'orderStatus',
+      'reason',
+      'paymentMethod',
+      'total',
+      'coupon',
+      'orderDate'
+    ];
+    const orderData = await Order.aggregate(
+      [
+        { $unwind: '$orderItems' },
+        {
+          $project: {
+            _id: 0,
+            orderId: 1,
+            'productName': '$orderItems.productName',
+            'quantity': '$orderItems.quantity',
+            'productTotal': '$orderItems.productTotal',
+            'orderStatus': '$orderItems.orderStatus',
+            'reason': '$orderItems.reason',
+            paymentMethod: 1,
+            total: 1,
+            coupon: 1,
+            orderDate: {
+              $dateToString: {
+                format: "%d-%m-%Y",
+                date: "$orderDate",
+                timezone: "Asia/Kolkata"
+              }
+            }
+          }
+        }
+      ]
+    );
     
+     
+    //for calculating the total quanity,productamount,and order amount
+     let totalQuantity = 0, totalProductTotal = 0, grandTotal = 0;
+     orderData.forEach(order => {
+       totalQuantity += order.quantity;
+       totalProductTotal += order.productTotal;
+       grandTotal += order.total;
+     });
+     
+     //for adding a line at the end of the summary
+     let summary = {
+       orderId: 'Total',
+       productName: '',
+       quantity: totalQuantity,
+       productTotal: totalProductTotal,
+       orderStatus: '',
+       reason: '',
+       paymentMethod: '',
+       total: grandTotal,
+       coupon: '',
+       orderDate: ''
+     };
+     orderData.push(summary);
+
+    const parser = new Json2csvParser({ fields });
+    const csv = parser.parse(orderData);
+    // fs.writeFileSync("sales.csv", csv);
+
+    res.setHeader('Content-type','text/csv')
+    res.setHeader('Content-disposition','attachment;filename = sales_report.csv')
+    
+    return res.status(200).send(csv)
+
+  } catch (error) {
+    next(error)
   }
 }

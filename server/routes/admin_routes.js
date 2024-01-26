@@ -58,6 +58,7 @@ adminRoute.get('/api/getAllOrder',orderControll.getAllOrderDetails)//to get all 
 adminRoute.put('/api/changeOrderStatus/:orderId',orderControll.changeStatus)//control order status
 
 adminRoute.get('/api/chartData',chartController.order); //get chart data to admin side based on the order
+adminRoute.get('/api/salesReport',adminControll.salesReport);//get sales report of the order
 
 adminRoute.post('/api/addCoupen',coupenControll.CreateCoupen);//to add(create) a coupen
 

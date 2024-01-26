@@ -342,8 +342,8 @@ exports.changeStatus = async (req, res, next) => {
         $set:
         {
           'orderItems.$.orderStatus': orderStatus,
-          'orderItems.$.cancelReason': cancelReason,
-          'orderItems.$.ReturnReason': returnReason
+          'orderItems.$.reason': cancelReason??returnReason,
+          
         }
       },
       {
@@ -522,7 +522,7 @@ exports.cancelOrder = async (req, res, next) => {
       {
         $set: {
           'orderItems.$[].orderStatus': orderStatus,
-          'orderItems.$[].cancelReason': cancelReason
+          'orderItems.$[].reason': cancelReason
         }
       }
     );
