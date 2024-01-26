@@ -4,9 +4,16 @@ const Order = require('../model/orderSchema')
 exports.order = async (req, res, next) => {
   try {
     const { sort = '' } = req.query;
-    const sorted = sort.trim() ? sort.trim().toLowerCase() : 'month'; 
+    const sorted = sort.trim() ? sort.trim().toLowerCase() : 'month';
+
+    let matchQuery = {
+      $match: {
+        $and: [{
+          'orderItems.orderStatus': 'delivered'
+        }]
+      }
+    }
     let orderQuery = []
- 
     let orderData = {}
 
     switch (sorted) {
@@ -44,7 +51,20 @@ exports.order = async (req, res, next) => {
           'Sat': 0,
         }
         orderData = { ...weekData }
-        orderQuery = [...week]
+        orderQuery = [...week];
+        matchQuery.$match.$and.push({
+          $expr: {
+            $eq:
+              [
+                {
+                  $month: '$orderDate'
+                }
+                ,
+                new Date().getMonth() + 1
+              ]
+          }
+        }
+        )
 
         break;
       case 'month':
@@ -94,7 +114,17 @@ exports.order = async (req, res, next) => {
           'Dec': 0,
         }
         orderData = { ...monthData }
-        orderQuery = [...month]
+        orderQuery = [...month];
+        matchQuery.$match.$and.push({
+          $expr: {
+            $eq: [
+              {
+                $year: '$orderDate'
+              },
+              new Date().getFullYear()
+            ]
+          }
+        })
         break;
       case 'year':
         const year = [
@@ -111,13 +141,29 @@ exports.order = async (req, res, next) => {
             }
           }
         ];
-        orderQuery = [...year]
+        orderQuery = [...year];
+        matchQuery.$match.$and.push({
+          $expr: {
+            $eq: [
+              {
+                $year: '$orderDate'
+              },
+              new Date().getFullYear()
+            ]
+          }
+        })
         break;
     }
-    console.log(orderQuery);
-    console.log(...orderQuery)
-    const orderDetails = await Order.aggregate(orderQuery);
 
+    const orderDetails = await Order.aggregate(
+      [
+        { $unwind: '$orderItems' },
+        matchQuery,
+        ...orderQuery
+      ]
+    );
+
+    
     if (sort === 'year') {
       orderDetails.forEach(items => {
         orderData[items._id] = items.count

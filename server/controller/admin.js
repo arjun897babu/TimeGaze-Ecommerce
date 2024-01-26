@@ -64,7 +64,11 @@ exports.blockUser = async (req, res) => {
   try {
 
     const { userId } = req.params;
-    const user = await User.findByIdAndUpdate(userId, { isBlocked: true }, { new: true });
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { isBlocked: true },
+      { new: true }
+    );
     if (user) {
       req.session.userBlocked = true;
 
@@ -143,38 +147,38 @@ exports.salesReport = async (req, res, next) => {
         }
       ]
     );
-    
-     
+
+
     //for calculating the total quanity,productamount,and order amount
-     let totalQuantity = 0, totalProductTotal = 0, grandTotal = 0;
-     orderData.forEach(order => {
-       totalQuantity += order.quantity;
-       totalProductTotal += order.productTotal;
-       grandTotal += order.total;
-     });
-     
-     //for adding a line at the end of the summary
-     let summary = {
-       orderId: 'Total',
-       productName: '',
-       quantity: totalQuantity,
-       productTotal: totalProductTotal,
-       orderStatus: '',
-       reason: '',
-       paymentMethod: '',
-       total: grandTotal,
-       coupon: '',
-       orderDate: ''
-     };
-     orderData.push(summary);
+    let totalQuantity = 0, totalProductTotal = 0, grandTotal = 0;
+    orderData.forEach(order => {
+      totalQuantity += order.quantity;
+      totalProductTotal += order.productTotal;
+      grandTotal += order.total;
+    });
+
+    //for adding a line at the end of the summary
+    let summary = {
+      orderId: 'Total',
+      productName: '',
+      quantity: totalQuantity,
+      productTotal: totalProductTotal,
+      orderStatus: '',
+      reason: '',
+      paymentMethod: '',
+      total: grandTotal,
+      coupon: '',
+      orderDate: ''
+    };
+    orderData.push(summary);
 
     const parser = new Json2csvParser({ fields });
     const csv = parser.parse(orderData);
     // fs.writeFileSync("sales.csv", csv);
 
-    res.setHeader('Content-type','text/csv')
-    res.setHeader('Content-disposition','attachment;filename = sales_report.csv')
-    
+    res.setHeader('Content-type', 'text/csv')
+    res.setHeader('Content-disposition', 'attachment;filename = sales_report.csv')
+
     return res.status(200).send(csv)
 
   } catch (error) {

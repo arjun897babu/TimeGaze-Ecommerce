@@ -201,8 +201,12 @@ exports.getOrderDetails = async (req, res, next) => {
     const { userId } = req.params
 
     if (!userId) return res.send('user not logged in')
+
     const getOrderDetails = await Order.aggregate(
       [
+
+        { $unwind: '$orderItems' }
+        ,
         {
           $match:
           {
@@ -210,9 +214,6 @@ exports.getOrderDetails = async (req, res, next) => {
           }
         }
         ,
-        { $unwind: '$orderItems' }
-        ,
-        { $sort: { orderDate: -1 } },
         {
           $project: {
             'orderItems._id': 1,
@@ -220,9 +221,11 @@ exports.getOrderDetails = async (req, res, next) => {
             'orderItems.productName': 1,
             'orderItems.price': 1,
             'orderItems.discountPrice': 1,
-            'orderItems.image': 1
+            'orderItems.image': 1,
+            orderDate: 1
           }
-        }
+        },
+        { $sort: { orderDate: -1, _id: -1 } },
       ]
     );
 
@@ -253,7 +256,7 @@ exports.getAllOrderDetails = async (req, res, next) => {
         },
         { $unwind: '$orderItems' }
         ,
-        { $sort: { orderDate: -1 } },
+        { $sort: { orderDate: -1, _id: -1 } },
         {
           $project:
           {
@@ -342,8 +345,8 @@ exports.changeStatus = async (req, res, next) => {
         $set:
         {
           'orderItems.$.orderStatus': orderStatus,
-          'orderItems.$.reason': cancelReason??returnReason,
-          
+          'orderItems.$.reason': cancelReason ?? returnReason,
+
         }
       },
       {
@@ -378,10 +381,10 @@ exports.changeStatus = async (req, res, next) => {
           {
             $inc: { balance: updatedOrder.total }
           },
-          { upsert: true } 
+          { upsert: true }
         );
       }
-      
+
     }
 
     return res.status(200).json(
@@ -479,7 +482,7 @@ exports.payOnline = async (req, res, next) => {
 
 exports.cancelOrder = async (req, res, next) => {
   try {
-    const {userId} = req.session;
+    const { userId } = req.session;
     const { orderItemsId } = req.params;
     const { orderStatus, cancelReason } = req.body;
     console.log(orderItemsId, orderStatus, cancelReason);
@@ -533,7 +536,7 @@ exports.cancelOrder = async (req, res, next) => {
       {
         $inc: { balance: productDetails[0].total }
       },
-      { upsert: true } 
+      { upsert: true }
     );
 
     res.status(200).json({
