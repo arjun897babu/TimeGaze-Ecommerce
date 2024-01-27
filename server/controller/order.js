@@ -379,7 +379,13 @@ exports.changeStatus = async (req, res, next) => {
         await Wallet.findOneAndUpdate(
           { userId: updatedOrder.userId },
           {
-            $inc: { balance: updatedOrder.total }
+            $inc: { balance: updatedOrder.total },
+            $push:{
+              transactions:{
+                amount:updatedOrder.total,
+                
+              }
+            }
           },
           { upsert: true }
         );
@@ -534,7 +540,13 @@ exports.cancelOrder = async (req, res, next) => {
     await Wallet.findOneAndUpdate(
       { userId: userId },
       {
-        $inc: { balance: productDetails[0].total }
+        $inc: { balance: productDetails[0].total },
+        $push:{
+          transactions:{
+            amount:productDetails[0].total,
+
+          }
+        }
       },
       { upsert: true }
     );

@@ -43,6 +43,11 @@ exports.adminLogout = (req, res) => {
 
 exports.findAllUser = async (req, res) => {
   try {
+
+    const {pageNumber,unblocked,search=''} = req.query;
+
+
+
     const users = await User.find({});
     if (!users) {
       res.send('no user')

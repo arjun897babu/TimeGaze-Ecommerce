@@ -9,6 +9,17 @@ const walletSchema = new mongoose.Schema({
     type:Number,
     default:0
   },
+  transactions:[
+    {
+      amount:{
+        type:Number
+      },
+      transactionDate:{
+        type:Date,
+        default:Date.now()
+      }
+    }
+  ]
 },{timestamps:true});
 
 const Wallet = mongoose.model('Wallet',walletSchema);
