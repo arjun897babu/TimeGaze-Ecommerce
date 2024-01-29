@@ -51,6 +51,7 @@ app.use('/',require('./server/routes/user_routes'));
 app.use('/',require('./server/routes/admin_routes'));
 
 app.use((err, req, res, next) => {
+  console.log('error middle ware')
   if (err.status === 404) {
     console.log(err.stack)
     res.status(404).render('error');

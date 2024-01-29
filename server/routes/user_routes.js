@@ -58,7 +58,7 @@ route.put('/api/removeCartItem/:cartItemId', cartController.removeCartItem);//re
 route.put('/api/cartQuantiy/:cartItem', cartController.cartQuantity);//control cartQuantiy
 route.post('/api/rateProduct/:productId',reviewController.addReview);//add product rating and review
 
-route.post('/api/createOrder/:selectedAddressId', userMiddleWare.notUser, orderController.createOrder);// create user order details
+route.post('/api/createOrder/:selectedAddressId',userMiddleWare.notUser, orderController.createOrder);// create user order details
 route.get('/api/getUserOrder/:userId', orderController.getOrderDetails)//get user order details.
 route.get('/api/getSingleOrder/:soid',orderController.getSingleOrderDetails)//get single orderDetails.
 route.put('/api/cancelOrder/:orderItemsId',orderController.cancelOrder);//for bulk canceling

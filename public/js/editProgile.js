@@ -80,6 +80,7 @@ $(document).ready(function () {
           console.log('updation failed:', xhr.responseText)
         }
         if(xhr.status===404){
+          console.log('ajax eeror')
           window.location.href = '/login'
         }
       }

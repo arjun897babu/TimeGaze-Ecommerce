@@ -10,7 +10,7 @@ module.exports = {
   home: (req, res) => {
 
     const { query } = req.query;
-    console.log(query);
+    
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/allProducts`),
       axios.get(`http://localhost:${process.env.PORT}/api/categories`)
@@ -19,8 +19,7 @@ module.exports = {
         const products = productResponse.data.products;
         const selected = productResponse.data.selected;
         const categories = categoriesResponse.data;
-        console.log('prodcuts:', products, 'categories', categories)
-        console.log(req.session.email);
+      
         res.status(200).render('index', { logged: req.session.isUserAuth, products, categories, selected: selected });
       }))
       .catch((error) => {
@@ -30,6 +29,7 @@ module.exports = {
 
   },
   login: (req, res) => {
+    console.log('login page')
     res.render('user/user_login', { registerdEmail: req.session.useremail, errorMessage: req.session.invalidMessage, logged: req.session.isUserAuth }, (error, html) => {
 
       if (error) {
@@ -72,7 +72,6 @@ module.exports = {
     });
   },
   resetPassword: (req, res) => {
-    console.log(req.session.useremail);
     res.render('user/reset_password', { registerdEmail: req.session.useremail, errorMessage: req.session.errorMessage, logged: req.session.isUserAuth }, (error, html) => {
       if (error) {
         res.send(error.message)
@@ -87,7 +86,6 @@ module.exports = {
     const query = queryString.stringify(req.query);
     const { pid } = req.query
     const review = await ReviewHelper.productReview(userId, pid);
-  console.log(review)
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/singleEditProduct?userId=${userId}&${query}`),
       axios.get(`http://localhost:${process.env.PORT}/api/categories`)
@@ -122,7 +120,6 @@ module.exports = {
         const brands = productResponse.data.brands;
         const caseDiameters = productResponse.data.caseDiameters;
         const selected = productResponse.data.selected;
-        console.log(caseDiameters)
 
         res.status(200).render('user/productList', { logged: req.session.isUserAuth, products, categories, totalPages, brands, caseDiameters, selected })
 
@@ -165,7 +162,6 @@ module.exports = {
         res.status(200).render('user/userAddress', { address: allAddress, logged: req.session.isUserAuth, categories: categories, allStates: allStates })
       }))
       .catch((error) => {
-        console.log(error)
         res.status(500).send(error.message)
       })
 
@@ -173,7 +169,6 @@ module.exports = {
   editAddress: (req, res) => {
     const addressId = req.session.addressId;
     const { selected } = req.query
-    console.log('axios', addressId, selected);
 
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/categories`),
@@ -182,7 +177,6 @@ module.exports = {
       .then(axios.spread((categoryResponse, addressResponse) => {
         const allCategories = categoryResponse.data;
         const address = addressResponse.data;
-        console.log('sss', address)
         res.status(200).render('user/userEditAddress', { logged: req.session.isUserAuth, categories: allCategories, address: address })
 
       }))
@@ -197,7 +191,6 @@ module.exports = {
 
   cart: (req, res) => {
     const userId = req.session.userId;
-    console.log(userId)
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/categories`),
       axios.get(`http://localhost:${process.env.PORT}/api/getUserCart/${userId}`)
@@ -206,7 +199,6 @@ module.exports = {
       .then(axios.spread((categoryResponse, cartResponse) => {
         const categories = categoryResponse.data;
         const cart = cartResponse.data;
-        console.log(categories, cart)
         res.status(200).render('user/cart', { categories: categories, cart: cart, logged: req.session.isUserAuth })
       }))
 
@@ -217,7 +209,6 @@ module.exports = {
 
   },
   checkoutPage: async (req, res) => {
-    console.log(req.originalUrl)
     const userEmail = req.session.email;
     const userId = req.session.userId;
     const coupen = await coupenHelper.getAllCoupon();
@@ -268,11 +259,9 @@ module.exports = {
 
         const categories = categoryResponse.data;
         const orders = orderResponse.data;
-        console.log(orders)
         res.status(200).render('user/orderHistory', { logged: req.session.isUserAuth, order: orders, categories: categories })
       }))
       .catch((error) => {
-        console.log(error)
         res.status(500).send(error.message)
       })
   },
@@ -288,7 +277,6 @@ module.exports = {
 
         const categories = categoryResponse.data
         const order = orderResponse.data;
-        console.log('dddddd', order)
         res.status(200).render('user/ordersingle', { logged: req.session.isUserAuth, categories: categories, order: order })
       }))
       .catch((error) => {
@@ -330,7 +318,6 @@ module.exports = {
     ])
       .then(axios.spread((categoryResponse) => {
         const categories = categoryResponse.data
-        console.log(wallet)
         res.status(200).render('user/userWallet', { logged: req.session.isUserAuth, categories: categories, wallet: wallet }, (error, html) => {
           if (error) {
             return res.send(error)

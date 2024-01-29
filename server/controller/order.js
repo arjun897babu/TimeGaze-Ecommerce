@@ -135,7 +135,7 @@ exports.createOrder = async (req, res, next) => {
 
 
     if (PaymentOption === 'cashOnDelivery') {
-
+      console.log('entering here')
       const savedOrder = await newOrder.save();
       console.log('savedorder', savedOrder)
 
@@ -192,7 +192,7 @@ exports.createOrder = async (req, res, next) => {
 
   }
   catch (error) {
-    res.send(error);
+   next(error)
   }
 }
 
@@ -281,7 +281,7 @@ exports.changeStatus = async (req, res, next) => {
   try {
     const { orderId } = req.params;
     const { orderStatus, cancelReason, returnReason } = req.body;
-    console.log(orderStatus, cancelReason, returnReason)
+    console.log('orderCreate body',orderStatus, cancelReason, returnReason)
 
     if (orderStatus === 'cancel' && cancelReason === '') return res.status(400).json(
       {
@@ -320,7 +320,7 @@ exports.changeStatus = async (req, res, next) => {
         }
       ]);
 
-      console.log(usedCoupon)
+      console.log('coupon:',usedCoupon)
 
       if (usedCoupon && usedCoupon._id.length > 1) return res.status(202).json(
         {

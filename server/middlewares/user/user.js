@@ -47,13 +47,13 @@ exports.isUser = (req, res, next) => {
 exports.notUser = (req, res, next) => {
 
   if (req.session.isUserAuth) {
-    req.session.redirectUrl = req.originalUrl;
-
+  
     next();
-
-  } else {
     
-    res.redirect('/login');
+  } else {
+    console.log(typeof(req.xhr))
+    console.log('middleware')
+    return res.redirect('/login');
   }
 };
 

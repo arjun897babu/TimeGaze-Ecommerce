@@ -259,10 +259,12 @@ function makePurchase(selectedAddressId, PaymentOption) {
     contentType: "application/json",
     data: JSON.stringify(PaymentOption),
     success: function (data, textStatus, xhr) {
+      console.log(xhr.status);
       if (xhr.status === 200) {
-       let {message,redirectUrl,order,razorKey} = JSON.parse(xhr.responseText);
-       console.log(redirectUrl)
-       if(!order) window.location.href = redirectUrl;
+        
+       let {message,redirectUrl,order,razorKey} = data
+       console.log(message,redirectUrl,order,razorKey)
+       if(!order) window.location.href = redirectUrl?redirectUrl:'/login';
        else{
         const options = {
           "key": razorKey,
@@ -293,8 +295,9 @@ function makePurchase(selectedAddressId, PaymentOption) {
       }
 
     },
-    error: function () {
+    error: function (xhr, textStatus, errorThrown) {
       if(xhr.status===404){
+        console.log('ajax error')
         window.location.href = '/login'
       }
     }
