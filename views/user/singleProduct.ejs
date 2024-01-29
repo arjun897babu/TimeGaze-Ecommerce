@@ -23,6 +23,24 @@
 
 
   <style>
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.2);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .pulse-animation {
+      animation: pulse 1s infinite;
+    }
+
     .breadcrumb-item a {
       color: rgb(0, 0, 0) !important;
       font-size: inherit;
@@ -104,6 +122,20 @@
       color: rgb(0, 0, 0) !important;
       font-size: inherit;
     }
+
+    .star-rating {
+      font-size: 0;
+    }
+
+    .star {
+      font-size: 24px;
+      cursor: pointer;
+      color: #ccc;
+    }
+
+    .star.checked {
+      color: gold;
+    }
   </style>
 
 </head>
@@ -127,66 +159,65 @@
     </header>
     <!-- header -->
     <!-- content -->
-    <%products=products[0]  %>
-    <div class="container">
-      <nav aria-label="breadcrumb " class="p-4">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="/">Home</a></li>
-          <!-- <li class="breadcrumb-item "></a></li> -->
-          <li class="breadcrumb-item active" aria-current="page">
-            <%=products.productName%>
-          </li>
-        </ol>
-      </nav>
-    </div>
-    <section class="py-5">
+    <%products=products[0] %>
       <div class="container">
-        <div class="row ">
-          <aside class="col-sm-6">
-            <div class="border rounded-4 mb-3 d-flex justify-content-center image-zoom">
-              <img style="max-width: 80%; object-fit: contain;" class="rounded-4 fit "
-                src="uploads/<%=products.image[0]  %>" id="main-image-div" />
-            </div>
-            <div class="d-flex justify-content-center g-3 mb-3">
-              <% for(i=0;i<products.image.length;i++) { %>
-                <div class=" p-1"><img width="80" height="80" style="border: 1px solid gainsboro;"
-                    class="rounded-2 smallImageDiv" src="uploads/<%=products.image[i]%>" /></div>
-                <% } %>
-            </div>
+        <nav aria-label="breadcrumb " class="p-4">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <!-- <li class="breadcrumb-item "></a></li> -->
+            <li class="breadcrumb-item active" aria-current="page">
+              <%=products.productName%>
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <section class="py-5">
+        <div class="container">
+          <div class="row ">
+            <aside class="col-sm-6">
+              <div class="border rounded-0 mb-3 d-flex justify-content-center image-zoom">
+                <img style="max-width: 60%; object-fit: contain;" class="rounded-4 fit "
+                  src="uploads/<%=products.image[0]  %>" id="main-image-div" />
+              </div>
+              <div class="d-flex justify-content-center g-3 mb-3">
+                <% for(i=0;i<products.image.length;i++) { %>
+                  <div class=" p-1"><img width="80" height="80" style="border: 1px solid gainsboro;"
+                      class="rounded-2 smallImageDiv" src="uploads/<%=products.image[i]%>" /></div>
+                  <% } %>
+              </div>
 
-       </aside>
-          <main class="col-sm-6">
-            <div class="p-3">
-              <h4 class="title text-dark text-capitalize">
-                <%=products.productName %>Fashion <%=products.category.categoryName%>'s <%=products.caseShape%> Case
-                      Watch <br />
+            </aside>
+            <main class="col-sm-6">
+              <div class="p-3">
+                <h4 class="title text-dark text-capitalize">
+                  <%=products.productName %>Fashion <%=products.category.categoryName%>'s <%=products.caseShape%> Case
+                        Watch <br />
 
-              </h4>
-              <hr>
-              <div class="d-flex flex-row my-3">
-                <div class="text-warning mb-1 me-2">
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-half"></i>
-                  <span class="ms-1">
-                    4.5
-                  </span>
+                </h4>
+                <hr>
+                <div class="d-flex flex-row my-3">
+                  <div class=" mb-1 me-2">
+                    <% if(review) {%>
+                      <% for(let i = 1; i <= 5; i++) { %>
+                      
+                        <span style="cursor: default;" class="star <%= ((review.reviews.averageReview) >= i) ? 'checked' : '' %>">&#9733;</span>
+                      <% } %>
+                      <% } %>
+                    
+                  </div>
+
+                  <!-- <span class="text-success ms-2">In stock</span> -->
+                </div>
+                <span class="text-success">
+                  <%=products.offer%>% offer
+                </span>
+                <div class="mb-3">
+
+                  <span class="h5">₹<%=products.discountPrice%></span>
+                  <span class="text-muted"><del>₹<%=products.price%></del></span>
                 </div>
 
-                <!-- <span class="text-success ms-2">In stock</span> -->
-              </div>
-              <span class="text-success">
-                <%=products.offer%>% offer
-              </span>
-              <div class="mb-3">
-
-                <span class="h5">₹<%=products.discountPrice%></span>
-                <span class="text-muted"><del>₹<%=products.price%></del></span>
-              </div>
-
-              <!-- <p>
+                <!-- <p>
             Modern look and quality demo item is a streetwear-inspired collection that continues to break away from the conventions of mainstream fashion. Made in Italy, these black and brown clothing low-top shirts for
             men.
           </p>
@@ -206,115 +237,299 @@
           </div> -->
 
 
-              <div class="justify-content-center d-flex">
-                <% if(isCart) {%>
-                  <a href="/cart" class="col-8">
-                    <i class="p-0 btn btn-dark shadow-0 col-12">
-                      <button class="btn btn-dark card-img-bottom my-1">GO TO
-                        CART</button>
-                    </i>
-                  </a>
-                  <% } else{ %>
-                    <% if(products.quantity>0) {%>
-                      <form action='/api/addToCart/<%=products._id%>' method="post"
-                        class="p-0 btn btn-dark shadow-0 col-8">
-                        <button class="btn btn-dark card-img-bottom my-1" type="submit">
-                          ADD TO CART
-                        </button>
-                      </form>
-                      <% }else{ %>
-                        <i class="p-0 btn btn-dark shadow-0 col-8">
-                          <button class="btn btn-dark card-img-bottom my-1">OUT OF STOCK</button>
-                        </i>
-                        <% } %>
+                <div class="justify-content-center d-flex">
+                  <% if(isCart) {%>
+                    <a href="/cart" class="col-8">
+                      <i class="p-0 btn btn-dark shadow-0 col-12">
+                        <button class="btn btn-dark card-img-bottom my-1">GO TO
+                          CART</button>
+                      </i>
+                    </a>
+                    <% } else{ %>
+                      <% if(products.quantity>0) {%>
+                        <form action='/api/addToCart/<%=products._id%>' method="post"
+                          class="p-0 btn btn-dark shadow-0 col-8">
+                          <button class="btn btn-dark card-img-bottom my-1" type="submit">
+                            ADD TO CART
+                          </button>
+                        </form>
+                        <% }else{ %>
+                          <i class="p-0 btn btn-dark shadow-0 col-8">
+                            <button class="btn btn-dark card-img-bottom my-1">OUT OF STOCK</button>
+                          </i>
                           <% } %>
+                            <% } %>
+
+                </div>
+
+
 
               </div>
-
-
-
-            </div>
-          </main>
+            </main>
+          </div>
         </div>
+      </section>
+      <!-- content -->
+      <div class="container my-3">
+        <h4>Product Information</h4>
+        <hr>
+
+        <table>
+          <tr>
+            <th class="pe-4">Product</th>
+            <td>:</td>
+            <td class="ps-4  text-capitalize">
+              <%=products.productName%>
+            </td>
+          </tr>
+          <tr>
+            <th class="pe-4">Brand</th>
+            <td>:</td>
+            <td class="ps-4 text-capitalize">
+              <%=products.brand%>
+            </td>
+          </tr>
+          <tr>
+            <th class="pe-4">Case Diameter</th>
+            <td>:</td>
+            <td class="ps-4 text-capitalize">
+              <%=products.caseDiameter%> <small class="text-lowercase">mm</small>
+            </td>
+          </tr>
+          <tr>
+            <th class="pe-4">Case Shape</th>
+            <td>:</td>
+            <td class="ps-4 text-capitalize">
+              <%=products.caseShape%>
+            </td>
+          </tr>
+          <tr>
+            <th class="pe-4">Display Type</th>
+            <td>:</td>
+            <td class="ps-4 text-capitalize">Analogue</td>
+          </tr>
+        </table>
+        <br>
+
       </div>
-    </section>
-    <!-- content -->
-    <div class="container my-3">
-      <h4>Product Information</h4>
-      <hr>
+    <% if(review) {%>
+      <div class="container my-3">
+        <div class="d-flex justify-content-between">
+          <h4>Review's and Ratings</h4>
+          <% if(logged) {%>
+           
+            <button class="btn btn-dark rounded-0" style="font-size: 0.7rem;" data-bs-toggle="modal"
+              data-bs-target="#reviewProduct">
+              <%= (review&&review.userReview)?'Edit Review':'Add Review' %>
+            </button>
+            <% } %>
+              <div class="modal modal-xl modal-sm fade" id="reviewProduct" data-bs-backdrop="static"
+                data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content rounded-0">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="staticBackdropLabel">Ratings & Reviews</h1>
 
-      <table>
-        <tr>
-          <th class="pe-4">Product</th>
-          <td>:</td>
-          <td class="ps-4  text-capitalize">
-            <%=products.productName%>
-          </td>
-        </tr>
-        <tr>
-          <th class="pe-4">Brand</th>
-          <td>:</td>
-          <td class="ps-4 text-capitalize">
-            <%=products.brand%>
-          </td>
-        </tr>
-        <tr>
-          <th class="pe-4">Case Diameter</th>
-          <td>:</td>
-          <td class="ps-4 text-capitalize">
-            <%=products.caseDiameter%> <small class="text-lowercase" >mm</small>
-          </td>
-        </tr>
-        <tr>
-          <th class="pe-4">Case Shape</th>
-          <td>:</td>
-          <td class="ps-4 text-capitalize">
-            <%=products.caseShape%>
-          </td>
-        </tr>
-        <tr>
-          <th class="pe-4">Display Type</th>
-          <td>:</td>
-          <td class="ps-4 text-capitalize">Analogue</td>
-        </tr>
-      </table>
-      <h1></h1>
-      <hr>
-    </div>
+                    </div>
+                    <div class="modal-body">
+                      <h5>Rate this Product</h5>
+                      <form id="reviewForm" data-id="<%=products._id%>" novalidate>
+                        <div class="star-rating">
+                          <% for(let i = 1; i <= 5; i++) { %>
+                            <span class="star <%= (review.userReview && review.userReview.rating >= i) ? 'checked' : '' %>" data-value="<%= i %>">&#9733;</span>
+                          <% } %>
+                        </div>
+                        <br>
+                        <div class="p-1">
 
-    <%- include("../include/footer") %>
-      <script src="js/togglebutton.js"> </script>
-      <script>
-        const mainDiv = document.getElementById('main-image-div')
-        const smallImages = Array.from(document.querySelectorAll('.smallImageDiv'))
+                          <textarea name="reviewText" style="width: 100%;" rows="5"><%= (review&&review.userReview)?review.userReview.reviewText:'' %></textarea>
+                        </div>
+                        <small class="text-danger" style="display: none;">Please provide a rating and review.</small>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-dark rounded-0" data-bs-dismiss="modal"
+                            style="font-size: 0.6rem;">Close</button>
 
-        smallImages.forEach(function (element) {
-          element.addEventListener('click', function () {
-            mainDiv.src = this.src;
+                          <input type="hidden" name="rating" id="rating" value="0">
+                          <button type="submit" class="btn btn-dark rounded-0 review" style="font-size: 0.6rem;">Submit
+                            Review</button>
 
+                        </div>
+                      </form>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+        </div>
+        <hr>
+
+        <!-- product reviews -->
+        <% if(review) {%>
+          <% review.reviews.reviews.forEach(userReview=>{%>
+          
+            <div class="card my-3 rounded-0">
+              <div class="card-body ">
+                <div class="review-rating">
+                  <% for(let i = 1; i <= 5; i++) { %>
+                    <span class="star <%= (userReview.rating >= i) ? 'checked' : '' %>" style="cursor: default;" >&#9733;</span>
+                    <% } %>
+                    
+                  </div>
+                  <pre class="card-text" style="font-family: inherit;"><%= userReview.reviewText %></pre>
+                  <h5 class="card-title text-muted" style="font-size:0.6rem">
+                   by <span class="review-username "> <%= userReview.username %></span>
+                  </h5>
+                  
+                </div>
+              </div>
+              
+              <%})%>
+          <% } %>
+        
+            <!-- product reviews -->
+          </div>
+          <% } %>
+
+      <%- include("../include/footer") %>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="js/togglebutton.js"> </script>
+        <script>
+
+          let message = localStorage.getItem('reviewMessage');
+          if (message) {
+            const Toast = Swal.mixin({
+              toast: true,
+              position: "bottom",
+              showConfirmButton: false,
+              timer: 3000,
+              timerProgressBar: true,
+              didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+              }
+            });
+            Toast.fire({
+              icon: "success",
+              title: message
+            });
+
+            localStorage.removeItem('reviewMessage')
+          }
+
+          const mainDiv = document.getElementById('main-image-div')
+          const smallImages = Array.from(document.querySelectorAll('.smallImageDiv'))
+
+          smallImages.forEach(function (element) {
+            element.addEventListener('click', function () {
+              mainDiv.src = this.src;
+
+            });
           });
-        });
 
 
-        document.querySelectorAll('.image-zoom').forEach(element => {
-          let x, y, width, height;
-          element.onmouseenter = () => {
-            const size = element.getBoundingClientRect();
-            x = size.x;
-            y = size.y;
-            width = size.width;
-            height = size.height;
-          };
-          element.onmousemove = e => {
-            const horizontal = (e.clientX - x) / width * 100;
-            const vertical = (e.clientY - y) / height * 100;
+          document.querySelectorAll('.image-zoom').forEach(element => {
+            let x, y, width, height;
+            element.onmouseenter = () => {
+              const size = element.getBoundingClientRect();
+              x = size.x;
+              y = size.y;
+              width = size.width;
+              height = size.height;
+            };
+            element.onmousemove = e => {
+              const horizontal = (e.clientX - x) / width * 100;
+              const vertical = (e.clientY - y) / height * 100;
 
-            element.style.setProperty('--x', horizontal + '%');
-            element.style.setProperty('--y', vertical + '%');
-          };
-        });
+              element.style.setProperty('--x', horizontal + '%');
+              element.style.setProperty('--y', vertical + '%');
+            };
+          });
 
-      </script>
+          //for add the rating and review 
+          const stars = document.querySelectorAll('.star');
+          const ratingInput = document.getElementById('rating');
+
+          stars.forEach(star => {
+            star.addEventListener('click', function (event) {
+              let rating = this.getAttribute('data-value');
+              ratingInput.value = rating;
+
+              console.log(ratingInput.value)
+              stars.forEach(s => {
+                s.classList.remove('checked');
+              });
+
+              for (let i = 0; i < rating; i++) {
+                stars[i].classList.add('checked');
+              }
+            });
+          });
+
+          //listener for review form
+          $('#reviewForm').submit(function (event) {
+            event.preventDefault();
+            let pid = $(this).attr('data-id')
+            let rating = $(ratingInput).val()
+            let reviewTextInput = $('textarea[name="reviewText"]');
+            let reviewText = reviewTextInput.val()
+
+            let isValid = checkReview(rating, reviewTextInput, reviewText);
+            if (isValid) {
+              submitReview(pid, rating, reviewText)
+            }
+          })
+
+
+          //validation for adding review
+          function checkReview(rating, reviewTextInput, reviewText) {
+            let valid = true;
+            // if (rating < 1) {
+            //   valid = false
+            //   $('small').show();
+            // } else {
+            //   $('small').hide();
+            // }
+
+            if (!reviewText || reviewText === '') {
+              valid = false
+              $('small').show();
+            } else {
+              $('small').hide();
+            }
+            return valid
+          }
+          //ajax call for submit the review
+          function submitReview(pid, rating, reviewText,) {
+            console.log('called')
+            $.ajax({
+              url: `/api/rateProduct/${pid}`,
+              type: 'post',
+              contentType: 'application/json',
+              data: JSON.stringify({
+                rating: rating,
+                reviewText: reviewText
+              }),
+              success: function (data, textStatus, xhr) {
+                if (xhr.status === 200) {
+                  const { message } = JSON.parse(xhr.responseText)
+                  localStorage.setItem('reviewMessage', message);
+                  location.reload();
+                }
+              },
+              error: function (xhr, textResponse, errorThrown) {
+                const { message } = JSON.parse(xhr.responseText);
+                if (xhr.status === 404) {
+                  window.location.reload();
+                }
+                if (xhr.status === 400) {
+                  $('small').text(message);
+                  $('small').show();
+                }
+              }
+            })
+          }
+        </script>
 
 </body>
 

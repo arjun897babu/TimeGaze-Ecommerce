@@ -7,6 +7,8 @@ const cartController = require('../controller/cart');
 const orderController = require('../controller/order');
 const coupenControll = require('../controller/coupen');
 const invoiceController = require('../controller/invoice')
+const reviewController =  require('../controller/review');
+
 
 
 const express = require('express');
@@ -54,6 +56,7 @@ route.post('/api/addToCart/:productId', userMiddleWare.notUser, cartController.a
 route.get('/api/getUserCart/:userId', cartController.getUserCart);//get user cartDetails;
 route.put('/api/removeCartItem/:cartItemId', cartController.removeCartItem);//remove single cart item;
 route.put('/api/cartQuantiy/:cartItem', cartController.cartQuantity);//control cartQuantiy
+route.post('/api/rateProduct/:productId',reviewController.addReview);//add product rating and review
 
 route.post('/api/createOrder/:selectedAddressId', userMiddleWare.notUser, orderController.createOrder);// create user order details
 route.get('/api/getUserOrder/:userId', orderController.getOrderDetails)//get user order details.
