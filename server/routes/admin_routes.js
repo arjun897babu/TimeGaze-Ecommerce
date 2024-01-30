@@ -24,6 +24,8 @@ adminRoute.get('/unlistedProducts', adminMiddleWare.isAdmin, adminServices.unlis
 adminRoute.get('/updateProduct', adminMiddleWare.isAdmin,adminMiddleWare.isProduct, adminServices.adminEditProduct);//edit product
 adminRoute.get('/order',adminMiddleWare.isAdmin,adminServices.order);//admin order management
 adminRoute.get('/adminCoupen',adminServices.coupen);//admin coupen management
+adminRoute.get('/adminOffer',adminMiddleWare.isAdmin,adminServices.offer)//admin offer management(product and category)
+adminRoute.get('/AddOffer',adminMiddleWare.isAdmin,adminServices.addOffer)//admin add offer(product and category)
 
 
 
@@ -61,6 +63,8 @@ adminRoute.get('/api/chartData',chartController.order); //get chart data to admi
 adminRoute.get('/api/salesReport',adminControll.salesReport);//get sales report of the order
 
 adminRoute.post('/api/addCoupen',coupenControll.CreateCoupen);//to add(create) a coupen
+
+adminRoute.post('/api/addOffer/',adminControll.addOffer);//add offer
 
 
 

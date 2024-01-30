@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- boostrap css cdn link -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+  <!-- bootstrap icon cdn link -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+
+  <!-- Boxicons -->
+  <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+  <!-- My CSS -->
+
+  <link rel="stylesheet" href="css/adminproducts.css">
+
+  <title>AdminHub</title>
+  <style>
+    table td {
+      font-size: 0.6rem;
+    }
+
+    table .h6 {
+
+      font-size: 0.8rem;
+    }
+
+    label {
+      font-size: 0.8rem;
+      color: black;
+    }
+
+    ::placeholder {
+      font-size: 0.6rem
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      appearance: none;
+    }
+
+    .form-control:focus {
+      color: var(--bs-body-color);
+      background-color: var(--bs-body-bg);
+      border-color: none;
+      outline: 0;
+      box-shadow: none;
+    }
+
+    .btn-close:focus {
+      color: var(--bs-body-color);
+      background-color: var(--bs-body-bg);
+      border-color: none;
+      outline: 0;
+      box-shadow: none;
+    }
+  </style>
+</head>
+
+
+
+<body class="">
+
+  <div class="container-fluid  d-flex p-0 ">
+
+    <!-- SIDEBAR -->
+    <div id="sidebar" class="pe-0 col-md-3 ">
+      <a href="/adminHome" class="brand">
+        <i class='bx bxs-smile'></i>
+        <span class="text">Admin</span>
+      </a>
+
+
+      <ul class="side-menu top">
+        <li>
+          <a href="/adminHome">
+            <i class='bx bxs-dashboard'></i>
+            <span class="text">Dashboard</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="/adminproducts">
+            <i class='bx bxs-shopping-bags'></i>
+            <span class="text">products</span>
+          </a>
+        </li>
+        <li>
+          <a href="/adminusers">
+            <i class='bx bxs-user'></i>
+            <span class="text">users</span>
+          </a>
+        </li>
+        <li>
+          <a href="/order">
+            <i class='bx bx-basket'></i>
+            <span class="text">Orders</span>
+          </a>
+        </li>
+
+        <!-- <li>
+          <a href="#">
+            <i class='bx bxs-edit-alt'></i>
+            <span class="text">banner management</span>
+          </a>
+        </li> -->
+        <li class="">
+          <a href="/adminCoupen">
+            <i class='bx bxs-offer'></i>
+            <span class="text">coupon management</span>
+          </a>
+        </li>
+        <li>
+          <a href="/adminCategory">
+            <i class='bx bxs-book'></i>
+            <span class="text">category management</span>
+          </a>
+        </li>
+        <li class="active">
+          <a href="/adminOffer">
+            <i class='bx bxs-offer'></i>
+            <span class="text">adminOffer</span>
+          </a>
+        </li>
+        <li>
+          <form action="/logout" method="post" class="py3 d-flex align-items-center justify-content-center">
+            <i class='bx bxs-log-out-circle text-danger'></i>
+            <button type="submit" class="btn "><span class="text-danger">LOG OUT</span></button>
+          </form>
+        </li>
+      </ul>
+
+    </div>
+    <!-- SIDEBAR -->
+
+    <!-- CONTENT -->
+    <div class=" col-12 col-md-9 ">
+      <div class="ps-0 ">
+        <!-- NAVBAR -->
+        <nav>
+          <div class="p-2 navbar" style="background-color: #F9F9F9;">
+            <div class="mobile_brand">
+              <a href="/adminHome">
+                <i class='bx bxs-smile'></i>
+                <span class="text">Admin</span>
+              </a>
+            </div>
+            <img src="image/timegazelogo.png" alt="timegaze logo" style="width: 9rem;">
+          </div>
+
+
+
+        </nav>
+
+        <!-- NAVBAR -->
+        <nav aria-label="breadcrumb " class="p-4">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/adminHome">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">adminOffer</li>
+          </ol>
+        </nav>
+        <div class="container-fluid ">
+          <div class="container d-flex justify-content-end"><a href="/addOffer"><button type="submit"
+                class="btn btn-dark rounded-0 ">
+                Add Offer +
+              </button></a>
+          </div>
+        </div>
+        <div class="container-fluid mt-3">
+          <div class="table-responsive ">
+            <table class="table table-hover rounded ">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th class="h6">OfferType</th>
+                  <th class="h6">Category/Product</th>
+                  <th class="h6">Discount </th>
+                  <th class="h6">MinAmount <br><small>(To purchase)</small></th>
+                  <th class="h6">expiry</th>
+
+                  <th class="h6">Status</th>
+                </tr>
+              </thead>
+              <tbody class="mb-2">
+                <tr>
+                  <% offer.forEach((x, index)=> { %>
+                    <% let expired=x.expiry<Date.now() %>
+                <tr>
+                  <td>
+                    <%= index + 1 %>
+                  </td>
+                  <td>
+                    <%= x.type %>
+                  </td>
+                  <td><%=x.name  %></td>
+                  <td>
+                    <%= x.discount + '%' %>
+                  </td>
+                  <td>₹<%= x.minAmount %>
+                  </td>
+                  <td>
+                    <%= new
+                      Date(x.expiry).toLocaleString('en-US',{day:'2-digit',month:'2-digit',year:'2-digit',hour: '2-digit'
+                      , minute: '2-digit' , second: '2-digit' ,timezon:'Asia/kolkata'}) %>
+                  </td>
+                  <td><span class="btn rounded-0 <%= expired ? 'btn-danger' : 'btn-success'  %>"
+                      style="font-size: 0.6rem;">
+                      <%= expired ? 'expired' : 'Active' %>
+                    </span></td>
+                </tr>
+                <% }); %>
+                  </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+
+
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+        <%- include('../include/adminfooter') %>
+      </div>

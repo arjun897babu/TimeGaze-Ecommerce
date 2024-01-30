@@ -10,7 +10,7 @@ exports.CreateCoupen = async (req, res, next) => {
   try {
     const { code, isPercentage, maxDiscount, discount, expiry, minAmount, limit } = req.body;
 
-
+    console.log(expiry);
     if (!code || !discount || !expiry || !minAmount || !limit) {
       return res.status(400).json(
         {
@@ -57,7 +57,7 @@ exports.CreateCoupen = async (req, res, next) => {
 
 exports.applyCoupen = async (req, res, next) => {
   try {
-    const  userId  = req.session.userId = '658275a8be7448200852a4c7'
+    const  userId  = req.session.userId 
     const { code } = req.body;
     const { cartId } = req.params
 

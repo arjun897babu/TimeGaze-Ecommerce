@@ -4,6 +4,9 @@ const { default: mongoose } = require('mongoose');
 const Order = require('../model/orderSchema');
 const Json2csvParser = require('@json2csv/plainjs').Parser;
 const fs = require('fs');
+const Category = require('../model/categorySchema')
+const Product = require('../model/productSchema');
+const category = require('../model/categorySchema');
 
 
 const adminDetails = {
@@ -44,7 +47,7 @@ exports.adminLogout = (req, res) => {
 exports.findAllUser = async (req, res) => {
   try {
 
-    const {pageNumber,unblocked,search=''} = req.query;
+    const { pageNumber, unblocked, search = '' } = req.query;
 
 
 
@@ -186,6 +189,55 @@ exports.salesReport = async (req, res, next) => {
 
     return res.status(200).send(csv)
 
+  } catch (error) {
+    next(error)
+  }
+}
+//create a middleware for checking the product and category is not unlisted
+exports.addOffer = async (req, res, next) => {
+  try {
+    const { offer, category, product, discount, expiry } = req.body;
+    console.log(req.body, category, product, discount, expiry);
+
+    let errorMessage = {}
+    if (discount === '' || !discount || discount % 1 !== 0 || discount < 1 || discount > 80) {
+      errorMessage.discount = 'enter a valid disocunt'
+    }
+    if (!expiry || new Date(expiry) < new Date()) {
+
+      errorMessage.expiry = 'choose a valid expiry dat'
+    }
+    if (Object.keys(errorMessage).length > 0) {
+      req.session.errorMessage = errorMessage;
+      console.log(req.session.errorMessage)
+      return res.status(400).redirect('/addOffer')
+    }
+    if (offer === 'category') {
+      await Category.findByIdAndUpdate(
+        category,
+        {
+          $set: {
+            'specialOffer.discount': discount,
+            'specialOffer.expiry': expiry
+          }
+        },
+        { new: true }
+      );
+    }
+    if (offer === 'product') {
+      await Product.findByIdAndUpdate(
+        product,
+        {
+          $set: {
+            'specialOffer.discount': discount,
+            'specialOffer.expiry': expiry
+          }
+        },
+        { new: true }
+      )
+    }
+    req.session.successMessage = `New ${offer} offer is added`;
+    return res.status(200).redirect('/adminOffer')
   } catch (error) {
     next(error)
   }

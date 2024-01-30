@@ -5,6 +5,8 @@ const queryString = require('querystring');
 const coupenHelper = require('../utilities/coupen');
 const userHelper = require('../utilities/user');
 const orderHelper = require('../utilities/order');
+const categoryHelper = require('../utilities/category');
+const ProductHelper = require('../utilities/product')
 
 module.exports = {
 
@@ -19,11 +21,11 @@ module.exports = {
     });
   },
 
-  adminHome: async(req, res) => {
+  adminHome: async (req, res) => {
     const user = await userHelper.userCount();
     const order = await orderHelper.profitAndOrder();
-    console.log(user,order)
-    res.render('admin/adminHome',{user:user,order:order})
+    console.log(user, order)
+    res.render('admin/adminHome', { user: user, order: order })
   },
 
   adminproducts: (req, res) => {
@@ -159,12 +161,57 @@ module.exports = {
       })
 
   },
-  coupen: async(req, res, next) => {
+  coupen: async (req, res, next) => {
     const coupen = await coupenHelper.getAllCoupon();
     console.log(coupen)
-    res.status(200).render('admin/adminCoupen',{coupon:coupen})
+    res.status(200).render('admin/adminCoupen', { coupon: coupen })
   },
+  offer: async (req, res, next) => {
+    try {
+      const allSpecialOfferCategory = await categoryHelper.allSpecialOfferCategory();
+      const allSpecialOfferProduct = await ProductHelper.allSpecialOfferProducts();
+      console.log(allSpecialOfferCategory, allSpecialOfferProduct)
+      res.status(200).render('admin/adminOffer', { offer: [...allSpecialOfferCategory, ...allSpecialOfferProduct], successMessage: req.session.successMessage }, (error, html) => {
+        if (error) {
+          return next(error)
+        }
 
+        delete req.session.successMessage
+        res.status(200).send(html)
+
+      })
+
+    } catch (error) {
+      next(error)
+    }
+  }
+  ,
+  addOffer: async (req, res, next) => {
+    try {
+      const categories = await categoryHelper.allCategory();
+      const product = await ProductHelper.allProduct()
+      console.log(req.session.successMessage, req.session.errorMessage);
+      res.status(200).render('admin/addOffer',
+        {
+          categories: categories,
+          products: product,
+          errorMessage: req.session.errorMessage,
+        }, 
+        (error, html) => {
+          if (error) {
+            return next(error)
+          }
+
+          delete req.session.errorMessage
+
+          res.status(200).send(html)
+        })
+    }
+    catch (error) {
+      next(error)
+    }
+  }
+  ,
   errorPage: (req, res) => {
     res.status(404).render('error')
   }
