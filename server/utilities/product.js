@@ -27,21 +27,3 @@ exports.allProduct = async () => {
   ])
 }
 
-
-exports.allSpecialOfferProducts = async () => {
-  return await Product.aggregate(
-    [
-      { $match: { unlisted: false, 'specialOffer.expiry': { $exists: true, $gt: new Date() } }, },
-      {
-        $project: {
-          _id: 0,
-          type: 'Product',
-          name: '$productName',
-          expiry: '$specialOffer.expiry',
-          discount: '$specialOffer.discount'
-        }
-      }
-    ]
-  )
-
-}

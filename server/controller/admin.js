@@ -4,10 +4,8 @@ const { default: mongoose } = require('mongoose');
 const Order = require('../model/orderSchema');
 const Json2csvParser = require('@json2csv/plainjs').Parser;
 const fs = require('fs');
-const Category = require('../model/categorySchema')
 const Product = require('../model/productSchema');
-const category = require('../model/categorySchema');
-
+const Offer = require('../model/offerSchema')
 
 const adminDetails = {
   emailAddress: 'admin@gmail.com',
@@ -212,28 +210,30 @@ exports.addOffer = async (req, res, next) => {
       console.log(req.session.errorMessage)
       return res.status(400).redirect('/addOffer')
     }
+
+    const newOffer = new Offer({
+      offerType:offer,
+      item:category??product,
+      discount:discount,
+      expiry:expiry
+    })
+
+    const createdOffer = await newOffer.save()
+
     if (offer === 'category') {
-      await Category.findByIdAndUpdate(
-        category,
-        {
-          $set: {
-            'specialOffer.discount': discount,
-            'specialOffer.expiry': expiry
-          }
-        },
-        { new: true }
-      );
+      await Product.updateMany({category:category},{$set:{
+        'specialOffer':createdOffer
+      }});
     }
     if (offer === 'product') {
       await Product.findByIdAndUpdate(
         product,
         {
           $set: {
-            'specialOffer.discount': discount,
-            'specialOffer.expiry': expiry
+            'specialOffer': createdOffer,
+            
           }
-        },
-        { new: true }
+        }
       )
     }
     req.session.successMessage = `New ${offer} offer is added`;

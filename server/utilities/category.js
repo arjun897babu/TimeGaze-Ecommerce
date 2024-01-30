@@ -13,30 +13,4 @@ exports.allCategory = async () => {
       }
     ]
   )
-
-}
-exports.allSpecialOfferCategory = async () => {
-  return await Category.aggregate(
-    [
-      {
-        $match: {
-          unlisted: false,
-          'specialOffer.expiry': {
-            $exists: true, $gt: new Date()
-          }
-        }
-        
-      },
-      {
-        $project: {
-          _id: 0,
-          type: 'Category',
-          name: '$categoryName',
-          expiry: '$specialOffer.expiry',
-          discount: '$specialOffer.discount'
-        }
-      }
-    ]
-  )
-
 }

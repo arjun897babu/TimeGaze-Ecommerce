@@ -6,7 +6,9 @@ const coupenHelper = require('../utilities/coupen');
 const userHelper = require('../utilities/user');
 const orderHelper = require('../utilities/order');
 const categoryHelper = require('../utilities/category');
-const ProductHelper = require('../utilities/product')
+const ProductHelper = require('../utilities/product');
+const OfferHelper = require('../utilities/offer');
+
 
 module.exports = {
 
@@ -168,10 +170,9 @@ module.exports = {
   },
   offer: async (req, res, next) => {
     try {
-      const allSpecialOfferCategory = await categoryHelper.allSpecialOfferCategory();
-      const allSpecialOfferProduct = await ProductHelper.allSpecialOfferProducts();
-      console.log(allSpecialOfferCategory, allSpecialOfferProduct)
-      res.status(200).render('admin/adminOffer', { offer: [...allSpecialOfferCategory, ...allSpecialOfferProduct], successMessage: req.session.successMessage }, (error, html) => {
+     const offers = await OfferHelper.allOffer();
+     console.log(offers)
+      res.status(200).render('admin/adminOffer', { offers:offers, successMessage: req.session.successMessage }, (error, html) => {
         if (error) {
           return next(error)
         }

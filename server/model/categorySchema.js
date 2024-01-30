@@ -9,10 +9,6 @@ const categorySchema = new mongoose.Schema({
   unlisted:{
     type:Boolean,
     default:false,
-  },
-  specialOffer: {
-    discount: Number,
-    expiry: Date
   }
   
 })

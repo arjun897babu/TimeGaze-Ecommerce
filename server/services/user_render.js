@@ -4,6 +4,7 @@ const queryString = require('querystring')
 const Wallet = require('../utilities/wallet')
 const coupenHelper = require('../utilities/coupen');
 const ReviewHelper = require('../utilities/review');
+const OrderHelper = require('../utilities/order')
 
 
 module.exports = {
@@ -86,6 +87,9 @@ module.exports = {
     const query = queryString.stringify(req.query);
     const { pid } = req.query
     const review = await ReviewHelper.productReview(userId, pid);
+    const isPurchased = await OrderHelper.userPurchased(userId,pid);
+    console.log('review:',review)
+    console.log('isPurchased:',isPurchased)
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/singleEditProduct?userId=${userId}&${query}`),
       axios.get(`http://localhost:${process.env.PORT}/api/categories`)
@@ -95,7 +99,7 @@ module.exports = {
         const categories = categoriesResponse.data;
         const selected = productResponse.data.selected;
        
-        res.status(200).render('user/singleProduct', { logged: req.session.isUserAuth, products: products.existingProduct, isCart: products.isCart, categories, selected: selected ,review:review})
+        res.status(200).render('user/singleProduct', { logged: req.session.isUserAuth, products: products.existingProduct, isCart: products.isCart, categories, selected: selected ,review:review,isPurchased:isPurchased})
       }))
       .catch((error) => {
         // console.error('Error in adminEditProduct:', error);

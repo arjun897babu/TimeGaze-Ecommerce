@@ -47,6 +47,10 @@ const productSchema = new mongoose.Schema({
   unlisted:{
     type:Boolean,
     default:false
+  },
+  specialOffer:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref:'Offer'
   }
 
 })

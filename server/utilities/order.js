@@ -18,3 +18,15 @@ exports.profitAndOrder = async function () {
     }
   ])
 }
+
+exports.userPurchased = async (userId, productId) => {
+  try {
+   
+    const [isPurchased] = await Order.aggregate([
+      { $match: { userId: new mongoose.Types.ObjectId(userId) } }, { $unwind: '$orderItems' }, { $match: { 'orderItems.product': new mongoose.Types.ObjectId(productId),'orderItems.orderStatus':'delivered' } }]);
+    console.log('ispr', isPurchased);
+    return isPurchased ? true : false;
+  } catch (error) {
+
+  }
+}

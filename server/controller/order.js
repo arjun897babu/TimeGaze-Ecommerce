@@ -23,7 +23,7 @@ exports.createOrder = async (req, res, next) => {
     const { userId, addressId, coupon } = req.session;
     const { selectedAddressId } = req.params;
     const { PaymentOption } = req.body
-
+    console.log(userId, addressId, coupon,selectedAddressId,PaymentOption)
     if (!PaymentOption || !selectedAddressId) return res.status(400).send('all field are required');
 
     //checking the address is the defualt address
@@ -43,7 +43,7 @@ exports.createOrder = async (req, res, next) => {
         }
       },
     ]);
-
+  
     //checking cart is exist
     const existingCart = await Cart.aggregate(
       [
@@ -78,7 +78,8 @@ exports.createOrder = async (req, res, next) => {
     });
 
     const isValid = valid.every(bolean => bolean);
-
+    console.log('isValid',isValid)
+    console.log('ex.address',existingAddress)
     if (existingAddress.length === 0 || !isValid) {
 
       return res.status(404).json({ status: 'failed', message: 'some product is outOf stock', redirectUrl: '/cart' })
@@ -174,6 +175,7 @@ exports.createOrder = async (req, res, next) => {
       )
     }
     if (PaymentOption === 'onlinePayment') {
+      console.log('entering payment option')
       const options = {
         amount: newOrder.total * 100,
         currency: "INR",
@@ -193,6 +195,7 @@ exports.createOrder = async (req, res, next) => {
 
   }
   catch (error) {
+    console.log('enetring error in post order')
    next(error)
   }
 }
