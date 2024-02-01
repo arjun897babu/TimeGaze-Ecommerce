@@ -130,13 +130,13 @@ exports.updateProducts = async (req, res, next) => {
 exports.allProducts = async (req, res, next) => {
   try {
 
-    let { pageNumber = 1, category = '', brand = '', caseDiameter = '', search = '' } = req.query;
+    let { pageNumber = 1, category, brand, caseDiameter, search, sort=1} = req.query;
 
     if (!req.query.hasOwnProperty('pageNumber') || req.query.pageNumber === '' || req.query.pageNumber < 1) {
       req.query.pageNumber = 1;
       pageNumber = 1
     }
-
+    console.log(sort)
     const perPage = 4;
     const startIndex = Math.ceil((pageNumber - 1) * perPage);
     const endIndex = Math.ceil(startIndex + perPage);
@@ -145,35 +145,81 @@ exports.allProducts = async (req, res, next) => {
       unlisted: false,
       'category.unlisted': false,
     };
+    let brandQuery = { $match: {} }
+    let caseDiameterQuery = { $match: {} }
+    let selected = {};
 
-    let selected = {}
 
+    if (category || brand || caseDiameter || search) {
 
-    if (category !== '' || brand !== '' || caseDiameter !== '' || search !== '') {
-      matchQuery.$or = [];
-      if (category !== '') {
+      if (category) {
 
-        const categories = category.split(',').map(cat => ({ 'category.categoryName': cat.trim()}));
+        const categories = category.split(',')
+          .map(cat => (
+            {
+              'category.categoryName': {
+                $regex: `^${cat.trim()}$`,
+                $options: 'i'
+              }
+            }
+          )
+          );
 
         selected.category = category.split(',')
-        matchQuery.$or.push(...categories);
+        matchQuery.$or = categories
       }
 
-      if (brand !== '') {
+      if (brand) {
 
-        const brands = brand.split(',').map(b => ({ brand: { $regex: `^${b.trim()}$`, $options: 'i' } }))
+        const brands = brand.split(',')
+          .map(b => (
+            {
+              brand: {
+                $regex: `^${b.trim()}$`,
+                $options: 'i'
+              }
+            }
+          )
+          );
+
         selected.brands = brand.split(',')
-        matchQuery.$or.push(...brands);
+        brandQuery.$match.$or = brands;
       }
-      if (caseDiameter !== '') {
-        const caseDiameters = caseDiameter.split(',').map(caseD => ({ caseDiameter: Number(caseD) }));
-        selected.caseDiameter = caseDiameter.split(',')
-        matchQuery.$or.push(...caseDiameters);
+      if (caseDiameter) {
+        const caseDiameters = caseDiameter.split(',')
+          .map(caseD => (
+            {
+              caseDiameter: Number(caseD)
+            }
+          )
+          );
 
+        selected.caseDiameter = caseDiameter.split(',')
+        caseDiameterQuery.$match.$or = caseDiameters;
       };
-      if (search !== '') {
-        matchQuery.$or=[];
-        matchQuery.$or = [{'category.categoryName':{$regex: search.trim() ,$options:'i' }},{brand:{$regex: search.trim() ,$options:'i' }},{productName:{$regex: search.trim() ,$options:'i' }}];
+      if (search) {
+        matchQuery.$or = [];
+        matchQuery.$or = [
+          {
+            'category.categoryName': {
+              $regex: search.trim(),
+              $options: 'i'
+            }
+          },
+          {
+            brand: {
+              $regex: search.trim(),
+              $options: 'i'
+            }
+          },
+          {
+            productName:
+            {
+              $regex: search.trim(),
+              $options: 'i'
+            }
+          }
+        ];
         selected.search = search
       }
     }
@@ -188,7 +234,11 @@ exports.allProducts = async (req, res, next) => {
       },
       { $unwind: '$category' },
       { $match: matchQuery },
-      
+      { ...brandQuery },
+      { ...caseDiameterQuery },
+      {$sort:{discountPrice:sort}}
+
+
     ];
     // return res.json(productQuery)
 
