@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TimeGaze</title>
-  <link rel="icon" href="android-chrome-512x512.png" type="image/png" alt="Site Icon">
+  <link rel="icon" href="/image/android-chrome-512x512.png" type="image/png" alt="Site Icon">
 
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
@@ -19,7 +19,7 @@
 
 
   <!-- css style sheet link -->
-  <link rel="stylesheet" href="css/header_footer.css">
+  <link rel="stylesheet" href="/css/header_footer.css">
 
 
   <style>
@@ -177,12 +177,12 @@
             <aside class="col-sm-6">
               <div class="border rounded-0 mb-3 d-flex justify-content-center image-zoom">
                 <img style="max-width: 60%; object-fit: contain;" class="rounded-4 fit "
-                  src="uploads/<%=products.image[0]  %>" id="main-image-div" />
+                  src="/uploads/<%=products.image[0]  %>" id="main-image-div" />
               </div>
               <div class="d-flex justify-content-center g-3 mb-3">
                 <% for(i=0;i<products.image.length;i++) { %>
                   <div class=" p-1"><img width="80" height="80" style="border: 1px solid gainsboro;"
-                      class="rounded-2 smallImageDiv" src="uploads/<%=products.image[i]%>" /></div>
+                      class="rounded-2 smallImageDiv" src="/uploads/<%=products.image[i]%>" /></div>
                   <% } %>
               </div>
 
@@ -394,7 +394,7 @@
       <%- include("../include/footer") %>
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="js/togglebutton.js"> </script>
+        <script src="/js/togglebutton.js"> </script>
         <script>
 
           let message = localStorage.getItem('reviewMessage');

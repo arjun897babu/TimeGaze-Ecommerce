@@ -15,7 +15,7 @@
   <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
   <!-- My CSS -->
 
-  <link rel="stylesheet" href="css/adminaddproducts.css">
+  <link rel="stylesheet" href="/css/adminaddproducts.css">
 
   <title>AdminHub</title>
 </head>
@@ -101,7 +101,7 @@
                 <span class="text">Admin</span>
               </a>
             </div>
-            <img src="image/timegazelogo.png" alt="timegaze logo" style="width: 9rem;">
+            <img src="/image/timegazelogo.png" alt="timegaze logo" style="width: 9rem;">
           </div>
 
 
@@ -191,7 +191,7 @@
                     <div class="col-4 col-sm-3 position-relative">
                       <span data-id="<%=products._id  %>" class="position-absolute delete-image bi bi-x-circle"
                         style="font-size: inherit;cursor: pointer;top: 0.35rem;right: 1.35rem;"></span>
-                      <img id="productName" src="uploads/<%= products.image[i] %>" alt=""
+                      <img id="productName" src="/uploads/<%= products.image[i] %>" alt=""
                         style="object-fit: cover;width: 100%; height: 100%;">
                     </div>
                     <% } %>
@@ -222,5 +222,5 @@
 
   <%- include('../include/adminfooter') %>
 
-    <script src="js/sample.js">
+    <script src="/js/sample.js">
     </script>

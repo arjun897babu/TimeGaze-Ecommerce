@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TimeGaze</title>
-  <link rel="icon" href="image/android-chrome-512x512.png" type="image/png" alt="Site Icon">
+  <link rel="icon" href="/image/android-chrome-512x512.png" type="image/png" alt="Site Icon">
 
   <!-- boostrap css cdn link -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
 
   <!-- css style sheet link -->
-  <link rel="stylesheet" href='css/header_footer.css'>
+  <link rel="stylesheet" href='/css/header_footer.css'>
 
 
   <style>
@@ -499,7 +499,7 @@
                   <% for( x of cartItems) {%>
                     <div class="d-flex align-items-center mb-4">
                       <div class="me-3 position-relative">
-                        <img src="uploads/<%=x.cartItem.product.image[0]  %>" style="height: 96px; width: 96px;"
+                        <img src="/uploads/<%=x.cartItem.product.image[0]  %>" style="height: 96px; width: 96px;"
                           class="img-sm rounded border" />
                       </div>
                       <div class="">
@@ -647,7 +647,7 @@
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
       <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
       <script src="/js/checkout.js"></script>
-      <script src="js/togglebutton.js"></script>
+      <script src="/js/togglebutton.js"></script>
       <script>
 
         getCities($('#state').val(), 'district'); 

@@ -8,8 +8,8 @@ const Product = require('../model/productSchema');
 const Offer = require('../model/offerSchema')
 
 const adminDetails = {
-  emailAddress: 'admin@gmail.com',
-  password: '1234'
+  emailAddress: process.env.admin_email,
+  password: process.env.admin_password
 }
 
 exports.adminLogin = (req, res, next) => {

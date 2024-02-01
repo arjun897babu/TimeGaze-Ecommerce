@@ -15,7 +15,7 @@
   <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
   <!-- My CSS -->
 
-  <link rel="stylesheet" href="css/adminproducts.css">
+  <link rel="stylesheet" href="/css/adminproducts.css">
 
   <title>AdminHub</title>
   <style>
@@ -112,7 +112,7 @@
                 <span class="text">Admin</span>
               </a>
             </div>
-            <img src="image/timegazelogo.png" alt="timegaze logo" style="width: 9rem;">
+            <img src="/image/timegazelogo.png" alt="timegaze logo" style="width: 9rem;">
           </div>
 
 
@@ -165,7 +165,7 @@
                 <% for(x in products){ %>
                   <tr>
                     <th>
-                      <img src="uploads/<%= products[x].image[0] %>" style="width: 4rem;object-fit: cover;">
+                      <img src="/uploads/<%= products[x].image[0] %>" style="width: 4rem;object-fit: cover;">
                     </th>
                     <td class="fixed-td">
                       <h6>
@@ -248,4 +248,4 @@
   <%- include('../include/adminfooter') %>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="js/deleteProduct.js"></script>
+    <script src="/js/deleteProduct.js"></script>
