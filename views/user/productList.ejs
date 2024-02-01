@@ -390,6 +390,7 @@
                 }
               }
             });
+            console.log(checkedValues);
             let queryString = new URLSearchParams(checkedValues).toString();
             window.location.href = '/productList?'+queryString
           });

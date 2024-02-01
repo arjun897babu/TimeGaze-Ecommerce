@@ -4,14 +4,18 @@ const queryString = require('querystring')
 const Wallet = require('../utilities/wallet')
 const coupenHelper = require('../utilities/coupen');
 const ReviewHelper = require('../utilities/review');
-const OrderHelper = require('../utilities/order')
+const OrderHelper = require('../utilities/order');
+const categoryHelper = require('../utilities/category');
+const statesHelper = require('../utilities/states');
+const addressHelper = require('../utilities/address')
+
 
 
 module.exports = {
   home: (req, res) => {
 
     const { query } = req.query;
-    
+
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/allProducts`),
       axios.get(`http://localhost:${process.env.PORT}/api/categories`)
@@ -20,7 +24,7 @@ module.exports = {
         const products = productResponse.data.products;
         const selected = productResponse.data.selected;
         const categories = categoriesResponse.data;
-      
+
         res.status(200).render('index', { logged: req.session.isUserAuth, products, categories, selected: selected });
       }))
       .catch((error) => {
@@ -87,9 +91,9 @@ module.exports = {
     const query = queryString.stringify(req.query);
     const { pid } = req.query
     const review = await ReviewHelper.productReview(userId, pid);
-    const isPurchased = await OrderHelper.userPurchased(userId,pid);
-    console.log('review:',review)
-    console.log('isPurchased:',isPurchased)
+    const isPurchased = await OrderHelper.userPurchased(userId, pid);
+    console.log('review:', review)
+    console.log('isPurchased:', isPurchased)
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/singleEditProduct?userId=${userId}&${query}`),
       axios.get(`http://localhost:${process.env.PORT}/api/categories`)
@@ -98,8 +102,8 @@ module.exports = {
         const products = productResponse.data.result;
         const categories = categoriesResponse.data;
         const selected = productResponse.data.selected;
-       
-        res.status(200).render('user/singleProduct', { logged: req.session.isUserAuth, products: products.existingProduct, isCart: products.isCart, categories, selected: selected ,review:review,isPurchased:isPurchased})
+
+        res.status(200).render('user/singleProduct', { logged: req.session.isUserAuth, products: products.existingProduct, isCart: products.isCart, categories, selected: selected, review: review, isPurchased: isPurchased })
       }))
       .catch((error) => {
         // console.error('Error in adminEditProduct:', error);
@@ -152,22 +156,30 @@ module.exports = {
       }))
 
   },
-  userAddress: (req, res) => {
-
-    const userEmail = req.session.email
-    axios.all([
-      axios.get(`http://localhost:${process.env.PORT}/api/getAddressDetails?userEmail=${userEmail}`),
-      axios.get(`http://localhost:${process.env.PORT}/api/categories`)
-    ])
-      .then(axios.spread((addressResponse, categoryResponse) => {
-        const allAddress = addressResponse.data.address
-        const allStates = addressResponse.data.allStates
-        const categories = categoryResponse.data
-        res.status(200).render('user/userAddress', { address: allAddress, logged: req.session.isUserAuth, categories: categories, allStates: allStates })
-      }))
-      .catch((error) => {
-        res.status(500).send(error.message)
-      })
+  userAddress: async (req, res) => {
+    const { addressId } = req.session
+    const categories = await categoryHelper.allCategory()
+    const allStates = await statesHelper.allStates();
+    const allAddress = await addressHelper.userAddress(addressId);
+    console.log(allAddress)
+    // axios.all([
+    //   axios.get(`http://localhost:${process.env.PORT}/api/getAddressDetails?userEmail=${userEmail}`),
+    // ])
+    //   .then(axios.spread((addressResponse) => {
+    //     const allAddress = addressResponse.data.address
+    //     const allStates = addressResponse.data.allStates
+    //   }))
+    //   .catch((error) => {
+    //     res.status(500).send(error.message)
+    //   })
+    res.status(200).render('user/userAddress',
+      {
+        address: allAddress,
+        logged: req.session.isUserAuth,
+        categories: categories,
+        allStates: allStates
+      }
+    )
 
   },
   editAddress: (req, res) => {
@@ -187,10 +199,6 @@ module.exports = {
       .catch(error => {
         res.status(500).send(error.message)
       })
-
-
-
-
   },
 
   cart: (req, res) => {
@@ -212,44 +220,54 @@ module.exports = {
 
 
   },
-  checkoutPage: async (req, res) => {
-    const userEmail = req.session.email;
-    const userId = req.session.userId;
+  checkoutPage: async (req, res, next) => {
+    const { userId, addressId } = req.session;
     const coupen = await coupenHelper.getAllCoupon();
+    const categories = await categoryHelper.allCategory();
+    const allAddress = await addressHelper.userAddress(addressId);
+    const allStates = await statesHelper.allStates();
 
+    let address = {};
+    if (allAddress.length > 0) {
+      address.defaultAddress = allAddress.find(data => data.address.defaultAdress);
+      address.otherAddresses = allAddress.filter(data => !data.address.defaultAdress);
+    }else{
+      address = undefined
+    }
+    console.log('checkoutpage address',address)
     axios.all([
-      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
-      axios.get(`http://localhost:${process.env.PORT}/api/getAddressDetails?userEmail=${userEmail}`),
       axios.get(`http://localhost:${process.env.PORT}/api/getUserCart/${userId}`)
     ])
 
-      .then(axios.spread((categoryResponse, addressResponse, cartResponse) => {
-        const categories = categoryResponse.data;
-        const addressData = addressResponse.data.address;
-        const allStates = addressResponse.data.allStates
+      .then(axios.spread((cartResponse) => {
 
-
-        const address = {
-          defaultAddress: addressData.find(data => data.address.defaultAdress),
-          otherAddresses: addressData.filter(data => !data.address.defaultAdress),
-        };
 
         const cartItems = cartResponse.data;
 
 
-        res.status(200).render('user/checkout', { categories: categories, logged: req.session.isUserAuth, address: address, cartItems: cartItems, allStates: allStates, coupon: coupen }, (error, html) => {
+        res.status(200).render('user/checkout',
+          {
+            categories: categories,
+            logged: req.session.isUserAuth,
+            address: address,
+            cartItems: cartItems,
+            allStates: allStates,
+            coupon: coupen
+          },
+          (error, html) => {
 
-          if (error) {
-            return res.send(error)
-          }
-          delete req.session.coupon;
-          res.send(html);
+            if (error) {
+              console.log(error)
+              return res.send(error)
+            }
+            delete req.session.coupon;
+            res.send(html);
 
-        })
+          })
       }))
 
       .catch((error) => {
-        res.status(500).send(error.message)
+        next(error)
       })
 
   },

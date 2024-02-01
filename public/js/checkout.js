@@ -14,7 +14,7 @@ function makeAddressDefualt(selectedId) {
       location.reload()
     },
     error: function (error) {
-      if(xhr.status===404){
+      if (xhr.status === 404) {
         window.location.href = '/login'
       }
 
@@ -26,8 +26,8 @@ function makeAddressDefualt(selectedId) {
 
 const addAddressForm = document.querySelector("#addAddressModal form");
 const editAddressForm = document.querySelector("#addressModal form");
-setEventListeners(addAddressForm);
-setEventListeners(editAddressForm);
+if (addAddressForm) setEventListeners(addAddressForm);
+if (editAddressForm) setEventListeners(editAddressForm);
 
 function setEventListeners(form) {
 
@@ -44,8 +44,8 @@ function setEventListeners(form) {
         const selected = form.getAttribute('data-id');
         const formData = $(form).serializeArray();
         const newData = {}
-        formData.forEach((element)=>{
-          newData[element.name]=element.value
+        formData.forEach((element) => {
+          newData[element.name] = element.value
         })
         updateAddress(newData, selected);
       }
@@ -127,7 +127,7 @@ function checkInputValidity(form, element) {
   if (districtInput.value.trim() === '') {
     displayError(districtInput, errorMessage.common.required);
     isValid = false;
-  }  else {
+  } else {
     clearError(districtInput);
   }
 
@@ -171,7 +171,7 @@ function checkInputValidity(form, element) {
   if (stateInput.value.trim() === '') {
     displayError(stateInput, errorMessage.common.required);
     isValid = false;
-  }else {
+  } else {
     clearError(stateInput);
   }
 
@@ -188,14 +188,14 @@ function checkInputValidity(form, element) {
 
 function displayError(input, message) {
   let errorMessageElement = input.parentElement.querySelector('small');
- 
+
   errorMessageElement.innerHTML = message;
 
   input.classList.remove('is-valid');
   input.classList.add('is-invalid');
 }
 function clearError(input) {
- 
+
   let errorMessageElement = input.parentElement.querySelector('small');
   errorMessageElement.innerHTML = '';
 
@@ -208,8 +208,8 @@ function updateAddress(newData, selected) {
   $.ajax({
     url: `/api/updateAddress/${selected}?source=checkout`,
     type: 'PUT',
-    data:JSON.stringify(newData),
-    contentType:'application/json',
+    data: JSON.stringify(newData),
+    contentType: 'application/json',
     success: function (data, textStatus, xhr) {
       if (xhr.status === 200) {
 
@@ -220,7 +220,7 @@ function updateAddress(newData, selected) {
       if (xhr.status === 400) {
         console.log('Document not found:', xhr.responseText);
       }
-      if(xhr.status===404){
+      if (xhr.status === 404) {
         window.location.href = '/login'
       }
     }
@@ -234,7 +234,8 @@ $('.payment').submit(function (event) {
   let selectedAddressId = $(this).attr('data-id');
   let formValue = $(this).serializeArray();
   console.log(formValue, element)
-  if (formValue.length > 0) {
+
+  if (formValue.length > 0 && selectedAddressId) {
     clearMessage(element);
     let data = {};
     formValue.forEach((value) => {
@@ -242,9 +243,12 @@ $('.payment').submit(function (event) {
     })
     console.log(data, selectedAddressId);
     makePurchase(selectedAddressId, data);
+  } else if (!selectedAddressId) {
+    displayErrorMessage(element
+      , 'Please provide a delivery address to continue');
   } else {
     displayErrorMessage(element
-      , 'choose a payment option');
+      , 'Choose a payment option');
   }
 
 
@@ -252,6 +256,7 @@ $('.payment').submit(function (event) {
 })
 
 function makePurchase(selectedAddressId, PaymentOption) {
+  console.log('puchased')
   console.log(PaymentOption)
   $.ajax({
     url: `/api/createOrder/${selectedAddressId}`,
@@ -261,42 +266,42 @@ function makePurchase(selectedAddressId, PaymentOption) {
     success: function (data, textStatus, xhr) {
       console.log(xhr.status);
       if (xhr.status === 200) {
-        
-       let {message,redirectUrl,order,razorKey} = data
-       console.log(message,redirectUrl,order,razorKey)
-       if(!order) window.location.href = redirectUrl?redirectUrl:'/login';
-       else{
-        const options = {
-          "key": razorKey,
-          "amount": order.amount,
-          "currency": "INR",
-          "name": "Time Gaze",
-          "description": "Test Transaction",
-          "order_id": order.id, 
-          "callback_url": "/api/payOnline", 
-          "prefill": { 
-              "name": "Timegaze", 
+
+        let { message, redirectUrl, order, razorKey } = data
+        console.log(message, redirectUrl, order, razorKey)
+        if (!order) window.location.href = redirectUrl ? redirectUrl : '/login';
+        else {
+          const options = {
+            "key": razorKey,
+            "amount": order.amount,
+            "currency": "INR",
+            "name": "Time Gaze",
+            "description": "Test Transaction",
+            "order_id": order.id,
+            "callback_url": "/api/payOnline",
+            "prefill": {
+              "name": "Timegaze",
               "email": "arjunkan22@example.com",
-              "contact": "8943428897" 
-          },
-          "notes": {
+              "contact": "8943428897"
+            },
+            "notes": {
               "address": "Razorpay Corporate Office"
-          },
-          "theme": {
+            },
+            "theme": {
               "color": "#3399cc"
-          }
-        };
-    
-        const rzp1 = new Razorpay(options);
-    
-        rzp1.open();
-        
-       }
+            }
+          };
+
+          const rzp1 = new Razorpay(options);
+
+          rzp1.open();
+
+        }
       }
 
     },
     error: function (xhr, textStatus, errorThrown) {
-      if(xhr.status===404){
+      if (xhr.status === 404) {
         console.log('ajax error')
         window.location.href = '/login'
       }
@@ -322,5 +327,5 @@ function clearMessage(element) {
 $('#addAddressModal').on('hidden.bs.modal', function () {
   $('#addAddressModal input, #addAddressModal textarea').val('').removeClass('is-valid is-invalid');
   $('#addAddressModal small').text('');
-  $('#state,#district').val('').removeClass('is-valid is-invalid');
+  $('#addAddressModal  #state,#addAddressModal  #district').val('').removeClass('is-valid is-invalid');
 });

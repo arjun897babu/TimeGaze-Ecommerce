@@ -153,7 +153,7 @@ exports.allProducts = async (req, res, next) => {
       matchQuery.$or = [];
       if (category !== '') {
 
-        const categories = category.split(',').map(cat => ({ 'category.categoryName': { $regex: `^${cat.trim()}$`, $options: 'i' } }));
+        const categories = category.split(',').map(cat => ({ 'category.categoryName': cat.trim()}));
 
         selected.category = category.split(',')
         matchQuery.$or.push(...categories);
@@ -177,7 +177,6 @@ exports.allProducts = async (req, res, next) => {
         selected.search = search
       }
     }
-    // return res.json(matchQuery)
     const productQuery = [
       {
         $lookup: {
@@ -189,8 +188,9 @@ exports.allProducts = async (req, res, next) => {
       },
       { $unwind: '$category' },
       { $match: matchQuery },
-
+      
     ];
+    // return res.json(productQuery)
 
     const filter = await Product.aggregate([
 

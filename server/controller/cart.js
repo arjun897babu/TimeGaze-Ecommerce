@@ -77,7 +77,7 @@ exports.addToCart = async (req, res, next) => {
 exports.getUserCart = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    console.log(userId);
+    // console.log(userId);
 
     const userCart = await Cart.aggregate([
       {
@@ -131,7 +131,7 @@ exports.getUserCart = async (req, res, next) => {
       res.send(null)
     }
 
-    console.log(userCart)
+    
 
   } catch (error) {
     res.send(error.message)

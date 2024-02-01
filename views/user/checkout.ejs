@@ -86,7 +86,8 @@
                   <i class="bi bi-check-circle"></i>
                 </div>
               </div>
-              <!-- address -->
+              <% if(address) {%> 
+                 <!-- address -->
               <div class="d-flex col-md-8  flex-column border mb-1 bg-white p-2 flex-sm-row justify-content-between ">
                 <!-- default address -->
                 <div class="">
@@ -378,6 +379,116 @@
                 </div>
                 <!-- end of modal for add a new address -->
               </div>
+                <% }else{%> 
+                  <div class="d-flex col-md-8  flex-column border mb-1 bg-white p-2 flex-sm-row justify-content-end ">
+                    <button style="font-size:0.6rem ;" data-bs-toggle="modal"
+                                data-bs-target="#addAddressModal" class="btn btn-dark m-1" type="submit">Add New
+                                Address</button>
+                                 <!-- modal for add a new address -->
+                <div class="modal fade" id="addAddressModal" tabindex="-3" aria-labelledby="addressModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content rounded-0">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="addressModalLabel">Add Address</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-1">
+                      <form action="/api/createAdress?source=checkout" method="post" class="requires-validation1"
+                        novalidate>
+                        <div class="row p-2">
+
+                          <div class="col-md-6">
+                            <label for="validateName1" class="form-label"> name</label>
+                            <input type="text" class="form-control " name='name' id="validateName1">
+                            <small class="text-danger"></small>
+                          </div>
+
+                          <div class="col-md-6">
+                            <label for="validateMobileNumber1" class="form-label"> mobileNumber</label>
+                            <input type="number" name="mobileNumber" class="form-control " id="validateMobileNumber1">
+                            <small class="text-danger"></small>
+                          </div>
+
+                          <div class="col-md-4">
+                            <label for="state2" class="form-label">State</label>
+                            <select class="form-select" name="state" id="state2">
+                              <option value="" disabled selected>Select state</option>
+                              <% for(x of allStates) {%>
+                                <option value="<%=x.name  %>">
+                                  <%=x.name %>
+                                </option>
+                                <% } %>
+                            </select>
+                            <small class="text-danger"></small>
+                          </div>
+                          <div class="col-md-4">
+                            <label for="district2" class="form-label">district</label>
+                            <select class="form-select" name="district" id="district2">
+                              <option value="" disabled selected>Select district</option>
+
+                            </select>
+                            <!--                           
+                            <label for="inputAddress" class="form-label">District</label>
+                            <input type="text" name="district" class="form-control " id="validateCaseDiameter"> -->
+                            <small class="text-danger"></small>
+
+                          </div>
+                          <div class="col-md-4">
+                            <label for="locality" class="form-label">Locality</label>
+                            <input type="text" name="locality" class="form-control " id="locality">
+                            <small class="text-danger"></small>
+                          </div>
+
+
+                          <div class="col-md-12">
+                            <div class="row">
+                              <div class="col-md-12">
+                                <label for="validateAdress1" class="form-label">Address</label>
+                                <textarea class="form-control " name="address" id="validateAdress1" rows="4"
+                                  placeholder="adress(area and street)"></textarea>
+                                <small class="text-danger"></small>
+                              </div>
+                            </div>
+
+                          </div>
+                          <div class="col-md-12">
+                            <div class="col-5">
+                              <label for="validateCaseShape" class="form-label">Pincode</label>
+                              <input type="number" name="pincode" class="form-control " id="validateCaseShape">
+                              <small class="text-danger"></small>
+                            </div>
+                          </div>
+                          <div class="col-md-12">
+                            <div class="col-md-2 d-flex flex-column ">
+                              <label class="form-label">AdressType</label>
+                              <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                <input type="radio" name="addressType" class="btn-check" id="home1" autocomplete="off"
+                                  value="Home">
+                                <label class="btn btn-outline-dark" for="home1">Home</label>
+
+                                <input type="radio" name="addressType" class="btn-check" id="office1"
+                                  autocomplete="off" value="Office">
+                                <label class="btn btn-outline-dark" for="office1">Office</label>
+                              </div>
+                              <small class="text-danger"></small>
+                            </div>
+                          </div>
+                        </div>
+
+
+                        <div class="d-flex justify-content-center mt-3">
+                          <button type="submit" class="btn btn-outline-dark col-6">Add adress</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- end of modal for add a new address -->
+                  </div>
+                  <% } %>
+             
               <!-- items in cart -->
               <div class="d-flex col-md-8 border mb-1 bg-white p-2">
 
@@ -407,7 +518,7 @@
 
               <!-- payment option -->
               <div class="d-flex col-md-8 border mb-1 bg-white p-2 d-flex flex-column">
-                <form action="" data-id="<%=address.defaultAddress.address._id %>" class="payment" novalidate>
+                <form action="" data-id="<%= address?address.defaultAddress.address._id:'' %>" class="payment" novalidate>
                   <h5 class="form-label form-fontSize" style="font-size: 0.9rem;">Payment Option</h5>
                   <div class="ms-2">
                     <div class="d-flex-align-items-center">
@@ -528,7 +639,7 @@
       </div>
     </div>
     
-    <div class="modal-dialog modal-sm " id="" aria-hidden="">...</div>
+ 
     <!-- footer -->
     <%- include('../include/footer') %>
       <!-- footer -->
@@ -539,7 +650,7 @@
       <script src="js/togglebutton.js"></script>
       <script>
 
-        getCities($('#state').val(), 'district');//for document onload 
+        getCities($('#state').val(), 'district'); 
 
         //event listener for edit address
         $("#state").on("change", function () {
@@ -569,7 +680,7 @@
               districtDropdown.empty();
               districtDropdown.append('<option value="" >Select district</option>');
               for (let city of response.data) {
-                let isSelected = city === '<%=address.defaultAddress.address.district %>';
+                let isSelected = city === '<%=address?address.defaultAddress.address.district:undefined %>';
                 districtDropdown.append(`<option value="${city}" ${isSelected ? 'selected' : ''}>${city}</option>`);
               }
             },

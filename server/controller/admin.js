@@ -217,8 +217,9 @@ exports.addOffer = async (req, res, next) => {
       discount:discount,
       expiry:expiry
     })
-
+    console.log(newOffer._id)
     const createdOffer = await newOffer.save()
+    console.log(createdOffer)
 
     if (offer === 'category') {
       await Product.updateMany({category:category},{$set:{

@@ -78,7 +78,7 @@ exports.createAdress = async (req, res, next) => {
       );
 
       const addedNewAddress = await newNestedAdress.save();
-
+      req.session.addressId=addedNewAddress._id;
       existingUser.adress = addedNewAddress._id;
       await existingUser.save();
       if (source === 'checkout') {
