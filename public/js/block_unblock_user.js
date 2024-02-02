@@ -8,7 +8,7 @@
 
     function blockUser(userId) {
       $.ajax({
-        url: `http://localhost:3000/api/blockUser/${userId}`,
+        url: `/api/blockUser/${userId}`,
         type: 'PUT',
         contentType: 'application/json',
         success: function (data) {

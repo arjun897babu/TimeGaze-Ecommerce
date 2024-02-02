@@ -31,7 +31,7 @@ $(document).ready(function () {
 
   function updateCategory(categoryId, updatedName) {
     $.ajax({
-      url: `http://localhost:3000/api/updateCategory/${categoryId}`,
+      url: `/api/updateCategory/${categoryId}`,
       type: 'PUT',
       contentType: 'application/json',
       data: JSON.stringify({

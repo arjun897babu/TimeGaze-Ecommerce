@@ -18,7 +18,7 @@ $(document).ready(function () {
     }).then((result) => {
       if (result.isConfirmed) {
         $.ajax({
-          url: `http://localhost:3000/api/deleteProduct/${productId}`,
+          url: `/api/deleteProduct/${productId}`,
           type: 'PUT',
           contentType: 'application/json',
           success: function (data) {

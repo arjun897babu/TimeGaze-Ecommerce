@@ -7,7 +7,7 @@ $(document).ready(function(){
   function restore(productId){
     console.log(productId)
     $.ajax({
-      url:`http://localhost:3000/api/restoreProduct/${productId}`,
+      url:`/api/restoreProduct/${productId}`,
       type:'PUT',
       contentType:'application/json',
       success: function(data){

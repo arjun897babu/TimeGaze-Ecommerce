@@ -8,7 +8,7 @@ $(document).ready(function () {
 
   function deleteAddress(selectedId, addressDocumentId) {
     $.ajax({
-      url: `http://localhost:3000/api/deleteAddress/${addressDocumentId}`,
+      url: `/api/deleteAddress/${addressDocumentId}`,
       type: 'PATCH',
       data: JSON.stringify({
         selectedId: selectedId

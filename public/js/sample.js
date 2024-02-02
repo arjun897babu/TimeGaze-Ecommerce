@@ -503,7 +503,7 @@ $(document).ready(function () {
 function delteImage(productId, image) {
 
   $.ajax({
-    url: `http://localhost:3000/api/deleteImage/${productId}`,
+    url: `/api/deleteImage/${productId}`,
     type: 'PATCH',
     contentType: 'application/json',
     data: JSON.stringify({

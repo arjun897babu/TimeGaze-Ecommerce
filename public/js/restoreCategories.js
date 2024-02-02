@@ -7,7 +7,7 @@ $(document).ready(function(){
   function restore(categoryId){
     console.log(categoryId)
     $.ajax({
-      url:`http://localhost:3000/api/restoreCategory/${categoryId}`,
+      url:`/api/restoreCategory/${categoryId}`,
       type:'PUT',
       contentType:'application/json',
       success: function(data){

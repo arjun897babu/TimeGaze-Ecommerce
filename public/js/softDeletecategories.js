@@ -7,7 +7,7 @@ $(document).ready(function(){
   function softDelete(categoryId){
     console.log(categoryId)
     $.ajax({
-      url:`http://localhost:3000/api/deleteCategory/${categoryId}`,
+      url:`/api/deleteCategory/${categoryId}`,
       type:'PUT',
       contentType:'application/json',
       success: function(data){
