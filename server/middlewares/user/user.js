@@ -39,7 +39,6 @@ exports.isUser = (req, res, next) => {
 
     return res.redirect(req.session.redirectUrl || '/');
   } else {
-    console.log(req.session.redirectUrl)
     next();
   }
 };
@@ -169,9 +168,19 @@ exports.singleProduct = async (req, res, next) => {
 }
 
 exports.isUserEmail = (req, res, next)=>{
+  
   if (req.session.useremail) {
     next()
   } else {
+    res.redirect('/login')
+  }
+}
+
+exports.httpVerification = (req,res,next)=>{
+  if(req.session.httpVerification===req.body.email){
+    next()
+  }else{
+    delete req.session.httpVerification
     res.redirect('/login')
   }
 }

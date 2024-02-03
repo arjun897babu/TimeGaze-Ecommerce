@@ -36,8 +36,8 @@ route.get('/wallet', userMiddleWare.isBlocked, userMiddleWare.notUser, services.
 route.post('/api/users', controller.createUser);//api for register a usr
 route.post('/api/userAuth', userMiddleWare.isUserTrue, controller.userLogin);//api for loggin in
 route.post('/api/sendOTP', controller.sendOTP);//api for send otp to mail
-route.post('/api/verifyOTP', userMiddleWare.isUserEmail, controller.verifyOTP);///api for verifying the otp
-route.post('/api/updatePassword', userMiddleWare.isUserEmail, controller.updatePassword);//api for to change the password,to change the password
+route.post('/api/verifyOTP', userMiddleWare.httpVerification, controller.verifyOTP);///api for verifying the otp
+route.post('/api/updatePassword', userMiddleWare.httpVerification, controller.updatePassword);//api for to change the password,to change the password
 
 route.get('/api/productList', productController.productListOnUser)//for get all the product specific category
 

@@ -54,7 +54,7 @@ exports.createUser = async (req, res, next) => {
 
 
       const savedUser = await newUser.save();
-      
+
       const otpPlayload = { email: req.body.email, otp };
       const otpBody = await OTP.create(otpPlayload);
       console.log(otpBody)
@@ -64,7 +64,7 @@ exports.createUser = async (req, res, next) => {
 
       res.redirect('/emailVerify');
       await sendVerificationEmail(newUser.email, otp);
- 
+
 
     } catch (error) {
       console.log(error)
@@ -135,7 +135,7 @@ exports.verifyOTP = async (req, res, next) => {
 
 
     const { email, otp } = req.body;
-    console.log(req.body);
+
     if (!email || !otp) {
       return res.status(400).send(
         'All fields are required',
@@ -146,7 +146,6 @@ exports.verifyOTP = async (req, res, next) => {
 
     if (response.length === 0 || otp !== response[0].otp) {
 
-      console.log(email);
       req.session.errorMessage = 'otp not valid'
       console.log('otp not valid');
       return res.status(401).redirect('/emailVerify');
@@ -156,7 +155,6 @@ exports.verifyOTP = async (req, res, next) => {
     const purpose = req.session.otpPurpose;
     req.session.useremail = email;
     if (purpose === 'resetPassword') {
-
       res.status(200).redirect('/resetPassword');
 
     } else if (purpose === 'registerUser') {
@@ -181,7 +179,7 @@ exports.verifyOTP = async (req, res, next) => {
 exports.sendOTP = async (req, res, next) => {
   const { email } = req.body;
   const { otpPurpose } = req.query;
-  console.log(otpPurpose)
+
   try {
     if (!email) {
       return res.status(400).send(`all fields are required`);
@@ -205,17 +203,19 @@ exports.sendOTP = async (req, res, next) => {
       const otpBody = await OTP.create(otpPlayload);
       console.log(otpBody)
 
-
-      req.session.otpPurpose = 'resetPassword';
-      req.session.useremail = email;
-
+      
+      
+      
       if (otpPurpose === 'resendOtp') {
         res.status(200).json({ status: 'success' });
       } else {
+        req.session.otpPurpose = 'resetPassword';
+        req.session.useremail = email;
+        req.session.httpVerification = email;
         res.status(200).redirect('/emailVerify');
       }
       await sendVerificationEmail(email, otp);
-      
+
 
     }
   }
@@ -285,7 +285,6 @@ exports.updatePassword = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     req.session.useremail = email;
-
     if (!password) {
       return res.status(400).redirect('/resetPassword');
     }
@@ -300,9 +299,8 @@ exports.updatePassword = async (req, res, next) => {
       const salt = 10;
       const hasedPassowrd = await bcrypt.hash(password, salt);
       user.password = hasedPassowrd;
-      console.log(user.password);
       await user.save();
-
+      delete req.session.httpVerification;
       res.status(201).redirect('/login')
     }
   }
@@ -317,9 +315,9 @@ exports.updateUserPassword = async (req, res) => {
 
   try {
 
-    const userEmail = req.session.email 
+    const userEmail = req.session.email
     const { password } = req.body;
- 
+
 
     if (!userEmail) {
       return res.send('user is not logged in');

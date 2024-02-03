@@ -34,7 +34,6 @@ module.exports = {
 
   },
   login: (req, res) => {
-    console.log('login page')
     res.render('user/user_login', { registerdEmail: req.session.useremail, errorMessage: req.session.invalidMessage, logged: req.session.isUserAuth }, (error, html) => {
 
       if (error) {
@@ -55,23 +54,23 @@ module.exports = {
       res.send(html);
     });
   },
-  emailverify: (req, res) => {
-
-    res.render('user/email_verification', { registerdEmail: req.session.useremail, errorMessage: req.session.errorMessage, logged: req.session.isUserAuth }, (error, html) => {
-      if (error) {
-        res.send(error.message)
-      }
-      // delete req.session.useremail
-      delete req.session.errorMessage
-      res.send(html)
-    });
-  },
   passwordReset: (req, res) => {
     res.render('user/forgot_password', { errorMessage: req.session.errorMessage, logged: req.session.isUserAuth }, (error, html) => {
       if (error) {
         res.send(error.message)
       }
 
+      delete req.session.errorMessage
+      res.send(html)
+    });
+  },
+  emailverify: (req, res) => {
+
+    res.render('user/email_verification', { registerdEmail: req.session.useremail, errorMessage: req.session.errorMessage, logged: req.session.isUserAuth }, (error, html) => {
+      if (error) {
+        res.send(error.message)
+      }
+      delete req.session.useremail
       delete req.session.errorMessage
       res.send(html)
     });
@@ -92,8 +91,8 @@ module.exports = {
     const { pid } = req.query
     const review = await ReviewHelper.productReview(userId, pid);
     const isPurchased = await OrderHelper.userPurchased(userId, pid);
-    console.log('review:', review)
-    console.log('isPurchased:', isPurchased)
+    // console.log('review:', review)
+    // console.log('isPurchased:', isPurchased)
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/singleEditProduct?userId=${userId}&${query}`),
       axios.get(`http://localhost:${process.env.PORT}/api/categories`)
@@ -161,7 +160,7 @@ module.exports = {
     const categories = await categoryHelper.allCategory()
     const allStates = await statesHelper.allStates();
     const allAddress = await addressHelper.userAddress(addressId);
-    console.log(allAddress)
+    // console.log(allAddress)
     // axios.all([
     //   axios.get(`http://localhost:${process.env.PORT}/api/getAddressDetails?userEmail=${userEmail}`),
     // ])
@@ -234,7 +233,6 @@ module.exports = {
     }else{
       address = undefined
     }
-    console.log('checkoutpage address',address)
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/getUserCart/${userId}`)
     ])
