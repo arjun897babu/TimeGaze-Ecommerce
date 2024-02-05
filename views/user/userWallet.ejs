@@ -196,15 +196,15 @@
                 <% if(wallet) {%>
                   <div class="table-responsive ">
                     <table class="table table-hover rounded ">
+                      <thead>
+                        <tr>
+                          <th>No</th>
+                          <th>date</th>
+                          <th>amount</th>
+                        </tr>
+                      </thead>
+                      <tbody class="mb-2">
                       <% wallet.transactions.forEach((transaction,index)=>{ %>
-                        <thead>
-                          <tr>
-                            <th>No</th>
-                            <th>date</th>
-                            <th>amount</th>
-                          </tr>
-                        </thead>
-                        <tbody class="mb-2">
 
                           <tr>
                             <td>
@@ -222,9 +222,9 @@
 
                           </tr>
 
+                          
+                          <% }); %>
                         </tbody>
-
-                        <% }); %>
 
                     </table>
                   </div>

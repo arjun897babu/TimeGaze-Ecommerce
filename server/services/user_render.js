@@ -7,14 +7,17 @@ const ReviewHelper = require('../utilities/review');
 const OrderHelper = require('../utilities/order');
 const categoryHelper = require('../utilities/category');
 const statesHelper = require('../utilities/states');
-const addressHelper = require('../utilities/address')
+const addressHelper = require('../utilities/address');
 
 
 
 module.exports = {
-  home: (req, res) => {
+  home: async (req, res,next) => {
 
     const { query } = req.query;
+    const categories = await categoryHelper.allCategory();
+    const products1 = await OrderHelper.topSellingProducts();
+    console.log(categories,products1)
 
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/allProducts`),

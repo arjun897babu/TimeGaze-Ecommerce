@@ -9,7 +9,7 @@
           <ul>
             <li><a href="/">home</a></li>
             <% for(x in categories) {%>
-              <li><a href="/productList/<%=categories[x]._id %>">
+              <li><a href="/productList?category=<%=categories[x].categoryName %>">
                   <%=categories[x].categoryName%>
                 </a></li>
               <% } %>

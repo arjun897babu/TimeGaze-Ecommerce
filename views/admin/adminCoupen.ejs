@@ -253,7 +253,7 @@
                   </tr>
                 </thead>
                 <tbody class="mb-2">
-                  <tr>
+                  
                     <% coupon.forEach((x, index) => { %>
                       <% let expired = x.expiry<Date.now() %>
                       <tr>
@@ -268,7 +268,7 @@
                         <td ><span class="btn rounded-0 <%= expired ? 'btn-danger' : 'btn-success'  %>" style="font-size: 0.6rem;"><%= expired ? 'expired' : 'Active' %></span></td>
                       </tr>
                     <% }); %>
-                  </tr>
+                  
                 </tbody>
               </table>
             </div>

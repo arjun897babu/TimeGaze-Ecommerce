@@ -86,17 +86,6 @@
 <body>
   <!-- header -->
   <%- include('../include/headerCommon') %>
-
-    <div class="p-2 catagory">
-      <% for( x in categories ) {%>
-        <button class="btn btn-dark" style="--bs-btn-font-size: 0rem;"><a
-            href="/productList?category=<%=categories[x].categoryName %>">
-            <%=categories[x].categoryName%>
-          </a></button>
-        <%}%>
-    </div>
-
-
     </header>
     <!-- header -->
 

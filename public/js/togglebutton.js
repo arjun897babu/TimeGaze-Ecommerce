@@ -20,6 +20,6 @@ window.addEventListener('scroll', function hideNavigation() {
   }
 })
 const search = new URLSearchParams(window.location.search).get('search')
-if(search){
+if (search) {
   document.querySelector('input[name=search]').value = search
 }
