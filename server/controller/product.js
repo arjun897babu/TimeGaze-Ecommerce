@@ -236,14 +236,25 @@ exports.allProducts = async (req, res, next) => {
       { $match: matchQuery },
       { ...brandQuery },
       { ...caseDiameterQuery },
+      {
+        $unwind: {
+          path: '$categoryOffer',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $unwind: {
+          path: '$productOffer',
+          preserveNullAndEmptyArrays: true
+        }
+      },
       {$sort:{discountPrice:sort}}
 
 
     ];
     // return res.json(productQuery)
-
     const filter = await Product.aggregate([
-
+      
       {
         $group: {
           _id: null,
@@ -264,9 +275,10 @@ exports.allProducts = async (req, res, next) => {
     const [products, count] = await Promise.all([
       Product.aggregate([...productQuery, { $skip: startIndex }, { $limit: perPage }]),
       Product.aggregate([...productQuery, { $count: 'totalCount' }]),
-
+      
     ]);
-
+    console.log(products)
+    
     const totalCount = count.length > 0 ? count[0].totalCount : 0;
     const totalPages = Math.ceil(totalCount / perPage);
     const path = queryString.stringify(req.query);
@@ -385,7 +397,19 @@ exports.singleProduct = async (req, res, next) => {
             }
           ]
         }
-      }
+      },
+      {
+        $unwind: {
+          path: '$categoryOffer',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $unwind: {
+          path: '$productOffer',
+          preserveNullAndEmptyArrays: true
+        }
+      },
     ]);
 
 
@@ -409,7 +433,7 @@ exports.singleProduct = async (req, res, next) => {
       isCart: isCart,
       existingProduct: existingProduct
     };
-
+    console.log(existingProduct)
     return res.status(200).json({ result: result });
 
   } catch (error) {

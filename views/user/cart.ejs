@@ -83,6 +83,7 @@
                                  
                                  
                                 <% let availableQuantity=cart[carts].cartItem.product.quantity%>
+                               
                                   <div class="d-flex " style="width: 100px;">
                                     <button class="btn px-2"
                                       onclick="updateQuantity(this,-1,'<%= availableQuantity %>')">
@@ -106,20 +107,62 @@
 
 
                         <% if(cart[carts].cartItem.product.quantity>0) {%>
-                          <div class="col-lg-2 col-sm-6 col-6 d-flex flex-row flex-lg-column flex-xl-row text-nowrap">
+                          <%
+                             function calculateDiscountedPrice(lastPrice, discount) {
+                               return lastPrice - (lastPrice * discount / 100);
+                             }
 
-                            <div class="">
-                              <text class="h6">₹
-                                <%=cart[carts].cartItem.product.discountPrice*cart[carts].cartItem.quantity%>
-                              </text>
-                              <small class="text-success">
-                                <%=cart[carts].cartItem.product.offer%>% off
-                              </small> <br />
-                              <small class="text-muted text-nowrap"> ₹ <%=cart[carts].cartItem.product.discountPrice%>
-                                  /
-                                  per item </small>
-                            </div>
-                          </div>
+                             function calculateTotalPrice(lastPrice, cartQuantity, specialOffer, extraOffer, isSpecialOfferExpired, isExtraOfferExpired) {
+                               let finalPrice = lastPrice;
+                               
+                               if (specialOffer && !isSpecialOfferExpired) {
+                                 finalPrice = calculateDiscountedPrice(finalPrice, specialOffer);
+                               }
+                               
+                               if (extraOffer && !isExtraOfferExpired) {
+                                 finalPrice = calculateDiscountedPrice(finalPrice, extraOffer);
+                               }
+                               
+                               return Math.round(finalPrice * cartQuantity);
+                             }
+
+                             let cartQuantity = cart[carts].cartItem.quantity;
+                             let lastPrice = cart[carts].cartItem.product.discountPrice;
+                             let specialOffer = cart[carts].cartItem.product.categoryOffer?.discount;
+                             let extraOffer = cart[carts].cartItem.product.productOffer?.discount;
+                             let specialOfferExpired = new Date(cart[carts].cartItem.product.categoryOffer?.expiry).getTime() < Date.now();
+                             let extraOfferExpired = new Date(cart[carts].cartItem.product.productOffer?.expiry).getTime() < Date.now();
+
+                             let totalPrice = calculateTotalPrice(lastPrice, cartQuantity, specialOffer, extraOffer, specialOfferExpired, extraOfferExpired);
+                             %>
+
+                             <div class="col-lg-2 col-sm-6 col-6 d-flex flex-row flex-lg-column flex-xl-row text-nowrap">
+                               <div class="">
+                                 <text class="h6">₹<%= totalPrice %></text><br>
+                                 <small class="text-muted text-nowrap">
+                                  ₹ 
+                                  <% 
+        
+                                    let pricePerItem = lastPrice; 
+                                    if (!specialOfferExpired && !extraOfferExpired && specialOffer && extraOffer) {
+                                    
+                                      pricePerItem = calculateDiscountedPrice(lastPrice, specialOffer + extraOffer); 
+                                    } else if (!specialOfferExpired && specialOffer) {
+                                      
+                                      pricePerItem = calculateDiscountedPrice(lastPrice, specialOffer);
+                                    } else if (!extraOfferExpired && extraOffer) {
+                                    
+                                      pricePerItem = calculateDiscountedPrice(lastPrice, extraOffer);
+                                    }
+                                    
+                                      pricePerItem = Math.round(pricePerItem);
+                                    %>
+                                    <%= pricePerItem %> / per item
+                              </small>
+                              
+                               </div>
+                             </div>
+
                           <% } %>
 
                             <div
@@ -142,30 +185,41 @@
               <!-- cart -->
               <!-- summary -->
               <div class="col-md-3">
-                <!-- <div class="card mb-3 border shadow-0">
-                  <div class="card-body">
-                    <form>
-                      <div class="form-group">
-                        <label class="form-label">Have coupon?</label>
-                        <div class="input-group ">
-                          <input type="text" class="form-control border" name="" placeholder="Coupon code">
-                          <button class="btn btn-light border">Apply</button>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                </div> -->
+                
                 <div class="card shadow-0 border">
+                  <%
+
+                   let cartTotal = cart.reduce((total, carts) => {
+                    let cartQuantity = carts.cartItem.quantity;
+                    let extraOfferExpired = new Date(carts.cartItem.product.productOffer?.expiry).getTime() < Date.now();
+                    let specialOfferExpired = new Date(carts.cartItem.product.categoryOffer?.expiry).getTime() < Date.now();
+                    let lastPrice = carts.cartItem.product.discountPrice;
+                    let specialOffer = carts.cartItem.product.categoryOffer?.discount || 0;
+                    let extraOffer = carts.cartItem.product.productOffer?.discount || 0;
+
+                    let discountedPrice = lastPrice; 
+
+                    if (specialOffer && !specialOfferExpired && extraOffer && !extraOfferExpired) {
+                        discountedPrice *= (1 - specialOffer / 100) * (1 - extraOffer / 100);
+                    } else if (specialOffer && !specialOfferExpired) {
+                        discountedPrice *= (1 - specialOffer / 100);
+                    } else if (extraOffer && !extraOfferExpired) {
+                        discountedPrice *= (1 - extraOffer / 100);
+                    }
+
+                    let itemTotal = discountedPrice * cartQuantity;    
+                    return Math.round(total + itemTotal); 
+                   }, 0); 
+
+                  %>  
+
                   <div class="card-body">
                     <div class="d-flex justify-content-between">
                       <p class="mb-2">Price(<%=cart.length %> items)</p>
-                      <p class="mb-2">₹<%= cart[0].cartTotal %>
+                      <p class="mb-2">
+                        ₹<%= cartTotal %>
                       </p>
                     </div>
-                    <!-- <div class="d-flex justify-content-between">
-                      <p class="mb-2">Discount:</p>
-                      <p class="mb-2 text-success">-₹60.00</p>
-                    </div> -->
                     <div class="d-flex justify-content-between">
                       <p class="mb-2">Delivery</p>
                       <p class="mb-2 text-success">Free</p>
@@ -173,7 +227,7 @@
                     <hr />
                     <div class="d-flex justify-content-between">
                       <p class="mb-2">Total price:</p>
-                      <p class="mb-2 fw-bold">₹<%= cart[0].cartTotal %>
+                      <p class="mb-2 fw-bold">₹<%= cartTotal %>
                       </p>
                     </div>
 

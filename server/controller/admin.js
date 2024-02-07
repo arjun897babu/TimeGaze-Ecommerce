@@ -223,7 +223,7 @@ exports.addOffer = async (req, res, next) => {
 
     if (offer === 'category') {
       await Product.updateMany({category:category},{$set:{
-        'specialOffer':createdOffer
+        'categoryOffer.offer':newOffer._id,'categoryOffer.discount':newOffer.discount,'categoryOffer.expiry':newOffer.expiry
       }});
     }
     if (offer === 'product') {
@@ -231,8 +231,7 @@ exports.addOffer = async (req, res, next) => {
         product,
         {
           $set: {
-            'specialOffer': createdOffer,
-            
+            'productOffer.offer':newOffer._id,'productOffer.discount':newOffer.discount,'productOffer.expiry':newOffer.expiry
           }
         }
       )

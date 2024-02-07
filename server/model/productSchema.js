@@ -33,9 +33,9 @@ const productSchema = new mongoose.Schema({
   },
   category: {
     type: mongoose.Schema.ObjectId,
-    ref:'category',
+    ref: 'category',
     required: true,
-    
+
   },
   quantity: {
     type: Number,
@@ -44,13 +44,25 @@ const productSchema = new mongoose.Schema({
   image: [{
     type: String,
   }],
-  unlisted:{
-    type:Boolean,
-    default:false
+  unlisted: {
+    type: Boolean,
+    default: false
   },
-  specialOffer:{
-    type: mongoose.Schema.Types.ObjectId,
-    ref:'Offer'
+  categoryOffer: {
+    offer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Offer',
+    },
+    discount: Number,
+    expiry: Date,
+  },
+  productOffer: {
+    offer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Offer',
+    },
+    discount: Number,
+    expiry: Date,
   }
 
 })

@@ -213,6 +213,7 @@ module.exports = {
       .then(axios.spread((categoryResponse, cartResponse) => {
         const categories = categoryResponse.data;
         const cart = cartResponse.data;
+        console.log(cart)
         res.status(200).render('user/cart', { categories: categories, cart: cart, logged: req.session.isUserAuth })
       }))
 
@@ -244,7 +245,7 @@ module.exports = {
 
 
         const cartItems = cartResponse.data;
-
+        console.log('cartItems',cartItems)
 
         res.status(200).render('user/checkout',
           {

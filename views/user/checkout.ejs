@@ -497,6 +497,34 @@
                   <h6 class="text-dark my-4">Items in cart</h6>
                   <!-- single cart Item -->
                   <% for( x of cartItems) {%>
+                    <%
+                      function calculateDiscountedPrice(lastPrice, discount) {
+                       return lastPrice - (lastPrice * discount / 100);
+                      }
+
+                      function calculateTotalPrice(lastPrice, cartQuantity, specialOffer, extraOffer, isSpecialOfferExpired, isExtraOfferExpired) {
+
+                        let finalPrice = lastPrice;
+                        
+                        if (specialOffer && !isSpecialOfferExpired) {
+                          finalPrice = calculateDiscountedPrice(finalPrice, specialOffer);
+                        }
+                        
+                        if (extraOffer && !isExtraOfferExpired) {
+                          finalPrice = calculateDiscountedPrice(finalPrice, extraOffer);
+                        }
+                        
+                        return Math.round(finalPrice * cartQuantity);
+                      }
+                      let cartQuantity = x.cartItem.quantity;
+                      let lastPrice = x.cartItem.product.discountPrice;
+                      let specialOffer = x.cartItem.product.categoryOffer?.discount
+                      let extraOffer = x.cartItem.product.productOffer?.discount;
+                      let specialOfferExpired = new Date(x.cartItem.product.categoryOffer?.expiry).getTime()< Date.now()
+                      let extraOfferExpired = new Date(x.cartItem.product.productOffer?.expiry).getTime()< Date.now();
+                      let totalPrice = calculateTotalPrice(lastPrice, cartQuantity, specialOffer, extraOffer, specialOfferExpired, extraOfferExpired);
+
+                    %>
                     <div class="d-flex align-items-center mb-4">
                       <div class="me-3 position-relative">
                         <img src="/uploads/<%=x.cartItem.product.image[0]  %>" style="height: 96px; width: 96px;"
@@ -507,8 +535,24 @@
                           <%=x.cartItem.product.productName %> <br />
 
                         </a>
-                        <div class="price text-muted">Total:₹<%=x.cartItem.product.discountPrice* x.cartItem.quantity%>(
-                            <%=x.cartItem.quantity%>*₹<%= x.cartItem.product.discountPrice %>)</div>
+                        <div class="price text-muted">Total:₹<%=totalPrice%>
+                          <% 
+                            let pricePerItem = lastPrice; 
+                            if (!specialOfferExpired && !extraOfferExpired && specialOffer && extraOffer) {
+                            
+                              pricePerItem = calculateDiscountedPrice(lastPrice, specialOffer + extraOffer); 
+                            } else if (!specialOfferExpired && specialOffer) {
+                              
+                              pricePerItem = calculateDiscountedPrice(lastPrice, specialOffer);
+                            } else if (!extraOfferExpired && extraOffer) {
+                            
+                              pricePerItem = calculateDiscountedPrice(lastPrice, extraOffer);
+                            }
+                            
+                            pricePerItem = Math.round(pricePerItem);  
+                          %>
+                          (
+                            <%=cartQuantity%>*₹<%= pricePerItem%>)</div>
                       </div>
                     </div>
                     <% } %>
@@ -547,6 +591,31 @@
 
             <!-- summary -->
             <div class="col-md-3 mt-2">
+              <%
+
+                let cartTotal = cartItems.reduce((total, carts) => {
+                let cartQuantity = carts.cartItem.quantity;
+                let extraOfferExpired = new Date(carts.cartItem.product.productOffer?.expiry).getTime() < Date.now();
+                let specialOfferExpired = new Date(carts.cartItem.product.categoryOffer?.expiry).getTime() < Date.now();
+                let lastPrice = carts.cartItem.product.discountPrice;
+                let specialOffer = carts.cartItem.product.categoryOffer?.discount || 0;
+                let extraOffer = carts.cartItem.product.productOffer?.discount || 0;
+
+                let discountedPrice = lastPrice; 
+
+                if (specialOffer && !specialOfferExpired && extraOffer && !extraOfferExpired) {
+                    discountedPrice *= (1 - specialOffer / 100) * (1 - extraOffer / 100);
+                } else if (specialOffer && !specialOfferExpired) {
+                    discountedPrice *= (1 - specialOffer / 100);
+                } else if (extraOffer && !extraOfferExpired) {
+                    discountedPrice *= (1 - extraOffer / 100);
+                }
+
+                let itemTotal = discountedPrice * cartQuantity;    
+                return Math.round(total + itemTotal); 
+               }, 0); 
+
+              %>  
               <div class="card mb-1 border shadow-0 ">
                 <div class="card-body coupenDiv">
                   <form>
@@ -568,8 +637,9 @@
                 <div class="card shadow-0 border">
                   <div class="card-body p-2 cartSummary">
                     <div class="d-flex justify-content-between">
+                      
                       <p class="mb-0">Price (<%=cartItems.length %> items)</p>
-                      <p class="mb-0">₹<%=cartItems[0].cartTotal %>
+                      <p class="mb-0">₹<%=cartTotal %>
                       </p>
                     </div>
 
@@ -585,7 +655,7 @@
                     <hr />
                     <div class="d-flex justify-content-between">
                       <p class="mb-0 ">Total price:</p>
-                      <p class="mb-0 fw-bold finalPrice" id="cartTotal">₹<%=cartItems[0].cartTotal %>
+                      <p class="mb-0 fw-bold finalPrice" id="cartTotal">₹<%=cartTotal %>
                       </p>
                     </div>
                   </div>

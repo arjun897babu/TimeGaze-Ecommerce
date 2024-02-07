@@ -79,6 +79,20 @@
         /* Set the width to 100% for screens less than 320px */
       }
     }
+    .offer-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%; 
+      background-color: green; 
+      color: white; 
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.3rem;
+      position: absolute; 
+      top: 5px;
+    }
   </style>
 
 </head>
@@ -303,21 +317,57 @@
                 <% } else { %>
                   <% for( i=0;i<products.length;i++) { %>
 
-                    <div class="justify-content-center col-6 col-sm-3 d-flex small-col">
+                    <div class="justify-content-center col-6 col-sm-3 d-flex small-col" style="width: 228.375px;">
 
-                      <div class="card m-2" style="width: 13rem;">
-                        <i class="card-img-top d-flex justify-content-end pe-2"><i class="bi bi-heart"></i></i>
-                        <a href="/singleProduct?pid=<%=products[i]._id%>&product=<%=products[i].productName%>"><img
+                      <div class="card m-2  rounded-0 p-1" style="width: 13rem;">
+                        <% let specialOfferTimeStamp = new Date(products[i].productOffer?.expiry) %>
+                        <% let specialOfferExpired = specialOfferTimeStamp<Date.now() %>
+                        <% if(products[i].productOffer&&!specialOfferExpired) {%>
+                          <i class="card-img-top d-flex justify-content-end pe-2">
+                            <div class="offer-circle " > Special Offer <br> <i style="font-size: 0.5rem;"><%=products[i].productOffer.discount  %>%</i></div>
+                          </i>
+                          <% } %>
+                        <a class="pb-4" href="/singleProduct?pid=<%=products[i]._id%>&product=<%=products[i].productName%>"><img
                             src="/uploads/<%=products[i].image[0]%>" class=""
                             style="object-fit:cover;width: 100%; height: 100%" alt="...">
 
                         </a>
                         <div class="card-body p-0">
+                    <% let extraOfferTimestamp = new Date(products[i].categoryOffer?.expiry).getTime(); %>
+                    <% let extraOfferExpired = extraOfferTimestamp < Date.now(); %>
+                    <% if(products[i].categoryOffer&&!extraOfferExpired) {%>
+                      <span class="d-flex badge rounded-1 bg-success text-white position-absolute" style="bottom: 3.9rem;
+                      font-size: 0.6rem;">Extra Offer:
+                        <%= products[i].categoryOffer.discount %>%</span>
+                      <% } %>
                           <h5 class="card-title m-1" style="font-size: 0.8rem; text-transform: capitalize;">
                             <%=products[i].productName%> 
                           </h5>
                           <p><%=products[i].brand%></p>
-                          <p class="card-text m-1 ps-1">₹<%=products[i].discountPrice%> <del class="text-black-50">₹<%=products[i].price%></del>
+                          <p class="card-text m-1 ps-1">
+                          <%
+                            let lastPrice = products[i].discountPrice
+                            let delPrice =  products[i].price
+                            let specialOffer = products[i].categoryOffer?.discount
+                            let extraOffer = products[i].productOffer?.discount
+                          if((specialOffer&&!extraOfferExpired)&&(extraOffer&&!specialOfferExpired)){
+                            lastPrice -=Math.round(( (lastPrice*specialOffer )/100)+((lastPrice*extraOffer )/100))
+                            delPrice =  products[i].discountPrice
+                          }
+                          else if(specialOffer&&!extraOfferExpired){
+                              lastPrice -=Math.round((lastPrice*specialOffer )/100)
+                              delPrice =  products[i].discountPrice
+                          }
+                          else if(extraOffer&&!specialOfferExpired){
+                              lastPrice -=Math.round((lastPrice*extraOffer )/100)
+                              delPrice =  products[i].discountPrice
+                          }
+    
+                          %>
+                          ₹<%=lastPrice%> 
+                          <del>
+                            ₹<%=delPrice%>
+                          </del>
                           </p>
                         </div>
                         <div class=" ps-3 pe-3">

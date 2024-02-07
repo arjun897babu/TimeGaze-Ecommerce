@@ -188,6 +188,10 @@
 
             </aside>
             <main class="col-sm-6">
+              <% 
+                let specialOfferExpired = new Date(products.productOffer?.expiry).getTime() < Date.now();
+                let extraOfferExpired = new Date(products.categoryOffer?.expiry).getTime() < Date.now(); 
+              %>
               <div class="p-3">
                 <h4 class="title text-dark text-capitalize">
                   <%=products.productName %>Fashion <%=products.category.categoryName%>'s <%=products.caseShape%> Case
@@ -208,13 +212,43 @@
 
                   <!-- <span class="text-success ms-2">In stock</span> -->
                 </div>
-                <span class="text-success">
-                  <%=products.offer%>% offer
-                </span>
+                <%
+                 let lastPrice = products.discountPrice
+                 let delPrice =  products.price
+                 let specialOffer = products.categoryOffer?.discount
+                 let extraOffer = products.productOffer?.discount
+                 if((specialOffer&&!extraOfferExpired)&&(extraOffer&&!specialOfferExpired)){
+                  lastPrice -=Math.round(( (lastPrice*specialOffer )/100)+((lastPrice*extraOffer )/100))
+                  delPrice =  products.discountPrice
+                 }
+                 else if(specialOffer&&!extraOfferExpired){
+                  lastPrice -=Math.round((lastPrice*specialOffer )/100)
+                  delPrice =  products.discountPrice
+                  }
+                  else if(extraOffer&&!specialOfferExpired){
+                   lastPrice -=Math.round((lastPrice*extraOffer )/100)
+                   delPrice =  products.discountPrice
+                 }
+    
+                %>
+                <div class="text-success " style="font-size: 0.7rem;">
+                  <%  if((specialOffer&&!extraOfferExpired)&&(extraOffer&&!specialOfferExpired)) {%>
+                    <i class="bi bi-tag-fill text-sucess"></i> <%=specialOffer %><small style="font-size: 0.5rem;">%</small> Extra offer on Product<br>
+                    <i class="bi bi-tag-fill text-sucess"></i> <%=extraOffer %><small style="font-size: 0.5rem;">%</small> Special offer on <%=products.category.categoryName  %>  <br>
+                    <i class="bi bi-tag-fill text-sucess"></i> <%=products.offer %><small style="font-size: 0.5rem;">%</small> offer
+                  <% }else if(specialOffer&&!extraOfferExpired){ %>
+                    <i class="bi bi-tag-fill text-sucess"></i> <%=specialOffer %><small style="font-size: 0.5rem;">%</small> Extra offer on Product<br>
+                    <i class="bi bi-tag-fill text-sucess"></i> <%=products.offer %><small style="font-size: 0.5rem;">%</small> offer
+                  <% }else if(extraOffer&&!specialOfferExpired){ %>
+                    <i class="bi bi-tag-fill text-sucess"></i> <%=extraOffer %><small style="font-size: 0.5rem;">%</small> Special offer on <%=products.category.categoryName  %>'s  <br>
+                    <i class="bi bi-tag-fill text-sucess"></i> <%=products.offer %><small style="font-size: 0.5rem;">%</small> offer
+                  <% }else{ %>
+                    <i class="bi bi-tag-fill text-sucess"></i> <%=products.offer %><small style="font-size: 0.5rem;">%</small> offer
+                  <% } %>
+                </div>
                 <div class="mb-3">
-
-                  <span class="h5">₹<%=products.discountPrice%></span>
-                  <span class="text-muted"><del>₹<%=products.price%></del></span>
+                  <span class="h5">₹<%=lastPrice%></span>
+                  <span class="text-muted"><del>₹<%=delPrice%></del></span>
                 </div>
 
                 <!-- <p>
