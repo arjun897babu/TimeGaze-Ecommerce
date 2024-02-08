@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const Coupen = require('../model/coupenSchema');
-const Cart = require('../model/cartSchema');
 const Order = require('../model/orderSchema');
-const coupenHelper = require('../utilities/coupen')
+const coupenHelper = require('../utilities/coupen');
+const offerHelper = require('../utilities/offer')
 
 
 exports.CreateCoupen = async (req, res, next) => {
@@ -57,12 +57,8 @@ exports.CreateCoupen = async (req, res, next) => {
 
 exports.applyCoupen = async (req, res, next) => {
   try {
-    const  userId  = req.session.userId 
+    const userId = req.session.userId
     const { code } = req.body;
-    const { cartId } = req.params
-
-
-    console.log('cartId:',cartId,'code:',code)
 
     const [availableCoupen] = await Coupen.aggregate(
       [
@@ -88,25 +84,9 @@ exports.applyCoupen = async (req, res, next) => {
       }
     )
 
-    const [cartTotal] = await Cart.aggregate(
-      [
-        {
-          $match:
-          {
-            $and: [
-              { userId: new mongoose.Types.ObjectId(userId) },
-              { _id: new mongoose.Types.ObjectId(cartId) }
-            ]
-          }
-        }
-        ,
-        {
-          $project: { _id: 0, cartTotal: 1 }
-        }
-      ]
-    );
+    const lastPrice = await offerHelper.calulateLastPrice(userId);
 
-    if (cartTotal.cartTotal < availableCoupen.minAmount) return res.status(400).json(
+    if (lastPrice < availableCoupen.minAmount) return res.status(400).json(
       {
         status: 'error',
         message: `purchase above ${availableCoupen.minAmount}`
@@ -133,15 +113,15 @@ exports.applyCoupen = async (req, res, next) => {
 
     if (!appliedCoupon || appliedCoupon.usedCount < availableCoupen.limit) {
       //calculated discount amount
-      
-      const discountPrice = coupenHelper.calculateDiscount(availableCoupen, cartTotal.cartTotal);
+
+      const discountPrice = coupenHelper.calculateDiscount(availableCoupen, lastPrice);
       req.session.coupon = availableCoupen
       res.status(200).json(
         {
           status: 'success',
           discountPrice: discountPrice,
-          discount: cartTotal.cartTotal - discountPrice,
-          message :"coupon applied successfully"
+          discount: lastPrice - discountPrice,
+          message: "coupon applied successfully"
         }
       );
     }

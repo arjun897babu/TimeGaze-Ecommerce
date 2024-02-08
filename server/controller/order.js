@@ -8,7 +8,10 @@ const coupenHelper = require('../utilities/coupen');
 const Razorpay = require('razorpay');
 const crypto = require("crypto");
 const Wallet = require('../model/walletSchema');
-const productHelper = require('../utilities/product')
+const productHelper = require('../utilities/product');
+const Coupen = require('../model/coupenSchema');
+const offerHelper = require('../utilities/offer')
+
 
 const instance = new Razorpay(
   {
@@ -23,7 +26,7 @@ exports.createOrder = async (req, res, next) => {
     const { userId, addressId, coupon } = req.session;
     const { selectedAddressId } = req.params;
     const { PaymentOption } = req.body
-    console.log(userId, addressId, coupon,selectedAddressId,PaymentOption)
+    console.log(userId, addressId, coupon, selectedAddressId, PaymentOption)
     if (!PaymentOption || !selectedAddressId) return res.status(400).send('all field are required');
 
     //checking the address is the defualt address
@@ -43,7 +46,7 @@ exports.createOrder = async (req, res, next) => {
         }
       },
     ]);
-  
+
     //checking cart is exist
     const existingCart = await Cart.aggregate(
       [
@@ -78,8 +81,8 @@ exports.createOrder = async (req, res, next) => {
     });
 
     const isValid = valid.every(bolean => bolean);
-    console.log('isValid',isValid)
-    console.log('ex.address',existingAddress)
+    console.log('isValid', isValid)
+    console.log('ex.address', existingAddress)
     if (existingAddress.length === 0 || !isValid) {
 
       return res.status(404).json({ status: 'failed', message: 'some product is outOf stock', redirectUrl: '/cart' })
@@ -104,24 +107,63 @@ exports.createOrder = async (req, res, next) => {
         product => product._id.equals(new mongoose.Types.ObjectId(cartItem.product))
       );
 
+      let priceToUse = matchingProduct.discountPrice;
+
+      // Function to check offer is valid 
+      const isValidOffer = (offer) => {
+        if (!offer || !offer.expiry) return false;
+        const now = new Date();
+        const expiryDate = new Date(offer.expiry);
+        return now <= expiryDate;
+      };
+
+
+      const extraOffer = isValidOffer(matchingProduct.productOffer) ? matchingProduct.productOffer.discount : 0;
+      const specialOffer = isValidOffer(matchingProduct.categoryOffer) ? matchingProduct.categoryOffer.discount : 0;
+
+
+      const extraDiscount = priceToUse * (extraOffer / 100);
+      const specialDiscount = priceToUse * (specialOffer / 100);
+
+      const lastPrice =Math.round(priceToUse - (extraDiscount + specialDiscount));
+
       return {
         product: matchingProduct._id,
         productName: matchingProduct.productName,
         caseDiameter: matchingProduct.caseDiameter,
         caseShape: matchingProduct.caseShape,
         price: matchingProduct.price,
-        discountPrice: matchingProduct.discountPrice,
         offer: matchingProduct.offer,
+        specialOffer: specialOffer,
+        extraOffer: extraOffer,
+        discountPrice: lastPrice,
         quantity: cartItem.quantity,
-        productTotal: cartItem.quantity * matchingProduct.discountPrice,
+        productTotal: cartItem.quantity * lastPrice,
         image: matchingProduct.image,
       };
     });
 
+    console.log('first cartItem', cartItems[0]);
     //random orderId
     const orderID = Math.floor(Math.random() * 1000000).toString();
     //calculate discount price
-    const discountPrice = coupenHelper.calculateDiscount(coupon, existingCart[0].cartTotal);
+    let availableCoupen;
+    if (coupon) {
+       [availableCoupen] = await Coupen.aggregate([
+        {
+          $match: {
+            _id: new mongoose.Types.ObjectId(coupon._id),
+            active: true,
+            expiry: { $gt: new Date() }
+          }
+        }
+      ]);
+    }
+
+    const lastPrice = await offerHelper.calulateLastPrice(userId);
+
+    const discount = availableCoupen ?
+      coupenHelper.calculateDiscount(coupon, lastPrice) : 0;
 
     //creating new order
     const newOrder = new Order({
@@ -130,9 +172,9 @@ exports.createOrder = async (req, res, next) => {
       orderItems: cartItems,
       address: billingAddress,
       paymentMethod: PaymentOption,
-      coupon: coupon ? coupon.code : null,
-      discount: coupon ? discountPrice : 0,
-      total: coupon ? existingCart[0].cartTotal - discountPrice : existingCart[0].cartTotal
+      coupon: availableCoupen?.code || null,
+      discount,
+      total: lastPrice - discount
     })
 
 
@@ -196,7 +238,7 @@ exports.createOrder = async (req, res, next) => {
   }
   catch (error) {
     console.log('enetring error in post order')
-   next(error)
+    next(error)
   }
 }
 
@@ -285,7 +327,7 @@ exports.changeStatus = async (req, res, next) => {
   try {
     const { orderId } = req.params;
     const { orderStatus, cancelReason, returnReason } = req.body;
-    console.log('orderCreate body',orderStatus, cancelReason, returnReason)
+    console.log('orderCreate body', orderStatus, cancelReason, returnReason)
 
     if (orderStatus === 'cancel' && cancelReason === '') return res.status(400).json(
       {
@@ -324,7 +366,7 @@ exports.changeStatus = async (req, res, next) => {
         }
       ]);
 
-      console.log('coupon:',usedCoupon)
+      console.log('coupon:', usedCoupon)
 
       if (usedCoupon && usedCoupon._id.length > 1) return res.status(202).json(
         {
@@ -384,10 +426,10 @@ exports.changeStatus = async (req, res, next) => {
           { userId: updatedOrder.userId },
           {
             $inc: { balance: updatedOrder.total },
-            $push:{
-              transactions:{
-                amount:updatedOrder.total,
-                
+            $push: {
+              transactions: {
+                amount: updatedOrder.total,
+
               }
             }
           },
@@ -545,9 +587,9 @@ exports.cancelOrder = async (req, res, next) => {
       { userId: userId },
       {
         $inc: { balance: productDetails[0].total },
-        $push:{
-          transactions:{
-            amount:productDetails[0].total,
+        $push: {
+          transactions: {
+            amount: productDetails[0].total,
 
           }
         }

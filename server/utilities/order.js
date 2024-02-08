@@ -88,3 +88,40 @@ exports.topSellingProducts = async () => {
     throw error
   }
 }
+
+exports.getSingleOrder = async (soid)=>{
+  try{
+    const singleOrder = await Order.aggregate([
+      {$unwind:'$orderItems'},
+      {
+        $match: {
+          'orderItems._id': new mongoose.Types.ObjectId(soid) 
+          }
+        
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user'
+        }
+      },
+      {
+        $project: {
+          userId: 0,
+          'user._id': 0,
+          'user.password': 0,
+          'user.isBlocked': 0,
+          'user.isVerified': 0,
+          'user.__v': 0,
+          'user.adress': 0,
+        }
+      }
+    ]);
+
+    return singleOrder
+  }catch(error){
+    throw error
+  }
+}

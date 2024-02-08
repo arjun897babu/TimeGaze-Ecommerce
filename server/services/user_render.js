@@ -12,12 +12,12 @@ const addressHelper = require('../utilities/address');
 
 
 module.exports = {
-  home: async (req, res,next) => {
+  home: async (req, res, next) => {
 
     const { query } = req.query;
     const categories = await categoryHelper.allCategory();
     const products1 = await OrderHelper.topSellingProducts();
-    console.log(categories,products1)
+    console.log(categories, products1)
 
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/allProducts`),
@@ -234,7 +234,7 @@ module.exports = {
     if (allAddress.length > 0) {
       address.defaultAddress = allAddress.find(data => data.address.defaultAdress);
       address.otherAddresses = allAddress.filter(data => !data.address.defaultAdress);
-    }else{
+    } else {
       address = undefined
     }
     axios.all([
@@ -245,7 +245,7 @@ module.exports = {
 
 
         const cartItems = cartResponse.data;
-        console.log('cartItems',cartItems)
+        console.log('cartItems', cartItems)
 
         res.status(200).render('user/checkout',
           {
@@ -289,48 +289,41 @@ module.exports = {
         res.status(500).send(error.message)
       })
   },
-  ordersingle: (req, res) => {
-    const { userId } = req.session
-    const { soid } = req.query;
-    axios.all([
-      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
-      axios.get(`http://localhost:${process.env.PORT}/api/getSingleOrder/${soid}`),
-
-    ])
-      .then(axios.spread((categoryResponse, orderResponse) => {
-
-        const categories = categoryResponse.data
-        const order = orderResponse.data;
-        res.status(200).render('user/ordersingle', { logged: req.session.isUserAuth, categories: categories, order: order })
-      }))
-      .catch((error) => {
-        console.log(error)
-        res.status(500).send(error.message)
-      })
+  ordersingle: async (req, res, next) => {
+    try {
+      const { soid } = req.query;
+      const [orderSingle] = await OrderHelper.getSingleOrder(soid);
+      const categories = await categoryHelper.allCategory()
+      res.status(200).render('user/ordersingle',
+        {
+          logged: req.session.isUserAuth,
+          categories: categories,
+          order: orderSingle
+        }
+      )
+    }
+    catch (error) {
+      next(error)
+    }
   },
-  orderSuccess: (req, res) => {
-    const { userId } = req.session;
-    axios.all([
-      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
-
-    ])
-      .then(axios.spread((categoryResponse) => {
-        const categories = categoryResponse.data
-
-        res.status(200).render('user/orderSuccess', { logged: req.session.isUserAuth, categories: categories }, (error, html) => {
+  orderSuccess: async (req, res, next) => {
+    try {
+      const categories = await categoryHelper.allCategory()
+      res.status(200).render('user/orderSuccess',
+        {
+          logged: req.session.isUserAuth,
+          categories: categories
+        },
+        (error, html) => {
           if (error) {
             return res.send(error)
           }
-
           delete req.session.isOrder;
           res.send(html);
-
         })
-      }))
-      .catch((error) => {
-        console.log(error)
-        res.status(500).send(error.message)
-      })
+    } catch (error) {
+      next(error)
+    }
 
   },
   wallet: async (req, res) => {

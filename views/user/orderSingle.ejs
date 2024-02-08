@@ -179,7 +179,7 @@
             </div>
             <div class="card-body p-2">
               <div class="row d-flex justify-content-between">
-                <% order=order[0] %>
+                
                   <div class="col-sm-6">
                     <div class="mb-1">
                       <h6 class="fw-bold">
@@ -202,33 +202,33 @@
                   <div class="col-sm-6 d-flex">
                     <div>
                       <h6 class="fw-bold">Product Information</h6>
-                      <p>Product Name: <%= order.orderItems[0].productName %>
+                      <p>Product Name: <%= order.orderItems.productName %>
                       </p>
-                      <p>Quantity: <%= order.orderItems[0].quantity %>
+                      <p>Quantity: <%= order.orderItems.quantity %>
                       </p>
-                      <p>Price: ₹<%= order.orderItems[0].discountPrice %> each</p>
+                      <p>Price: ₹<%= order.orderItems.discountPrice %> each</p>
                       
                     </div>
                     <div class="mb-1">
-                      <img src="/uploads/<%= order.orderItems[0].image[0] %>" style="height: 96px; width: 96px;"
+                      <img src="/uploads/<%= order.orderItems.image[0] %>" style="height: 96px; width: 96px;"
                         class="img-fluid" />
                     </div>
 
                   </div>
                   <p>Date:<%= new Date(order.orderDate).toLocaleDateString('en-US',{timeZone:'Asia/kolkata'}) %></p>
                   <div class="">
-                    <% if(order.orderItems[0].orderStatus==='delivered'||order.orderItems[0].orderStatus==='return_requested'||order.orderItems[0].orderStatus==='returned'  ) {%>
+                    <% if(order.orderItems.orderStatus==='delivered'||order.orderItems.orderStatus==='return_requested'||order.orderItems.orderStatus==='returned'  ) {%>
                       <button class="btn btn-dark rounded-0" data-id="<%=order._id  %>" id="invoice" style="font-size: 0.6rem;">download
                         Invoice</button>
-                      <% if(order.orderItems[0].orderStatus!=='return_requested'&& order.orderItems[0].orderStatus!=='returned') {%>
+                      <% if(order.orderItems.orderStatus!=='return_requested'&& order.orderItems.orderStatus!=='returned') {%>
                         <button class="btn btn-dark rounded-0" id="return-status"
-                          data-id="<%= order.orderItems[0]._id %>" value="return_requested" style="font-size: 0.6rem;">
+                          data-id="<%= order.orderItems._id %>" value="return_requested" style="font-size: 0.6rem;">
                           Return
                         </button>
                         <% } %>
                           <% } %>
 
-                            <% if(order.orderItems[0].orderStatus==='returned' ) {%>
+                            <% if(order.orderItems.orderStatus==='returned' ) {%>
                               <span>
                                 Your item has been returned
                                 <i class="bi bi-check-circle text-success"></i>

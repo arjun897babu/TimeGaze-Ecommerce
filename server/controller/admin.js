@@ -119,11 +119,13 @@ exports.salesReport = async (req, res, next) => {
     const fields = ['orderId',
       'productName',
       'quantity',
+      'offer',
+      'specialOffer',
+      'extraOffer',
       'productTotal',
       'orderStatus',
       'reason',
       'paymentMethod',
-      'total',
       'coupon',
       'orderDate'
     ];
@@ -136,11 +138,13 @@ exports.salesReport = async (req, res, next) => {
             orderId: 1,
             'productName': '$orderItems.productName',
             'quantity': '$orderItems.quantity',
+            'offer': '$orderItems.offer',
+            'specialOffer': '$orderItems.specialOffer',
+            'extraOffer': '$orderItems.extraOffer',
             'productTotal': '$orderItems.productTotal',
             'orderStatus': '$orderItems.orderStatus',
             'reason': '$orderItems.reason',
             paymentMethod: 1,
-            total: 1,
             coupon: 1,
             orderDate: {
               $dateToString: {
@@ -160,7 +164,6 @@ exports.salesReport = async (req, res, next) => {
     orderData.forEach(order => {
       totalQuantity += order.quantity;
       totalProductTotal += order.productTotal;
-      grandTotal += order.total;
     });
 
     //for adding a line at the end of the summary
@@ -172,7 +175,7 @@ exports.salesReport = async (req, res, next) => {
       orderStatus: '',
       reason: '',
       paymentMethod: '',
-      total: grandTotal,
+      total: '',
       coupon: '',
       orderDate: ''
     };

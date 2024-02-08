@@ -8,8 +8,8 @@ const OrderSchema = new mongoose.Schema({
     ref: 'User',
 
   },
-  orderId:{
-    type:Number
+  orderId: {
+    type: Number
   },
   orderItems: [{
     product: {
@@ -30,6 +30,12 @@ const OrderSchema = new mongoose.Schema({
       type: Number
     },
     offer: {
+      type: Number
+    },
+    specialOffer: {
+      type: Number
+    },
+    extraOffer: {
       type: Number
     },
     discountPrice: {
