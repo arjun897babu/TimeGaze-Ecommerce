@@ -345,7 +345,7 @@
 
 
        function downloadInvoice(orderId,btn){
-        console.log(btn)
+       
 
         $.ajax({
           url:`api/invoice/${orderId}`,
@@ -353,9 +353,14 @@
           contentType:'application/json',
           success:function(data,textStatus,xhr){  
             if(xhr.status===200){
-              let {invoice,invoiceNumber} = JSON.parse(xhr.responseText);
-              easyinvoice.download(`${invoiceNumber}.pdf`, invoice.pdf);
-              $(btn).removeClass('disabled')
+              try{
+                
+                let {invoice,invoiceNumber} = JSON.parse(xhr.responseText);
+                easyinvoice.download(`${invoiceNumber}.pdf`, invoice.pdf);
+                $(btn).removeClass('disabled')
+              }catch(error){
+                window.location.href= '/'
+              }
             }
           },
           error(xhr,textStatus,errorThrown){

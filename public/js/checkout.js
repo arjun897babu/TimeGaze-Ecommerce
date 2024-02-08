@@ -233,7 +233,6 @@ $('.payment').submit(function (event) {
   const element = $(this).find('.ms-2')
   let selectedAddressId = $(this).attr('data-id');
   let formValue = $(this).serializeArray();
-  console.log(formValue, element)
 
   if (formValue.length > 0 && selectedAddressId) {
     clearMessage(element);
@@ -241,7 +240,7 @@ $('.payment').submit(function (event) {
     formValue.forEach((value) => {
       data[value.name] = value.value;
     })
-    console.log(data, selectedAddressId);
+   
     makePurchase(selectedAddressId, data);
   } else if (!selectedAddressId) {
     displayErrorMessage(element
@@ -256,8 +255,7 @@ $('.payment').submit(function (event) {
 })
 
 function makePurchase(selectedAddressId, PaymentOption) {
-  console.log('puchased')
-  console.log(PaymentOption)
+
   $.ajax({
     url: `/api/createOrder/${selectedAddressId}`,
     type: "POST",
@@ -302,8 +300,12 @@ function makePurchase(selectedAddressId, PaymentOption) {
     },
     error: function (xhr, textStatus, errorThrown) {
       if (xhr.status === 404) {
-        console.log('ajax error')
+       
         window.location.href = '/login'
+      }
+      if(xhr.status==400){
+        let { message,redirectUrl } = JSON.parse(xhr.responseText);
+        window.location.href = redirectUrl;
       }
     }
 

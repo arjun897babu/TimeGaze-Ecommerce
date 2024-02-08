@@ -136,7 +136,6 @@ exports.allProducts = async (req, res, next) => {
       req.query.pageNumber = 1;
       pageNumber = 1
     }
-    console.log(sort)
     const perPage = 4;
     const startIndex = Math.ceil((pageNumber - 1) * perPage);
     const endIndex = Math.ceil(startIndex + perPage);
@@ -277,7 +276,6 @@ exports.allProducts = async (req, res, next) => {
       Product.aggregate([...productQuery, { $count: 'totalCount' }]),
       
     ]);
-    console.log(products)
     
     const totalCount = count.length > 0 ? count[0].totalCount : 0;
     const totalPages = Math.ceil(totalCount / perPage);

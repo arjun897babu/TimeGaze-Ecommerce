@@ -16,17 +16,13 @@ module.exports = {
 
     const { query } = req.query;
     const categories = await categoryHelper.allCategory();
-    const products1 = await OrderHelper.topSellingProducts();
-    console.log(categories, products1)
-
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/allProducts`),
-      axios.get(`http://localhost:${process.env.PORT}/api/categories`)
+     
     ])
-      .then(axios.spread((productResponse, categoriesResponse) => {
+      .then(axios.spread((productResponse) => {
         const products = productResponse.data.products;
         const selected = productResponse.data.selected;
-        const categories = categoriesResponse.data;
 
         res.status(200).render('index', { logged: req.session.isUserAuth, products, categories, selected: selected });
       }))
@@ -229,6 +225,7 @@ module.exports = {
     const categories = await categoryHelper.allCategory();
     const allAddress = await addressHelper.userAddress(addressId);
     const allStates = await statesHelper.allStates();
+    const [{_id:walletId,balance}] = await Wallet.userWallet(userId);
 
     let address = {};
     if (allAddress.length > 0) {
@@ -254,7 +251,12 @@ module.exports = {
             address: address,
             cartItems: cartItems,
             allStates: allStates,
-            coupon: coupen
+            coupon: coupen,
+            wallet:{
+              walletId,
+              balance
+            }
+
           },
           (error, html) => {
 

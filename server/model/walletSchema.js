@@ -14,6 +14,10 @@ const walletSchema = new mongoose.Schema({
       amount:{
         type:Number
       },
+      transactionType: {
+        type: String,
+      }
+      ,
       transactionDate:{
         type:Date,
         default:Date.now()

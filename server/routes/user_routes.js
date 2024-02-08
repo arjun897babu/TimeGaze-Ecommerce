@@ -54,16 +54,16 @@ route.put('/api/makeDefault/:selectedId', userMiddleWare.notUser, addressControl
 
 route.post('/api/addToCart/:productId', userMiddleWare.notUser, cartController.addToCart); //add to cart
 route.get('/api/getUserCart/:userId', cartController.getUserCart);//get user cartDetails;
-route.put('/api/removeCartItem/:cartItemId', cartController.removeCartItem);//remove single cart item;
-route.put('/api/cartQuantiy/:cartItem', cartController.cartQuantity);//control cartQuantiy
-route.post('/api/rateProduct/:productId',reviewController.addReview);//add product rating and review
+route.put('/api/removeCartItem/:cartItemId',userMiddleWare.notUser, cartController.removeCartItem);//remove single cart item;
+route.put('/api/cartQuantiy/:cartItem',userMiddleWare.notUser, cartController.cartQuantity);//control cartQuantiy
+route.post('/api/rateProduct/:productId',userMiddleWare.notUser,reviewController.addReview);//add product rating and review
 
 route.post('/api/createOrder/:selectedAddressId',userMiddleWare.notUser, orderController.createOrder);// create user order details
 route.get('/api/getUserOrder/:userId', orderController.getOrderDetails)//get user order details.
 route.get('/api/getSingleOrder/:soid',orderController.getSingleOrderDetails)//get single orderDetails.
-route.put('/api/cancelOrder/:orderItemsId',orderController.cancelOrder);//for bulk canceling
-route.put('/api/returnRequest/:orderItemsId',orderController.returnOrder);//for bulk return
-route.post('/api/invoice/:orderId',invoiceController.invoice)
+route.put('/api/cancelOrder/:orderItemsId',userMiddleWare.notUser,orderController.cancelOrder);//for bulk canceling
+route.put('/api/returnRequest/:orderItemsId',userMiddleWare.notUser,orderController.returnOrder);//for bulk return
+route.post('/api/invoice/:orderId',userMiddleWare.notUser,invoiceController.invoice)
 
 route.post('/api/applyCoupen/:cartId',coupenControll.applyCoupen);
 route.post('/api/payOnline',orderController.payOnline)

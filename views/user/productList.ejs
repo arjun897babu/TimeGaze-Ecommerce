@@ -76,7 +76,7 @@
     @media (max-width: 320px) {
       .small-col {
         width: 100%;
-        /* Set the width to 100% for screens less than 320px */
+       
       }
     }
     .offer-circle {
@@ -317,7 +317,7 @@
                 <% } else { %>
                   <% for( i=0;i<products.length;i++) { %>
 
-                    <div class="justify-content-center col-6 col-sm-3 d-flex small-col" style="width: 228.375px;">
+                    <div class="justify-content-center col-6 col-sm-3 d-flex small-col">
 
                       <div class="card m-2  rounded-0 p-1" style="width: 13rem;">
                         <% let specialOfferTimeStamp = new Date(products[i].productOffer?.expiry) %>

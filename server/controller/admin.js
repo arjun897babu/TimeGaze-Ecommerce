@@ -215,26 +215,37 @@ exports.addOffer = async (req, res, next) => {
     }
 
     const newOffer = new Offer({
-      offerType:offer,
-      item:category??product,
-      discount:discount,
-      expiry:expiry
+      offerType: offer,
+      item: category ?? product,
+      discount: discount,
+      expiry: expiry
     })
     console.log(newOffer._id)
     const createdOffer = await newOffer.save()
     console.log(createdOffer)
 
     if (offer === 'category') {
-      await Product.updateMany({category:category},{$set:{
-        'categoryOffer.offer':newOffer._id,'categoryOffer.discount':newOffer.discount,'categoryOffer.expiry':newOffer.expiry
-      }});
+      await Product.updateMany(
+        {
+          category: category
+        },
+        {
+          $set: {
+            'categoryOffer.offer': newOffer._id,
+            'categoryOffer.discount': newOffer.discount,
+            'categoryOffer.expiry': newOffer.expiry
+          }
+        }
+      );
     }
     if (offer === 'product') {
       await Product.findByIdAndUpdate(
         product,
         {
           $set: {
-            'productOffer.offer':newOffer._id,'productOffer.discount':newOffer.discount,'productOffer.expiry':newOffer.expiry
+            'productOffer.offer': newOffer._id,
+            'productOffer.discount': newOffer.discount,
+            'productOffer.expiry': newOffer.expiry
           }
         }
       )

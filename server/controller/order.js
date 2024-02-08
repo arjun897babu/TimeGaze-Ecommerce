@@ -11,7 +11,7 @@ const Wallet = require('../model/walletSchema');
 const productHelper = require('../utilities/product');
 const Coupen = require('../model/coupenSchema');
 const offerHelper = require('../utilities/offer')
-
+const walletHelper = require('../utilities/wallet')
 
 const instance = new Razorpay(
   {
@@ -125,7 +125,7 @@ exports.createOrder = async (req, res, next) => {
       const extraDiscount = priceToUse * (extraOffer / 100);
       const specialDiscount = priceToUse * (specialOffer / 100);
 
-      const lastPrice =Math.round(priceToUse - (extraDiscount + specialDiscount));
+      const lastPrice = Math.round(priceToUse - (extraDiscount + specialDiscount));
 
       return {
         product: matchingProduct._id,
@@ -143,13 +143,12 @@ exports.createOrder = async (req, res, next) => {
       };
     });
 
-    console.log('first cartItem', cartItems[0]);
     //random orderId
     const orderID = Math.floor(Math.random() * 1000000).toString();
     //calculate discount price
     let availableCoupen;
     if (coupon) {
-       [availableCoupen] = await Coupen.aggregate([
+      [availableCoupen] = await Coupen.aggregate([
         {
           $match: {
             _id: new mongoose.Types.ObjectId(coupon._id),
@@ -177,17 +176,21 @@ exports.createOrder = async (req, res, next) => {
       total: lastPrice - discount
     })
 
-
-    if (PaymentOption === 'cashOnDelivery') {
-      console.log('entering here')
-      const savedOrder = await newOrder.save();
-      console.log('savedorder', savedOrder)
-
+    if (PaymentOption === 'wallet') {
+      const [{ balance }] = await walletHelper.userWallet(userId);
+      if (balance < newOrder.total) return res.status(400).json(
+        {
+          message: 'Insufficient amount',
+          status: 'failed',
+          redirectUrl: '/cart'
+        }
+      )
+      await newOrder.save();
       await Cart.updateOne(
         { userId: userId },
         { $set: { cartItem: [], cartTotal: 0 } }
       );
-      console.log('new order', newOrder.orderItems)
+
       const bulkoperation = newOrder.orderItems.map(function (items) {
         return {
           updateOne: {
@@ -197,16 +200,52 @@ exports.createOrder = async (req, res, next) => {
         }
       });
 
+      await Product.bulkWrite(bulkoperation);
+      await Wallet.findOneAndUpdate(
+        { userId: userId },
+        {
+          $inc: { balance: -(newOrder.total) },
+          $push: {
+            transactions: {
+              amount: newOrder.total,
+              transactionType: 'Debit'
+            }
+          }
+        },
+      );
 
-      console.log('new bulkoperation', bulkoperation)
+      req.session.isOrder = true;
+      delete req.session.coupon
+      res.status(200).json(
+        {
+          paymentMethod: PaymentOption,
+          message: 'order placed successFully',
+          status: 'success',
+          redirectUrl: '/orderSuccess'
+        }
+      )
+    }
+    if (PaymentOption === 'cashOnDelivery') {
 
+      await newOrder.save();
 
-      console.log('new bulkoperation', bulkoperation)
+      await Cart.updateOne(
+        { userId: userId },
+        { $set: { cartItem: [], cartTotal: 0 } }
+      );
+
+      const bulkoperation = newOrder.orderItems.map(function (items) {
+        return {
+          updateOne: {
+            filter: { _id: items.product },
+            update: { $inc: { quantity: -(items.quantity) } }
+          }
+        }
+      });
 
       await Product.bulkWrite(bulkoperation);
       req.session.isOrder = true;
       delete req.session.coupon
-      console.log('session for order', req.session.isOrder)
       res.status(200).json(
         {
           paymentMethod: PaymentOption,
@@ -366,8 +405,6 @@ exports.changeStatus = async (req, res, next) => {
         }
       ]);
 
-      console.log('coupon:', usedCoupon)
-
       if (usedCoupon && usedCoupon._id.length > 1) return res.status(202).json(
         {
           message: 'Canceling this order will also cancel all products purchased with the coupon',
@@ -421,7 +458,7 @@ exports.changeStatus = async (req, res, next) => {
         },
 
       );
-      if ((orderStatus === 'canceled' && updatedOrder.paymentMethod === 'onlinePayment') || orderStatus === 'returned') {
+      if ((orderStatus === 'canceled' && (updatedOrder.paymentMethod === 'onlinePayment' || updatedOrder.paymentMethod === 'wallet')) || orderStatus === 'returned') {
         await Wallet.findOneAndUpdate(
           { userId: updatedOrder.userId },
           {
@@ -429,7 +466,7 @@ exports.changeStatus = async (req, res, next) => {
             $push: {
               transactions: {
                 amount: updatedOrder.total,
-
+                transactionType: 'Credit'
               }
             }
           },
@@ -590,7 +627,7 @@ exports.cancelOrder = async (req, res, next) => {
         $push: {
           transactions: {
             amount: productDetails[0].total,
-
+            transactionType: 'Credit'
           }
         }
       },
