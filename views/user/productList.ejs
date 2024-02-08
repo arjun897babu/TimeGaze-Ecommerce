@@ -142,32 +142,35 @@
                         Price
                       </button>
                     </h2>
-                    <!-- <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse show"
+                    <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse show"
                       aria-labelledby="headingThree">
                       <div class="accordion-body">
-                        <div class="row mb-3">
-                          <div class="col-6">
-                            <p class="mb-0">
-                              Min
-                            </p>
-                            <div class="form-outline">
-                              <input type="number" id="typeNumber" class="form-control" />
-                              <label class="form-label" for="typeNumber">₹0</label>
+                        
+                          <div class="row mb-3">
+                            <div class="col-6">
+                              <p class="mb-0">
+                                Min
+                              </p>
+                              <div class="form-outline">
+                                <input type="number" id="minAmount" min="0" value="<%=(selected&&selected.min)?selected.min:''  %>" class="form-control" />
+                                
+                              </div>
+                            </div>
+                            <div class="col-6">
+                              <p class="mb-0">
+                                Max
+                              </p>
+                              <div class="form-outline">
+                                <input type="number" id="maxAmount" value="<%=(selected&&selected.max)?selected.max:''  %>" min="0" class="form-control" />
+                               
+                              </div>
                             </div>
                           </div>
-                          <div class="col-6">
-                            <p class="mb-0">
-                              Max
-                            </p>
-                            <div class="form-outline">
-                              <input type="number" id="typeNumber" class="form-control" />
-                              <label class="form-label" for="typeNumber">₹1,00000</label>
-                            </div>
-                          </div>
-                        </div>
-                        <button type="button" class="btn btn-white w-100 border border-secondary">apply</button>
+                          <button type="button" id="priceFilter" class="btn btn-white w-100 border border-secondary" >apply</button>
+                        
+                        
                       </div>
-                    </div> -->
+                    </div>
                   </div>
                   <div class="accordion-item">
                     <h2 class="accordion-header" id="headingOne">
@@ -412,7 +415,22 @@
       document.addEventListener('DOMContentLoaded', function () {
         let checkboxes = document.querySelectorAll('input[type="checkbox"]');
         let checkedValues = {};
+        let priceFilterForm = document.getElementById('priceFilter');
 
+        priceFilterForm.addEventListener('click', function(event) {
+          event.preventDefault();
+          let currentUrl = new URL(window.location.href);
+          let searchParams = currentUrl.searchParams;
+          let minAmount = document.getElementById('minAmount').value;
+          let maxAmount = document.getElementById('maxAmount').value;
+
+          if (minAmount) searchParams.set('min', minAmount);
+          if (maxAmount) searchParams.set('max', maxAmount);
+
+          currentUrl.search = searchParams.toString();
+
+          window.location.href = currentUrl.toString();
+        });
         checkboxes.forEach(function (checkbox) {
           checkbox.addEventListener('change', function () {
             checkedValues = {};
@@ -429,7 +447,7 @@
                 }
               }
             });
-            console.log(checkedValues);
+
             let queryString = new URLSearchParams(checkedValues).toString();
             window.location.href = '/productList?'+queryString
           });

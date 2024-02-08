@@ -130,12 +130,13 @@ exports.updateProducts = async (req, res, next) => {
 exports.allProducts = async (req, res, next) => {
   try {
 
-    let { pageNumber = 1, category, brand, caseDiameter, search, sort=1} = req.query;
+    let { pageNumber = 1, category, brand, caseDiameter, search, min, max, sort = 1 } = req.query;
 
     if (!req.query.hasOwnProperty('pageNumber') || req.query.pageNumber === '' || req.query.pageNumber < 1) {
       req.query.pageNumber = 1;
       pageNumber = 1
     }
+
     const perPage = 4;
     const startIndex = Math.ceil((pageNumber - 1) * perPage);
     const endIndex = Math.ceil(startIndex + perPage);
@@ -146,10 +147,11 @@ exports.allProducts = async (req, res, next) => {
     };
     let brandQuery = { $match: {} }
     let caseDiameterQuery = { $match: {} }
+    let discountPrice = { $match: {} }
     let selected = {};
 
 
-    if (category || brand || caseDiameter || search) {
+    if (category || brand || caseDiameter || search || min || max) {
 
       if (category) {
 
@@ -196,6 +198,19 @@ exports.allProducts = async (req, res, next) => {
         selected.caseDiameter = caseDiameter.split(',')
         caseDiameterQuery.$match.$or = caseDiameters;
       };
+      if (min || max) {
+        const conditions = {};
+
+        const minimum = parseInt(min);
+        if (!isNaN(minimum)) conditions.$gte = minimum; selected.min = minimum
+
+        const maximum = parseInt(max);
+        if (!isNaN(maximum)) conditions.$lte = maximum; selected.max = maximum
+
+        if (Object.keys(conditions).length > 0) {
+          discountPrice.$match.discountPrice = conditions;
+        }
+      }
       if (search) {
         matchQuery.$or = [];
         matchQuery.$or = [
@@ -233,27 +248,16 @@ exports.allProducts = async (req, res, next) => {
       },
       { $unwind: '$category' },
       { $match: matchQuery },
-      { ...brandQuery },
-      { ...caseDiameterQuery },
-      {
-        $unwind: {
-          path: '$categoryOffer',
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {
-        $unwind: {
-          path: '$productOffer',
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      {$sort:{discountPrice:sort}}
+      brandQuery,
+      caseDiameterQuery,
+      discountPrice,
+      { $sort: { discountPrice: sort } }
 
 
     ];
     // return res.json(productQuery)
     const filter = await Product.aggregate([
-      
+
       {
         $group: {
           _id: null,
@@ -274,13 +278,12 @@ exports.allProducts = async (req, res, next) => {
     const [products, count] = await Promise.all([
       Product.aggregate([...productQuery, { $skip: startIndex }, { $limit: perPage }]),
       Product.aggregate([...productQuery, { $count: 'totalCount' }]),
-      
+
     ]);
-    
+
     const totalCount = count.length > 0 ? count[0].totalCount : 0;
     const totalPages = Math.ceil(totalCount / perPage);
     const path = queryString.stringify(req.query);
-
     return res.status(200).json({
       products,
       totalPages: {
@@ -324,12 +327,18 @@ exports.unlistedProducts = async (req, res) => {
 exports.deleteProducts = async (req, res, next) => {
   try {
     const { productId } = req.params;
-    console.log(productId)
 
-    const existingProduct = await Product.findByIdAndUpdate(productId, { unlisted: true }, { new: true }).populate('category');
-    console.log(existingProduct)
+    const existingProduct = await Product.findByIdAndUpdate(
+      productId,
+      { unlisted: true },
+      { new: true }).populate('category');
     if (existingProduct) {
-      res.status(200).json({ status: 'success', product: existingProduct });
+      res.status(200).json(
+        {
+          status: 'success',
+          product: existingProduct
+        }
+      );
     } else {
       res.status(400).send('not found')
     }
@@ -346,7 +355,11 @@ exports.restoreProducts = async (req, res, next) => {
   try {
     const { productId } = req.params;
 
-    const existingProduct = await Product.findByIdAndUpdate(productId, { unlisted: false }, { new: true });
+    const existingProduct = await Product.findByIdAndUpdate(
+      productId,
+      { unlisted: false },
+      { new: true }
+    );
 
     if (existingProduct) {
       console.log(existingCateogry);
