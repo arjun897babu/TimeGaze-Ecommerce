@@ -61,6 +61,7 @@ exports.createUser = async (req, res, next) => {
 
       req.session.otpPurpose = 'registerUser';
       req.session.useremail = newUser.email;
+      req.session.httpVerification = newUser.email
 
       res.redirect('/emailVerify');
       await sendVerificationEmail(newUser.email, otp);
@@ -154,6 +155,7 @@ exports.verifyOTP = async (req, res, next) => {
 
     const purpose = req.session.otpPurpose;
     req.session.useremail = email;
+    req.session.httpVerification = email;
     if (purpose === 'resetPassword') {
       res.status(200).redirect('/resetPassword');
 

@@ -53,7 +53,7 @@ module.exports = {
       if (error) {
         return res.send(error)
       }
-      delete req.session.invalidMessage;
+      delete req.session.errorMessage;
       res.send(html);
     });
   },
