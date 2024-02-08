@@ -294,7 +294,7 @@ module.exports = {
       const { soid } = req.query;
       const [orderSingle] = await OrderHelper.getSingleOrder(soid);
       const categories = await categoryHelper.allCategory()
-      res.status(200).render('user/ordersingle',
+      res.status(200).render('user/orderSingle',
         {
           logged: req.session.isUserAuth,
           categories: categories,
