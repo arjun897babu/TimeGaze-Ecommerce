@@ -225,8 +225,11 @@ module.exports = {
     const categories = await categoryHelper.allCategory();
     const allAddress = await addressHelper.userAddress(addressId);
     const allStates = await statesHelper.allStates();
-    const [{_id:walletId,balance}] = await Wallet.userWallet(userId);
-
+    const [userWallet] = await Wallet.userWallet(userId)
+    let walletId = null;
+    let balance = 0;
+    if (userWallet) ({ _id: walletId, balance } = userWallet);
+    
     let address = {};
     if (allAddress.length > 0) {
       address.defaultAddress = allAddress.find(data => data.address.defaultAdress);

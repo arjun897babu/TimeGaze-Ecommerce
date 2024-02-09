@@ -595,7 +595,7 @@
                       <div class="card-body ">
                         <i class="bi bi-wallet"></i>
                         <span>Balace: ₹<%= (wallet)?wallet.balance.toFixed(2):'0.00' %></span><br>
-                        <small class="text-muted"><%= (!walletApproval)?'Insufficient amount' : '' %></small>
+                        <i class="text-muted"><%= (!walletApproval)?'Insufficient amount' : '' %></i>
                       </div>
                       <input type="radio" name="PaymentOption" id="wallet" autocomplete="off"
                         value="wallet" <%= (!walletApproval)?'disabled':'' %> >
