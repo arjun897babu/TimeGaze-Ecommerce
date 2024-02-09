@@ -79,7 +79,7 @@
                                   <% } %>
                               </div>
                               <div class="col-3 px-2 me-2 ">
-                                <% if(cart[carts].cartItem.product.quantity>1&&cart[carts].cartItem.product.quantity>=cart[carts].cartItem.quantity) {%>
+                                <% if(cart[carts].cartItem.product.quantity>=1&&cart[carts].cartItem.product.quantity>=cart[carts].cartItem.quantity) {%>
                                  
                                  
                                 <% let availableQuantity=cart[carts].cartItem.product.quantity%>
@@ -232,7 +232,7 @@
                     </div>
 
                     <div class="mt-3">
-                      <% if(cart[carts].cartItem.product.quantity>1) {%>
+                      <% if(cart[carts].cartItem.product.quantity>=1) {%>
                         
                         <a href="/checkout?" class="btn btn-dark w-100 shadow-0 mb-2"> Make Purchase </a>
                         <% }%>
