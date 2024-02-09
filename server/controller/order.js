@@ -85,7 +85,7 @@ exports.createOrder = async (req, res, next) => {
     console.log('ex.address', existingAddress)
     if (existingAddress.length === 0 || !isValid) {
 
-      return res.status(404).json({ status: 'failed', message: 'some product is outOf stock', redirectUrl: '/cart' })
+      return res.status(400).json({ status: 'failed', message: 'some product is outOf stock', redirectUrl: '/cart' })
     }
 
     //creating billing address

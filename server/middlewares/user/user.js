@@ -94,10 +94,11 @@ exports.cartIsTrue = async (req, res, next) => {
     });
 
     console.log('cartIstrue middle ware', cartExists)
-
+    
     if (cartExists) {
       next();
     } else {
+      console.log('cartIstrue not true middle ware', cartExists)
       res.status(401).redirect('/');
     }
   } catch (error) {

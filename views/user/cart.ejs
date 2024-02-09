@@ -70,7 +70,7 @@
                                 </p>
                                 <% if(cart[carts].cartItem.product.quantity<6) {%>
                                   <p class="text-danger">
-                                    <% if(cart[carts].cartItem.product.quantity<1) {%>
+                                    <% if(cart[carts].cartItem.product.quantity<cart[carts].cartItem.quantity||cart[carts].cartItem.product.quantity<1) {%>
                                       OUT OF STOCK
                                       <% } else {%>
                                         only <%=cart[carts].cartItem.product.quantity%> left
@@ -79,7 +79,7 @@
                                   <% } %>
                               </div>
                               <div class="col-3 px-2 me-2 ">
-                                <% if(cart[carts].cartItem.product.quantity>1) {%>
+                                <% if(cart[carts].cartItem.product.quantity>1&&cart[carts].cartItem.product.quantity>=cart[carts].cartItem.quantity) {%>
                                  
                                  
                                 <% let availableQuantity=cart[carts].cartItem.product.quantity%>
@@ -189,7 +189,7 @@
                 <div class="card shadow-0 border">
                   <%
 
-                   let cartTotal = cart.reduce((total, carts) => {
+                    let cartTotal = cart.reduce((total, carts) => {
                     let cartQuantity = carts.cartItem.quantity;
                     let extraOfferExpired = new Date(carts.cartItem.product.productOffer?.expiry).getTime() < Date.now();
                     let specialOfferExpired = new Date(carts.cartItem.product.categoryOffer?.expiry).getTime() < Date.now();
