@@ -25,5 +25,30 @@ exports.allProduct = async () => {
       }
     }
   ])
+};
+
+exports.newProducts = async()=>{
+  try{
+    return Product.aggregate(
+      [
+        {
+          $lookup: {
+            from: 'categories',
+            localField: 'category',
+            foreignField: '_id',
+            as: 'category',
+          },
+        },
+        { $unwind: '$category' },
+        { $match: {} },
+        { $sort: { _id: -1 } },
+        {$limit:10}
+    
+      ]
+    )
+  }
+  catch(error){
+   throw error
+  }
 }
 

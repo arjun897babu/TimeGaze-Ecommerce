@@ -8,28 +8,27 @@ const OrderHelper = require('../utilities/order');
 const categoryHelper = require('../utilities/category');
 const statesHelper = require('../utilities/states');
 const addressHelper = require('../utilities/address');
+const productHelper = require('../utilities/product')
 
 
 
 module.exports = {
   home: async (req, res, next) => {
+    try {
+      const products = await productHelper.newProducts();
+      const categories = await categoryHelper.allCategory();
+      res.status(200).render('index',
+        {
+          logged: req.session.isUserAuth,
+          products,
+          categories,
+        }
+      )
 
-    const { query } = req.query;
-    const categories = await categoryHelper.allCategory();
-    axios.all([
-      axios.get(`http://localhost:${process.env.PORT}/api/allProducts`),
-     
-    ])
-      .then(axios.spread((productResponse) => {
-        const products = productResponse.data.products;
-        const selected = productResponse.data.selected;
-
-        res.status(200).render('index', { logged: req.session.isUserAuth, products, categories, selected: selected });
-      }))
-      .catch((error) => {
-        console.error('Error in adminEditProduct:', error.message);
-        res.status(500).send('Internal Server Error');
-      });
+    }
+    catch (error) {
+      next(error)
+    }
 
   },
   login: (req, res) => {
@@ -229,7 +228,7 @@ module.exports = {
     let walletId = null;
     let balance = 0;
     if (userWallet) ({ _id: walletId, balance } = userWallet);
-    
+
     let address = {};
     if (allAddress.length > 0) {
       address.defaultAddress = allAddress.find(data => data.address.defaultAdress);
@@ -255,7 +254,7 @@ module.exports = {
             cartItems: cartItems,
             allStates: allStates,
             coupon: coupen,
-            wallet:{
+            wallet: {
               walletId,
               balance
             }
