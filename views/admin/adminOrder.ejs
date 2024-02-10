@@ -66,6 +66,12 @@
             <span class="text">banner management</span>
           </a>
         </li> -->
+        <li class="">
+          <a href="/adminOffer">
+            <i class='bx bxs-offer'></i>
+            <span class="text">Offer Management</span>
+          </a>
+        </li>
         <li>
           <a href="/adminCoupen">
             <i class='bx bxs-offer'></i>
@@ -133,11 +139,10 @@
               <thead>
                 <tr>
                   <th></th>
-                  <th>orderId</th>
-
-                  <th>product</th>
-                  <th>status</th>
-                  <th>action</th>
+                  <th>OrderId</th>
+                  <th>Product</th>
+                  <th>Status</th>
+                  <th>Action</th>
 
                 </tr>
               </thead>
@@ -152,7 +157,7 @@
                       <td class="fixed-td">
                         <%=order.orderItems._id %>
                       </td>
-                      <td class="fixed-td">
+                      <td class="fixed-td text-capitalize">
                         <h6>
                           <%=order.orderItems.productName %>
                         </h6>
@@ -162,7 +167,7 @@
                             </del>
                         </p>
                       </td>
-                      <td class="status">
+                      <td class="status text-capitalize">
                         <%=order.orderItems.orderStatus%>
                       </td>
                       <td class="">
@@ -171,19 +176,19 @@
                         <div class="justify-content-between d-flex">
                           <% if(order.orderItems.orderStatus !== 'delivered' && order.orderItems.orderStatus !== 'canceled'&&order.orderItems.orderStatus !== 'return_requested' && order.orderItems.orderStatus !== 'returned') { %>
                             <select name="orderStatus" id="" class="me-1">
-                              <option value="placed" <%=order.orderItems.orderStatus==='placed' ? 'selected' : '' %>>placed</option>
-                              <option value="pending" <%=order.orderItems.orderStatus==='pending' ? 'selected' : '' %>>pending</option>
-                              <option value="shipped" <%=order.orderItems.orderStatus==='shipped' ? 'selected' : '' %>>shipped</option>
-                              <option value="delivered" <%=order.orderItems.orderStatus==='delivered' ? 'selected' : '' %>>delivered</option>
-                              <option value="canceled" <%=order.orderItems.orderStatus==='canceled' ? 'selected' : '' %>>canceled</option>
+                              <option value="placed" <%=order.orderItems.orderStatus==='placed' ? 'selected' : '' %>>Placed</option>
+                              <option value="pending" <%=order.orderItems.orderStatus==='pending' ? 'selected' : '' %>>Pending</option>
+                              <option value="shipped" <%=order.orderItems.orderStatus==='shipped' ? 'selected' : '' %>>Shipped</option>
+                              <option value="delivered" <%=order.orderItems.orderStatus==='delivered' ? 'selected' : '' %>>Delivered</option>
+                              <option value="canceled" <%=order.orderItems.orderStatus==='canceled' ? 'selected' : '' %>>Canceled</option>
                             </select>
-                            <button data-id="<%=order.orderItems._id%>" style="font-size: 0.6rem;" class="btn btn-dark me-1 changeOrder">submit</button>
+                            <button data-id="<%=order.orderItems._id%>" style="font-size: 0.6rem;" class="btn btn-dark me-1 changeOrder rounded-0">Submit</button>
                           <% } else if(order.orderItems.orderStatus === 'canceled') { %>
-                            <span class="text-danger">order canceled.</span>
+                            <span class="text-danger text-capitalize">order canceled.</span>
                           <% } else if(order.orderItems.orderStatus === 'delivered') { %>
-                            <span class="text-success">order delivered.</span>
+                            <span class="text-success text-capitalize">order delivered.</span>
                           <% }else if(order.orderItems.orderStatus === 'return_requested'){ %>
-                            <button data-id="<%= order.orderItems._id %>" value="returned" style="font-size: 0.6rem;" class="btn btn-dark me-1 changeOrder">accept</button>
+                            <button data-id="<%= order.orderItems._id %>" value="returned" style="font-size: 0.6rem;" class="btn btn-dark me-1 changeOrder">Accept</button>
                           <% }else{%>
                             <i class="bi bi-check-circle text-success"></i>
                             <% } %>
@@ -209,7 +214,6 @@
     <script src="/js/adminOrderStatus.js"></script>
     <script>
       let message = localStorage.getItem('message');
-      console.log(message)
         if (message) {
 
           const Toast = Swal.mixin({

@@ -89,8 +89,7 @@ module.exports = {
     const { pid } = req.query
     const review = await ReviewHelper.productReview(userId, pid);
     const isPurchased = await OrderHelper.userPurchased(userId, pid);
-    // console.log('review:', review)
-    // console.log('isPurchased:', isPurchased)
+
     axios.all([
       axios.get(`http://localhost:${process.env.PORT}/api/singleEditProduct?userId=${userId}&${query}`),
       axios.get(`http://localhost:${process.env.PORT}/api/categories`)
@@ -158,17 +157,7 @@ module.exports = {
     const categories = await categoryHelper.allCategory()
     const allStates = await statesHelper.allStates();
     const allAddress = await addressHelper.userAddress(addressId);
-    // console.log(allAddress)
-    // axios.all([
-    //   axios.get(`http://localhost:${process.env.PORT}/api/getAddressDetails?userEmail=${userEmail}`),
-    // ])
-    //   .then(axios.spread((addressResponse) => {
-    //     const allAddress = addressResponse.data.address
-    //     const allStates = addressResponse.data.allStates
-    //   }))
-    //   .catch((error) => {
-    //     res.status(500).send(error.message)
-    //   })
+
     res.status(200).render('user/userAddress',
       {
         address: allAddress,
@@ -179,23 +168,34 @@ module.exports = {
     )
 
   },
-  editAddress: (req, res) => {
+  editAddress: async (req, res ,next) => {
+    try{
     const addressId = req.session.addressId;
     const { selected } = req.query
-
+    const categories = await categoryHelper.allCategory()
+    const allStates = await statesHelper.allStates();
     axios.all([
-      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
       axios.get(`http://localhost:${process.env.PORT}/api/userEditAddress/${addressId}?selected=${selected}`)
     ])
-      .then(axios.spread((categoryResponse, addressResponse) => {
-        const allCategories = categoryResponse.data;
+      .then(axios.spread((addressResponse) => {
         const address = addressResponse.data;
-        res.status(200).render('user/userEditAddress', { logged: req.session.isUserAuth, categories: allCategories, address: address })
+        res.status(200).render('user/userEditAddress',
+          {
+            logged: req.session.isUserAuth,
+            categories: categories,
+            address: address,
+            allStates: allStates
+          }
+        )
+
 
       }))
       .catch(error => {
         res.status(500).send(error.message)
       })
+    }catch(error){
+      next(error)
+    }
   },
 
   cart: (req, res) => {

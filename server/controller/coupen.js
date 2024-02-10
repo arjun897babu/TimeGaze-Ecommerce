@@ -10,7 +10,6 @@ exports.CreateCoupen = async (req, res, next) => {
   try {
     const { code, isPercentage, maxDiscount, discount, expiry, minAmount, limit } = req.body;
 
-    console.log(expiry);
     if (!code || !discount || !expiry || !minAmount || !limit) {
       return res.status(400).json(
         {
@@ -39,7 +38,7 @@ exports.CreateCoupen = async (req, res, next) => {
       minAmount: minAmount,
       limit: limit ? limit : null
     });
-    console.log(newCoupen)
+
     await newCoupen.save();
 
     res.status(200).json(

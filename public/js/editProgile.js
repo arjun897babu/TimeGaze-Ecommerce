@@ -2,7 +2,6 @@ $(document).ready(function () {
 
   let inputField;
   $(".bi-pencil-fill").click(function () {
-    console.log('working');
     let container = $(this).closest('.position-relative');
     
     container.find('.option-button').show()
@@ -26,13 +25,11 @@ $(document).ready(function () {
   $('.name-save-icon').click(function () {
     let container = $(this).closest('.position-relative');
     let value = container.find('.oldValue').val();
-    console.log(value)
     if(inputField.data('currentValue')!==value) updateName(value)
   })
   $('.phoneNumber-save-icon').click(function () {
     let container = $(this).closest('.position-relative');
     let value = container.find('.oldValue').val();
-    console.log(value);
     if(inputField.data('currentValue')!==value) updatePhonenumber(value)
   })
 
@@ -46,13 +43,12 @@ $(document).ready(function () {
       contentType: 'application/json',
       success: function (data, textStatus, xhr) {
         if (xhr.status === 200) {
-          console.log('name update:', data);
           location.reload()
         }
       },
       error: function (xhr, textStatus, errorThrown) {
         if (xhr.status === 400) {
-          console.log('updation failed:', xhr.responseText)
+          location.reload()
         }if(xhr.status===404){
           window.location.href = '/login'
         }
@@ -71,16 +67,11 @@ $(document).ready(function () {
       contentType: 'application/json',
       success: function (data, textStatus, xhr) {
         if (xhr.status === 200) {
-          console.log('name update:', data);
           location.reload()
         }
       },
       error: function (xhr, textStatus, errorThrown) {
-        if (xhr.status === 400) {
-          console.log('updation failed:', xhr.responseText)
-        }
         if(xhr.status===404){
-          console.log('ajax eeror')
           window.location.href = '/login'
         }
       }
@@ -108,7 +99,6 @@ Array.from(forms).forEach(form => {
 
     if (isValidate) {
       const password = document.getElementById('validatePassword').value
-      console.log(password)
       updatePassword(password)
     }
   })
@@ -209,8 +199,6 @@ function updatePassword(password) {
       if(xhr.status===404){
         window.location.href = '/login'
       }
-      console.error('Error updating the category');
-      console.log('Response:', xhr.responseText);
     }
   })
 

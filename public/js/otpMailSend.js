@@ -2,7 +2,6 @@ const forms = document.querySelectorAll('.requires-validation');
     let formsubmitted = true;
     Array.from(forms).forEach(function (form) {
       Array.from(form.elements).forEach(function (element) {
-        console.log(form.elements)
         element.addEventListener('input', function () {
           if (formsubmitted) {
             checkInputValidity(form, element);
@@ -25,10 +24,7 @@ const forms = document.querySelectorAll('.requires-validation');
 
     function checkInputValidity(form, element) {
       let emailRegex = /^[A-Za-z0-9_\-\.]+@gmail+\.[A-Za-z]{3}$/;
-     
-
-      console.log('called')
-      //input field
+           //input field
       let emailInput = form.elements['validateCustomerEmail'];
       //input field values
 

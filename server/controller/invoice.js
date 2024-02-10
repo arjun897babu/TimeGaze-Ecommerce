@@ -8,7 +8,6 @@ exports.invoice = async (req, res, next) => {
   try {
 
     const { orderId } = req.params
-    console.log(req.params);
 
     if (!orderId) return res.status(400).json(
       {
@@ -72,7 +71,6 @@ exports.invoice = async (req, res, next) => {
       }
     )
   } catch (error) {
-    console.log(error.message)
-    res.send(error.message)
+    next(error)
   }
 };

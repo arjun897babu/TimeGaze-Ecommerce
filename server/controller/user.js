@@ -12,7 +12,6 @@ exports.createUser = async (req, res, next) => {
   if (!name || !email || !phonenumber || !password) {
     req.session.errorMessage
       = 'All fields are required';
-    console.log(req.session.errorMessage);
 
     return res.status(400).redirect('/signup');
   }
@@ -32,7 +31,6 @@ exports.createUser = async (req, res, next) => {
       req.session.errorMessage
         = 'Phone number exist'
     }
-    console.log(req.session.errorMessage);
     return res.status(400).redirect('/signup');
   } else {
 
@@ -48,8 +46,14 @@ exports.createUser = async (req, res, next) => {
         phonenumber: phonenumber,
         password: hasedPassowrd,
       });
-      console.log(newUser.email)
-      let otp = otpGenerator.generate(6, { upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false })
+      let otp = otpGenerator.generate(
+        6,
+        {
+          upperCaseAlphabets: false,
+          lowerCaseAlphabets: false,
+          specialChars: false
+        }
+      )
 
 
 
@@ -57,8 +61,6 @@ exports.createUser = async (req, res, next) => {
 
       const otpPlayload = { email: req.body.email, otp };
       const otpBody = await OTP.create(otpPlayload);
-      console.log(otpBody)
-
       req.session.otpPurpose = 'registerUser';
       req.session.useremail = newUser.email;
       req.session.httpVerification = newUser.email
@@ -68,7 +70,6 @@ exports.createUser = async (req, res, next) => {
 
 
     } catch (error) {
-      console.log(error)
       next(error)
     }
   }
@@ -89,7 +90,6 @@ exports.userLogin = async (req, res, next) => {
     if (!user) {
       req.session.useremail = '';
       req.session.invalidMessage = 'no user found';
-      console.log(req.session.invalidMessage);
       return res.status(400).redirect('/login');
     }
 
@@ -98,7 +98,6 @@ exports.userLogin = async (req, res, next) => {
     if (!validPassword) {
       req.session.useremail = email;
       req.session.invalidMessage = 'Invalid password';
-      console.log(req.session.invalidMessage);
       return res.status(400).redirect('/login');
     }
     req.session.email = '';
@@ -108,7 +107,6 @@ exports.userLogin = async (req, res, next) => {
       req.session.email = email;
       req.session.userId = user._id;
       req.session.addressId = user.adress;
-      console.log(req.session.addressId)
 
       res.status(200).redirect('/');
 
@@ -148,7 +146,6 @@ exports.verifyOTP = async (req, res, next) => {
     if (response.length === 0 || otp !== response[0].otp) {
 
       req.session.errorMessage = 'otp not valid'
-      console.log('otp not valid');
       return res.status(401).redirect('/emailVerify');
 
     }
@@ -169,8 +166,7 @@ exports.verifyOTP = async (req, res, next) => {
   }
 
   catch (error) {
-    console.log(error.message);
-    return res.status(500).send(error.message);
+    next(error)
   }
 
 }
@@ -203,11 +199,8 @@ exports.sendOTP = async (req, res, next) => {
 
       const otpPlayload = { email: email, otp };
       const otpBody = await OTP.create(otpPlayload);
-      console.log(otpBody)
 
-      
-      
-      
+
       if (otpPurpose === 'resendOtp') {
         res.status(200).json({ status: 'success' });
       } else {
@@ -223,8 +216,7 @@ exports.sendOTP = async (req, res, next) => {
   }
 
   catch (error) {
-    res.status(500).send(error.message);
-    console.log(error)
+    next(error)
   }
 
 }
@@ -258,7 +250,6 @@ exports.updateName = async (req, res, next) => {
 //to update phonenumber
 exports.updateMobileNumber = async (req, res, next) => {
   try {
-    console.log('a')
     const userEmail = req.session.email;
     const { phonenumber } = req.body;
 
@@ -307,8 +298,7 @@ exports.updatePassword = async (req, res, next) => {
     }
   }
   catch (error) {
-    console.log(error)
-    res.status(500).send(error.message);
+    next(error)
   }
 
 }
@@ -329,7 +319,6 @@ exports.updateUserPassword = async (req, res) => {
 
 
     const user = await User.findOne({ email: userEmail }, { _id: 1, password: 1 });
-    console.log(user, 'user is found');
     const oldPassword = await bcrypt.compare(password, user.password);
     if (oldPassword) {
       res.send('enter a new password')
@@ -341,7 +330,6 @@ exports.updateUserPassword = async (req, res) => {
     }
   }
   catch (error) {
-    console.log(error.message);
     res.send('internel sever error')
   }
 
@@ -411,6 +399,6 @@ async function sendVerificationEmail(email, otp) {
       </html>`
     );
   } catch (error) {
-    console.log(error.message);
+    throw error
   }
 }

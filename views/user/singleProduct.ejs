@@ -489,8 +489,6 @@
             star.addEventListener('click', function (event) {
               let rating = this.getAttribute('data-value');
               ratingInput.value = rating;
-
-              console.log(ratingInput.value)
               stars.forEach(s => {
                 s.classList.remove('checked');
               });
@@ -536,7 +534,6 @@
           }
           //ajax call for submit the review
           function submitReview(pid, rating, reviewText,) {
-            console.log('called')
             $.ajax({
               url: `/api/rateProduct/${pid}`,
               type: 'post',

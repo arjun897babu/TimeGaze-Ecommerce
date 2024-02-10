@@ -132,8 +132,14 @@ li {
 	justify-content: center;
 }
 
-/* SIDEBAR */
+#sidebar .text {
+text-transform: capitalize;
+}
 
+/* SIDEBAR */
+#sort{
+	background-color: #F1D2D8;
+}
 
 .table td {
 	vertical-align: middle;

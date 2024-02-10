@@ -5,7 +5,6 @@ $(document).ready(function(){
   }); 
 
   function restore(productId){
-    console.log(productId)
     $.ajax({
       url:`/api/restoreProduct/${productId}`,
       type:'PUT',

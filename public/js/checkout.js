@@ -1,7 +1,6 @@
 $('.change-address').click(function (event) {
   event.preventDefault();
   const selectedId = $(this).attr('data-id');
-  console.log(selectedId);
   makeAddressDefualt(selectedId);
 })
 
@@ -204,7 +203,6 @@ function clearError(input) {
 }
 
 function updateAddress(newData, selected) {
-  console.log('thi funcrion is called');
   $.ajax({
     url: `/api/updateAddress/${selected}?source=checkout`,
     type: 'PUT',
@@ -212,14 +210,11 @@ function updateAddress(newData, selected) {
     contentType: 'application/json',
     success: function (data, textStatus, xhr) {
       if (xhr.status === 200) {
-
         window.location.href = data.redirectUrl
       }
     },
     error: function (xhr, textStatus, errorThrown) {
-      if (xhr.status === 400) {
-        console.log('Document not found:', xhr.responseText);
-      }
+     
       if (xhr.status === 404) {
         window.location.href = '/login'
       }
@@ -262,11 +257,9 @@ function makePurchase(selectedAddressId, PaymentOption) {
     contentType: "application/json",
     data: JSON.stringify(PaymentOption),
     success: function (data, textStatus, xhr) {
-      console.log(xhr.status);
       if (xhr.status === 200) {
 
         let { message, redirectUrl, order, razorKey } = data
-        console.log(message, redirectUrl, order, razorKey)
         if (!order) window.location.href = redirectUrl ? redirectUrl : '/login';
         else {
           const options = {

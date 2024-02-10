@@ -132,20 +132,26 @@ li {
 	justify-content: center;
 }
 
+#sidebar .text {
+	text-transform: capitalize;
+}
+
 /* SIDEBAR */
 
 
 .table td {
 	vertical-align: middle;
 }
-.table tbody th{
+
+.table tbody th {
 	width: 6rem;
 	text-align: center;
 }
-.fixed-td{
+
+.fixed-td {
 	width: 20rem;
-	white-space: nowrap; 
-	overflow: hidden; 
+	white-space: nowrap;
+	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
@@ -160,9 +166,10 @@ li {
 	.mobile_brand {
 		display: block !important;
 	}
-	.logout-mob{
+
+	.logout-mob {
 		display: block !important;
-		
+
 	}
 
 	.navbar {
@@ -175,6 +182,70 @@ li {
 .mobile_brand {
 	display: none;
 }
-.logout-mob{
+
+.logout-mob {
 	display: none;
+}
+
+.page-link {
+	color: black;
+}
+
+.active>.page-link,
+.page-link.active {
+	background-color: black !important;
+	border-color: azure !important;
+}
+
+#sidebar .text,
+.breadcrumb-item a,
+.breadcrumb-item.active,
+.offerTable td,
+.offerTable th,
+.couponTable th,
+.navigation-buttons-container button {
+	text-transform: capitalize;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+	appearance: none;
+}
+
+.form-control:focus {
+	color: var(--bs-body-color);
+	background-color: var(--bs-body-bg);
+	border-color: none;
+	outline: 0;
+	box-shadow: none;
+}
+
+.btn-close:focus {
+	color: var(--bs-body-color);
+	background-color: var(--bs-body-bg);
+	border-color: none;
+	outline: 0;
+	box-shadow: none;
+}
+
+#discount::placeholder,
+#addCoupon input::placeholder {
+	font-size: 0.6rem
+}
+
+#offerForm label,
+#addCoupon label {
+	font-size: 0.8rem;
+	color: black;
+
+}
+
+.couponTable td,
+.offerTable td {
+	font-size: 0.6rem;
+}
+
+.couponTable .h6,
+.offerTable .h6 {
+	font-size: 0.8rem;
 }

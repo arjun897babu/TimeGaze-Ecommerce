@@ -10,8 +10,6 @@ exports.addProducts = async (req, res, next) => {
   try {
 
     const { name, brand, diameter, shape, price, offer, discountPrice, category, quantity } = req.body;
-    console.log(req.body);
-    console.log(name, brand, diameter, shape, price, offer, category, quantity);
     if (!name || !brand || !diameter || !shape || !price || !offer || !category || !quantity) {
       return res.send('all fields are required')
     };
@@ -59,7 +57,6 @@ exports.addProducts = async (req, res, next) => {
 exports.updateProducts = async (req, res, next) => {
   try {
     const { productId } = req.params;
-    console.log(productId)
 
     const { name, brand, diameter, shape, price, offer, discountPrice, category, quantity } = req.body;
 
@@ -72,7 +69,6 @@ exports.updateProducts = async (req, res, next) => {
       _id: { $ne: productId },
       productName: { $regex: `^${name}[0-9]*$`, $options: 'i' }
     });
-    console.log(existingProduct)
 
     if (existingProduct) {
       return res.status(409).json({ error: 'Product already exists' });
@@ -362,7 +358,6 @@ exports.restoreProducts = async (req, res, next) => {
     );
 
     if (existingProduct) {
-      console.log(existingCateogry);
       res.status(200).send('restored')
     } else {
       res.status(400).send('not found')
@@ -378,7 +373,6 @@ exports.restoreProducts = async (req, res, next) => {
 exports.singleProduct = async (req, res, next) => {
   try {
     let isCart = false;
-    console.log(req.query);
 
     if (!req.query.hasOwnProperty('userId') || req.query.userId === '' || req.query.userId === 'undefined') {
       req.query.userId = undefined;
@@ -444,11 +438,9 @@ exports.singleProduct = async (req, res, next) => {
       isCart: isCart,
       existingProduct: existingProduct
     };
-    console.log(existingProduct)
     return res.status(200).json({ result: result });
 
   } catch (error) {
-    console.log(error.message);
     next(error);
 
   }
@@ -463,8 +455,6 @@ exports.delteImage = async (req, res, next) => {
     const { productId } = req.params;
     const { imageName } = req.body;
 
-    console.log('Request Params:', req.params);
-    console.log('Request Body:', req.body);
 
     if (!productId || !imageName) {
       return res.status(400).send('All fields are required');
@@ -497,10 +487,10 @@ exports.delteImage = async (req, res, next) => {
 exports.productListOnUser = async (req, res, next) => {
   try {
     const categoryId = req.query.categoryId;
-    console.log('categoyId', categoryId);
+  
 
     const existingCateogry = await category.findOne({ _id: categoryId, unlisted: false });
-    console.log('existing category', existingCateogry)
+
     if (existingCateogry === null) {
       return res.send(null)
     }
@@ -523,7 +513,6 @@ exports.productListOnUser = async (req, res, next) => {
 
       ]
     )
-    console.log('loggin in fucntion', products)
 
     if (products.length > 0) {
       res.status(200).send(products);

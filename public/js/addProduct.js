@@ -401,8 +401,6 @@ function previewImage(previewDiv) {
 
       iconSpan.addEventListener('click', () => {
         let index = currentList.indexOf(file)
-        console.log(index, 'index');
-
         currentList.splice(index, 1);
         previewDiv.removeChild(div);
 
@@ -410,7 +408,6 @@ function previewImage(previewDiv) {
         const newFileList = createFileList(currentList);
         fileInput.files = newFileList;
         imageValidationCheck();
-        console.log(currentList, 'final current list');
       });
 
       // Icon style

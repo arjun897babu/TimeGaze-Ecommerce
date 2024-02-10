@@ -1,17 +1,20 @@
-
-
-$('#updateAddress').click(function (event) {
+$('#updateAddress').submit(function (event) {
   event.preventDefault();
-  const selected = $(this).attr('data-id');
-  const form = $('.requires-validation');
-  const data  = form.serializeArray();
- 
-  const dataObject = {};
-  data.forEach(item => {
-    dataObject[item.name] = item.value;
+  let isValidate = Array.from(this.elements).every((element) => {
+    return checkInputValidity(this, element);
   });
-  console.log(selected, dataObject);
-  updateAddress(dataObject, selected);
+
+  if (isValidate) {
+    const selected = $(this).attr('data-id');
+    const data  = $(this).serializeArray();
+    const dataObject = {};
+    data.forEach(item => {
+      dataObject[item.name] = item.value;
+    });
+    updateAddress(dataObject, selected);
+
+  }
+
 });
 
 function updateAddress(newData, selected) {
@@ -22,14 +25,11 @@ function updateAddress(newData, selected) {
     contentType: 'application/json',
     success: function (data, textStatus, xhr) {
       if (xhr.status === 200) {
-        console.log('Name update:', data);
         window.location.href = data.redirectUrl
     }
     },
     error: function (xhr, textStatus, errorThrown) {
-      if (xhr.status === 400) {
-        console.log('Document not found:', xhr.responseText);
-      } if(xhr.status===404){
+       if(xhr.status===404){
         window.location.href = '/login'
       }
     }
@@ -37,7 +37,6 @@ function updateAddress(newData, selected) {
 }
 
 function checkInputValidity(form, element) {
-
   let [nameInput, numberInput, districtInput, pincodeInput, localityInput, addressInput, stateInput, addressTypeInput] =
     ['name', 'mobileNumber', 'district', 'pincode', 'locality', 'address', 'state', 'addressType']
       .map(inputName => form.elements[inputName]);
@@ -84,7 +83,6 @@ function checkInputValidity(form, element) {
   let addressRegex = /^[^\s][a-zA-Z0-9\s,'-]*$/;
 
   let isValid = true;
-  let inputValue = element.value;
   // Check for 'name' field
   if (nameInput.value.trim() === '') {
     displayError(nameInput, errorMessage.common.required);

@@ -24,19 +24,16 @@ function checkInputValidity(form, element) {
   let otpInput = form.elements['validateOTP'];
   let otpInputValue = otpInput.value;
 
-  console.log(otpInputValue);
   let errorMessage = {
     required: 'OTP required',
   }
   let isValid = true
   if (!otpInputValue) {
-    console.log('undefined variable');
     displayErrorMessage(otpInput, errorMessage.required);
     isValid = false
     otpInput.classList.add('is-invalid');
     otpInput.classList.remove('is-valid')
   } else {
-    console.log('case is true');
     clearMessage(otpInput);
     otpInput.classList.remove('is-invalid');
     otpInput.classList.add('is-valid');
@@ -67,7 +64,6 @@ let otpVerify = document.getElementById('otpVerify');
 let resendButton = document.getElementById('otpResend')
 let timerId;
 let email = document.querySelector('input[name="email"]').value;
-console.log(email)
 
 if (email) { timerId = setInterval(countDown, 1000) };
 

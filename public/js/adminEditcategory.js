@@ -1,11 +1,10 @@
 //block user
 $(document).ready(function () {
   $('#updateCategory-form').on('submit', function (event) {
-    let nameRegex = /^[a-zA-Z][a-zA-Z ']{1,18}[a-zA-Z]$/
-
 
     event.preventDefault();
 
+    let nameRegex = /^[a-zA-Z][a-zA-Z ']{1,18}[a-zA-Z]$/
     const updatedName = $('#validateCateogryName').val()
     const categoryId = $(this).attr('data-id');
     
@@ -15,6 +14,7 @@ $(document).ready(function () {
       $('#validateCateogryName').removeClass('is-valid');
       return false
     }
+
     if (!nameRegex.test(updatedName)) {
       $('.errorDiv').text('enter a valid name');
       $('#validateCateogryName').addClass('is-invalid');
@@ -27,6 +27,7 @@ $(document).ready(function () {
     $('#validateCateogryName').addClass('is-valid');
 
     updateCategory(categoryId, updatedName);
+
   });
 
   function updateCategory(categoryId, updatedName) {
@@ -39,24 +40,20 @@ $(document).ready(function () {
       }),
       success: function (data, textStatus, xhr) {
         if (xhr.status === 200) {
-       
-          console.log('Category updated successfully', data);
+          const {message} = JSON.parse(xhr.responseText)
+          localStorage.setItem('updateCategory',message);
           window.location.href = '/adminCategory';
-        } else if (xhr.status === 400) {
-          console.log('Category name already exists', data);
-        } else {
-       
-          console.error('Unexpected status code:', xhr.status);
         }
 
-
       }, error: function (xhr, textStatus, errorThrown) {
-        console.error('Error updating the category');
-        console.log('Response:', xhr.responseText); 
         if (xhr.status === 400) {
-          $('.errorDiv').text(xhr.responseText);
+          const {message} = JSON.parse(xhr.responseText)
+          $('.errorDiv').text(message);
           $('#validateCateogryName').addClass('is-invalid');
           $('#validateCateogryName').removeClass('is-valid');
+        }
+        if(xhr.status===404){
+          window.location.href = '/adminHome'
         }
       }
     });

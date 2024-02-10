@@ -22,7 +22,6 @@ Array.from(forms).forEach(form => {
 
 function checkInputValidity(form, element) {
   let passwordRegex = /^.{4,20}$/;
-  let email = form.elements['email'];
   let passwordInput = form.elements['validatePassword'];
   let passwordInput2 = form.elements['validatePassword2']
   let passwordInputValue = passwordInput.value;

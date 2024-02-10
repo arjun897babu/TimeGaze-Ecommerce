@@ -64,6 +64,12 @@
             <span class="text">banner management</span>
           </a>
         </li> -->
+        <li class="">
+          <a href="/adminOffer">
+            <i class='bx bxs-offer'></i>
+            <span class="text">Offer Management</span>
+          </a>
+        </li>
         <li>
           <a href="/adminCoupen">
             <i class='bx bxs-offer'></i>
@@ -145,19 +151,19 @@
               <tbody>
                 <%for (let x in users) {%>
                   <tr>
-                    <td class="fixed-td">
+                    <td class="fixed-td text-capitalize">
                       <h6>
                         <%=users[x].name%>
                       </h6>
                     </td>
-                    <td>
+                    <td class="text-lowercase">
                       <%=users[x].email%>
                     </td>
                     <td>
                       <%=users[x].phonenumber%>
                     </td>
                     <td class="<%=users[x].isBlocked?'text-danger':'text-success'%>">
-                      <%=users[x].isBlocked?'blocked':'unblocked'%>
+                      <%=users[x].isBlocked?'Blocked':'Unblocked'%>
                     </td>
                     <td>
                       <% if(!users[x].isBlocked) {%>

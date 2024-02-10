@@ -26,7 +26,6 @@ module.exports = {
   adminHome: async (req, res) => {
     const user = await userHelper.userCount();
     const order = await orderHelper.profitAndOrder();
-    console.log(user, order)
     res.render('admin/adminHome', { user: user, order: order })
   },
 
@@ -38,8 +37,6 @@ module.exports = {
       .then((productResponse) => {
         const products = productResponse.data.products;
         const totalPages = productResponse.data.totalPages;
-        console.log(totalPages)
-
         res.status(200).render('admin/adminproducts', { products, totalPages })
       })
       .catch((error) => {
@@ -52,8 +49,12 @@ module.exports = {
     axios.get(`http://localhost:${process.env.PORT}/api/categories`)
       .then((response) => {
 
-        console.log('dd', req.session.errorMessage)
-        res.status(200).render('admin/addproduct', { categories: response.data, errorMessage: req.session.errorMessage }, (error, html) => {
+        res.status(200).render('admin/addproduct', 
+        { 
+          categories: response.data,
+          errorMessage: req.session.errorMessage
+        },
+         (error, html) => {
           if (error) {
             res.send(error.message)
           }
@@ -155,7 +156,6 @@ module.exports = {
     axios.get(`http://localhost:${process.env.PORT}/api/getAllOrder`)
       .then((response) => {
         const order = response.data;
-        console.log(order)
         res.status(200).render('admin/adminOrder', { orders: order })
       })
       .catch(error => {
@@ -165,13 +165,11 @@ module.exports = {
   },
   coupen: async (req, res, next) => {
     const coupen = await coupenHelper.getAllCoupon();
-    console.log(coupen)
     res.status(200).render('admin/adminCoupen', { coupon: coupen })
   },
   offer: async (req, res, next) => {
     try {
      const offers = await OfferHelper.allOffer();
-     console.log(offers)
       res.status(200).render('admin/adminOffer', { offers:offers, successMessage: req.session.successMessage }, (error, html) => {
         if (error) {
           return next(error)
@@ -191,7 +189,6 @@ module.exports = {
     try {
       const categories = await categoryHelper.allCategory();
       const product = await ProductHelper.allProduct()
-      console.log(req.session.successMessage, req.session.errorMessage);
       res.status(200).render('admin/addOffer',
         {
           categories: categories,

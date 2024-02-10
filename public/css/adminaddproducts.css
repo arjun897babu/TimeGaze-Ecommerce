@@ -138,6 +138,7 @@ li {
 	justify-content: center;
 }
 
+
 /* SIDEBAR */
 
 
@@ -177,5 +178,29 @@ li {
 .mobile_brand {
 	display: none;
 }
+#sidebar .text, 
+.breadcrumb-item a,
+#addProductForm label,
+.breadcrumb-item.active{
+	text-transform: capitalize;
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+	appearance: none;
+}
 
+.form-control:focus {
+	color: var(--bs-body-color);
+	background-color: var(--bs-body-bg);
+	border-color: none;
+	outline: 0;
+	box-shadow: none;
+}
 
+.btn-close:focus {
+	color: var(--bs-body-color);
+	background-color: var(--bs-body-bg);
+	border-color: none;
+	outline: 0;
+	box-shadow: none;
+}

@@ -18,17 +18,7 @@
   <link rel="stylesheet" href="/css/adminproducts.css">
 
   <title>AdminHub</title>
-  <style>
-    .page-link {
-      color: black;
-    }
 
-    .active>.page-link,
-    .page-link.active {
-      background-color: black !important;
-      border-color: azure !important;
-    }
-  </style>
 </head>
 
 
@@ -77,6 +67,12 @@
             <span class="text">banner management</span>
           </a>
         </li> -->
+        <li class="">
+          <a href="/adminOffer">
+            <i class='bx bxs-offer'></i>
+            <span class="text">Offer Management</span>
+          </a>
+        </li>
         <li>
           <a href="/adminCoupen">
             <i class='bx bxs-offer'></i>
@@ -125,7 +121,7 @@
           </ol>
         </nav>
 
-        <div class="container-fluid ">
+        <div class="container-fluid navigation-buttons-container">
           <div class="container d-flex justify-content-end"><a href="/addproducts"><button type="submit"
                 class="btn btn-dark ">
                 add products +
@@ -167,7 +163,7 @@
                     <th>
                       <img src="/uploads/<%= products[x].image[0] %>" style="width: 4rem;object-fit: cover;">
                     </th>
-                    <td class="fixed-td">
+                    <td class="fixed-td text-capitalize">
                       <h6>
                         <%=products[x].productName%>
                       </h6>
@@ -180,7 +176,7 @@
                     <td>
                       <%=products[x].quantity%>
                     </td>
-                    <td>
+                    <td class="text-capitalize">
                       <%=products[x].category.categoryName%>
                     </td>
                     <td class="">

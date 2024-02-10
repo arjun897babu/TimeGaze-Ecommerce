@@ -77,7 +77,6 @@ exports.addToCart = async (req, res, next) => {
 exports.getUserCart = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    // console.log(userId);
 
     const userCart = await Cart.aggregate([
       {
@@ -131,7 +130,7 @@ exports.getUserCart = async (req, res, next) => {
       res.send(null)
     }
 
-    
+
 
   } catch (error) {
     res.send(error.message)
@@ -141,8 +140,7 @@ exports.getUserCart = async (req, res, next) => {
 exports.removeCartItem = async (req, res, next) => {
   try {
     const { cartItemId } = req.params;
-    const {userId} = req.session;
-    console.log(cartItemId, userId);
+    const { userId } = req.session;
     const userCart = await Cart.findOne({ userId: userId }).populate('cartItem.product');
 
 
@@ -152,7 +150,6 @@ exports.removeCartItem = async (req, res, next) => {
         item._id.equals(new mongoose.Types.ObjectId(cartItemId))
       );
       let removeCartItem = userCart.cartItem.splice(indexOfItem, 1);
-      console.log(removeCartItem)
       const newCartTotal = userCart.cartItem.reduce((total, item) => {
         let productPrice = item.product.discountPrice || 0;
         return total + item.quantity * productPrice;
@@ -174,7 +171,7 @@ exports.cartQuantity = async (req, res, next) => {
     const userId = req.session.userId;
     const { cartItem } = req.params;
     const { newQuantity } = req.body;
-   
+
     if (userId !== 'undefined' && userId !== '' && cartItem !== 'undefined' && cartItem !== '' && newQuantity) {
       const existCartItem = await Cart.findOne({
         userId: userId
@@ -184,7 +181,6 @@ exports.cartQuantity = async (req, res, next) => {
         const indexOfItem = existCartItem.cartItem.findIndex((item) =>
           item.product._id.equals(new mongoose.Types.ObjectId(cartItem))
         );
-        // console.log(existCartItem.cartItem[indexOfItem])
         if (existCartItem.cartItem[indexOfItem].product.quantity >= newQuantity) {
           existCartItem.cartItem[indexOfItem].quantity = newQuantity;
           const newCartTotal = existCartItem.cartItem.reduce((total, item) => {
@@ -193,15 +189,23 @@ exports.cartQuantity = async (req, res, next) => {
           }, 0);
           existCartItem.cartTotal = newCartTotal;
           await existCartItem.save();
-          res.status(200).send('quantity changed');
+          res.status(200).json(
+            {
+              status: 'success',
+              message: "Quantity Updated"
+            }
+          );
         } else {
-          res.status(400).send('Out of stock');
+          res.status(400).json(
+            {
+              status: 'error',
+              message: "Maximum quantity exceeded"
+            }
+          );
         }
       }
-    } else {
-      res.status(400).send('Missing parameters');
     }
   } catch (error) {
-    res.send(error)
+    next(error)
   }
 };

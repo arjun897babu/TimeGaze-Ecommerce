@@ -39,7 +39,6 @@
       let passwordRegex = /^.{4,20}$/;
       let numberRegex = /^[0-9]\d{9}$/;
 
-      console.log('called')
       //input field
       let nameInput = form.elements['validateCustomerName']
       let emailInput = form.elements['validateCustomerEmail'];

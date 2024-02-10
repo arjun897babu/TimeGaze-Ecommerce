@@ -136,14 +136,11 @@ exports.getAllAdress = async (req, res, next) => {
 }
 
 
-exports.deleteAddress = async (req, res) => {
+exports.deleteAddress = async (req, res,next) => {
   try {
 
     const { addressId } = req.params;
     const { selectedId } = req.body;
-
-    console.log(addressId, selectedId)
-
     if (!addressId || !selectedId) {
       return res.send('all fields are required');
     }
@@ -180,8 +177,6 @@ exports.deleteAddress = async (req, res) => {
 
       //check is there default address or not
       const isDefault = existingAddressDocument.every(element => !element.address.defaultAdress)
-      console.log(existingAddressDocument.length)
-
       //change the default address 
       if (isDefault && existingAddressDocument.length > 0) {
         await Address.findOneAndUpdate(
@@ -204,8 +199,7 @@ exports.deleteAddress = async (req, res) => {
     }
 
   } catch (error) {
-    console.log(error)
-    res.send(error.message)
+    next(error)
   }
 }
 
@@ -214,8 +208,6 @@ exports.editAddress = async (req, res) => {
 
   const selectedId = req.query.selected;
   const { addressId } = req.params;
-  console.log('editapi', selectedId, addressId)
-
   if (!selectedId || !addressId) return res.send('not found or not logged in ');
   const trueAddress = await Address.aggregate(
     [
@@ -232,7 +224,6 @@ exports.editAddress = async (req, res) => {
       }
     ]
   );
-  console.log(trueAddress)
   if (trueAddress) {
     res.send(trueAddress);
   } else {
@@ -242,16 +233,14 @@ exports.editAddress = async (req, res) => {
 }
 
 // update a address
-exports.updateAddress = async (req, res) => {
+exports.updateAddress = async (req, res,next) => {
   try {
 
-    console.log('this s jjdj', req.body)
     const newData = { ...req.body };
     const { selected } = req.params;
     const { source } = req.query
     const addressId = req.session.addressId;
-    if (!selected || !source || !newData) return res.status().send('bad request')
-    console.log(newData, source, selected)
+    if (!selected || !source || !newData) return res.status().send('Field is required')
 
     const existing = await Address.findOne(
       { _id: addressId },
@@ -293,8 +282,7 @@ exports.updateAddress = async (req, res) => {
       res.status(400).send('not found')
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
+    next(error)
   }
 };
 

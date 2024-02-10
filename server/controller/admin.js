@@ -42,7 +42,7 @@ exports.adminLogout = (req, res) => {
 }
 
 
-exports.findAllUser = async (req, res) => {
+exports.findAllUser = async (req, res,next) => {
   try {
 
     const { pageNumber, unblocked, search = '' } = req.query;

@@ -20,7 +20,6 @@ exports.isUserTrue = async (req, res, next) => {
     } else {
       req.session.invalidMessage = 'Your are not verified,please register after some times';
       await User.deleteOne({ email })
-      console.log('user not verified');
       res.status(401).redirect('/login')
     }
 
@@ -93,12 +92,10 @@ exports.cartIsTrue = async (req, res, next) => {
       'cartItem': { $exists: true, $not: { $size: 0 } }
     });
 
-    console.log('cartIstrue middle ware', cartExists)
     
     if (cartExists) {
       next();
     } else {
-      console.log('cartIstrue not true middle ware', cartExists)
       res.status(401).redirect('/');
     }
   } catch (error) {

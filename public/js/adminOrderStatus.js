@@ -1,16 +1,6 @@
-// $(document).ready(function () {
-//   if ($('select[name="orderStatus"]').val()) {
-//     let fistValue = $('select[name="orderStatus"]').val();
-//     $('.changeOrder').val(fistValue);
-//   }
-//   console.log($('select[name="orderStatus"]').val())
-
-// });
-
 
 $(document).on('click', 'select[name="orderStatus"]', function () {
   let changedValue = $(this).val();
-  console.log(changedValue)
   $(this).closest('.justify-content-between').find('.changeOrder').val(changedValue);
 });
 
@@ -21,7 +11,6 @@ $(document).on('click', '.changeOrder', function (event) {
   let orderStatus = btn.val();
   let statusDiv = btn.closest('tr')
   let orderId = btn.attr('data-id');
-  console.log(orderId, orderStatus, statusDiv);
   changeOrderStatus(orderId, orderStatus, statusDiv, btn);
 })
 
@@ -50,8 +39,9 @@ function changeOrderStatus(orderId, orderStatus, statusDiv, btn) {
         },
         error: function (xhr, textStatus, errorThrown) {
           if (xhr.status === 400) {
-            console.log(xhr.responseText)
 
+          }if(xhr.status===404){
+            window.location.href = '/adminHome'
           }
         }
 

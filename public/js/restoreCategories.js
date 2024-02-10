@@ -5,7 +5,6 @@ $(document).ready(function(){
   }); 
 
   function restore(categoryId){
-    console.log(categoryId)
     $.ajax({
       url:`/api/restoreCategory/${categoryId}`,
       type:'PUT',

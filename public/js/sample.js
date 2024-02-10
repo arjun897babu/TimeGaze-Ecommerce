@@ -511,14 +511,12 @@ function delteImage(productId, image) {
     }),
     success: function (data, textStatus, xhr) {
       if (xhr.status === 200) {
-        console.log(data);
         location.reload();
         
       }
     }, error: function (xhr, textStatus, errorThrown) {
       if (xhr.status === 400) {
-        console.log(xhr.responseText);
-       
+        location.reload()
       }if(xhr.status===404){
         window.location.href = '/adminProduct'
       }

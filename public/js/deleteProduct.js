@@ -2,7 +2,6 @@ $(document).ready(function () {
   $('.delete_product').click(function () {
     const productId = $(this).attr('data-id');
     const container = $(this).closest('tr');
-    console.log(container)
     softDelete(productId, container);
   });
 
@@ -23,8 +22,6 @@ $(document).ready(function () {
           contentType: 'application/json',
           success: function (data) {
             const newData = data.product;
-            console.log(newData)
-
             const Toast = Swal.mixin({
               toast: true,
               position: "bottom",

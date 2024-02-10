@@ -37,7 +37,6 @@
       let passwordInput = form.elements['adminPasword'];
       let emailInputValue = emailInput.value;
       let passwordInputValue = passwordInput.value;
-      console.log(emailInput, passwordInput);
       let erroMessage = {
         validationCustomerEmail: {
           required: 'Email is required',

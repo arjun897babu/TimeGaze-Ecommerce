@@ -26,7 +26,6 @@ exports.createOrder = async (req, res, next) => {
     const { userId, addressId, coupon } = req.session;
     const { selectedAddressId } = req.params;
     const { PaymentOption } = req.body
-    console.log(userId, addressId, coupon, selectedAddressId, PaymentOption)
     if (!PaymentOption || !selectedAddressId) return res.status(400).send('all field are required');
 
     //checking the address is the defualt address
@@ -81,8 +80,6 @@ exports.createOrder = async (req, res, next) => {
     });
 
     const isValid = valid.every(bolean => bolean);
-    console.log('isValid', isValid)
-    console.log('ex.address', existingAddress)
     if (existingAddress.length === 0 || !isValid) {
 
       return res.status(400).json({ status: 'failed', message: 'some product is outOf stock', redirectUrl: '/cart' })
@@ -256,14 +253,12 @@ exports.createOrder = async (req, res, next) => {
       )
     }
     if (PaymentOption === 'onlinePayment') {
-      console.log('entering payment option')
       const options = {
         amount: newOrder.total * 100,
         currency: "INR",
         receipt: "" + newOrder.orderId,
       };
       const order = await instance.orders.create(options);
-      console.log(order)
       req.session.newOrder = newOrder;
 
       res.json({
@@ -276,7 +271,6 @@ exports.createOrder = async (req, res, next) => {
 
   }
   catch (error) {
-    console.log('enetring error in post order')
     next(error)
   }
 }
@@ -366,7 +360,6 @@ exports.changeStatus = async (req, res, next) => {
   try {
     const { orderId } = req.params;
     const { orderStatus, cancelReason, returnReason } = req.body;
-    console.log('orderCreate body', orderStatus, cancelReason, returnReason)
 
     if (orderStatus === 'cancel' && cancelReason === '') return res.status(400).json(
       {
@@ -525,7 +518,6 @@ exports.getSingleOrderDetails = async (req, res, next) => {
     res.json(singleOrder)
 
   } catch (error) {
-    console.log(error.messagge)
     res.send(error.message)
   }
 }
@@ -574,7 +566,6 @@ exports.cancelOrder = async (req, res, next) => {
     const { userId } = req.session;
     const { orderItemsId } = req.params;
     const { orderStatus, cancelReason } = req.body;
-    console.log(orderItemsId, orderStatus, cancelReason);
     if (orderStatus === 'canceled' && cancelReason === '') {
       return res.status(400).json(
         {
@@ -648,8 +639,6 @@ exports.returnOrder = async (req, res, next) => {
   try {
     const { orderItemsId } = req.params;
     const { orderStatus, returnReason } = req.body;
-    console.log(orderItemsId, orderStatus, returnReason);
-
 
     if (orderStatus === 'return_requested' && returnReason === '') return res.status(400).json(
       {

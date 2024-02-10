@@ -21,9 +21,6 @@ function checkInputValidity(form, element) {
     ['name', 'mobileNumber', 'district', 'pincode', 'locality', 'address', 'state', 'addressType']
       .map(inputName => form.elements[inputName]);
 
-      console.log('state:',stateInput.value);
-      console.log('district:',districtInput.value);
-
   let checkedAddressType = Array.from(addressTypeInput)
     .find(input => input.checked)
 

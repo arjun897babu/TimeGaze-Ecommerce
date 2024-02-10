@@ -2,7 +2,7 @@ const category = require('../model/categorySchema');
 
 
 //to add categories
-exports.addCategory = async (req, res,next) => {
+exports.addCategory = async (req, res, next) => {
   try {
     const { name } = req.body;
 
@@ -10,7 +10,7 @@ exports.addCategory = async (req, res,next) => {
       req.session.errorMessage = 'All fields required'
       return res.redirect('/addCategory');
     }
-    const existingCateogry = await category.findOne({ categoryName: {$regex:`^${name}`,$options:'i' }});
+    const existingCateogry = await category.findOne({ categoryName: { $regex: `^${name}`, $options: 'i' } });
 
     if (existingCateogry) {
       req.session.errorMessage = 'category exists'
@@ -28,12 +28,12 @@ exports.addCategory = async (req, res,next) => {
 
 
   } catch (error) {
-   next(error)
+    next(error)
   }
 }
 
 //find all category
-exports.findAllCategory = async (req, res,next) => {
+exports.findAllCategory = async (req, res, next) => {
   try {
     const Category = await category.find({ unlisted: false });
     // console.log(Category);
@@ -46,12 +46,12 @@ exports.findAllCategory = async (req, res,next) => {
 
   } catch (error) {
     next(error)
-    
+
   }
 };
 
 //unlisted category
-exports.findUnlistedCategory = async (req, res,next) => {
+exports.findUnlistedCategory = async (req, res, next) => {
   try {
     const Category = await category.find({ unlisted: true });
     console.log(Category);
@@ -70,7 +70,7 @@ exports.findUnlistedCategory = async (req, res,next) => {
 
 //delete category
 
-exports.deleteCategory = async (req, res,next) => {
+exports.deleteCategory = async (req, res, next) => {
   try {
     const { categoryId } = req.params;
 
@@ -92,7 +92,7 @@ exports.deleteCategory = async (req, res,next) => {
 }
 
 //resote category
-exports.restoreCategory = async (req, res,next) => {
+exports.restoreCategory = async (req, res, next) => {
   try {
     const { categoryId } = req.params;
 
@@ -114,7 +114,7 @@ exports.restoreCategory = async (req, res,next) => {
 
 //single category page
 
-exports.singleCategory = async (req, res,next) => {
+exports.singleCategory = async (req, res, next) => {
 
   try {
     const { categoryId } = req.query;
@@ -138,35 +138,63 @@ exports.singleCategory = async (req, res,next) => {
 
 //update Category
 
-exports.updateCategory = async (req, res) => {
+exports.updateCategory = async (req, res, next) => {
 
   try {
     const { categoryId } = req.params;
     const { name } = req.body;
-    console.log(req.params,req.body);
-    if (!categoryId || !name) {
-      return res.send('all required')
-    }
-    const existingCategoryName = await category.findOne({ categoryName: name });
-    console.log(existingCategoryName);
+
+    if (!categoryId || !name) return res.status(400).json(
+      {
+        status: 'error',
+        message: 'All Fields Are Required'
+      }
+    )
+
+    const existingCategoryName = await category.exists(
+      {
+        categoryName: {
+          $regex: `^${name}$`,
+          $options: 'i'
+        }
+      }
+    );
+
     if (existingCategoryName) {
 
-       res.status(400).send('already exist')
+      res.status(400).json(
+        {
+          status: 'error',
+          message: 'already exist'
+        }
+      )
 
     } else {
 
-      const existingCategory = await category.findByIdAndUpdate(categoryId, { categoryName: name }, { new: true });
+      const existingCategory = await category.findByIdAndUpdate(
+        categoryId,
+        { categoryName: name },
+      );
 
       if (!existingCategory) {
-        res.send('category is not found')
+        res.status(400).json(
+          {
+            status: 'error',
+            message: 'category is not found'
+          }
+        )
       } else {
-        res.status(200).send(existingCategory);
+        res.status(200).json(
+          {
+            status: 'success',
+            message: 'Category Updated'
+          }
+        );
       }
     }
   }
   catch (error) {
-    console.log(error.message)
-    res.status(500).send(error.message)
+    next(error)
   }
 
 

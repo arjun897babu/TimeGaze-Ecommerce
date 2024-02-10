@@ -55,7 +55,6 @@ exports.productReview = async (userId, productId) => {
       
     ]
   )
-  console.log(review)
   if (!review || (!review.reviews && !review.userReview)) {
     return false;
   }

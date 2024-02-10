@@ -256,7 +256,6 @@
           let btn = $(this);
           let orderStatus = btn.val();
           let orderId = btn.attr('data-id');
-          console.log(orderId, orderStatus);
           const { value: text } = await Swal.fire({
             input: "textarea",
             inputLabel: "Message",
@@ -273,7 +272,6 @@
 
           });
           if (text) {
-            console.log(orderId, btn, orderStatus, text);
             changeOrderStatus(orderId, btn, orderStatus, text)
           }
 
@@ -289,7 +287,6 @@
             confirmButtonText: "Return Order!"
           }).then((result) => {
             if (result.isConfirmed) {
-              console.log(orderId, btn, orderStatus, text)
               $.ajax({
                 url: `/api/changeOrderStatus/${orderId}`,
                 type: 'PUT',
@@ -319,7 +316,6 @@
                 },
                 error: function (xhr, textStatus, errorThrown) {
                   if (xhr.status === 400) {
-                    console.log(xhr.responseText)
 
                   } if (xhr.status === 404) {
                     window.location.href = '/loign'
@@ -338,7 +334,6 @@
         event.preventDefault();
         $(this).addClass('disabled')
         let orderId = $(this).attr('data-id');
-        console.log(orderId,this)
         if(orderId)downloadInvoice(orderId,this);
        
        })
