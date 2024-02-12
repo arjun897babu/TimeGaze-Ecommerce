@@ -6,7 +6,6 @@ const Json2csvParser = require('@json2csv/plainjs').Parser;
 const fs = require('fs');
 const Product = require('../model/productSchema');
 const Offer = require('../model/offerSchema')
-const pdfDocument = require('pdfkit')
 const adminDetails = {
   emailAddress: process.env.admin_email,
   password: process.env.admin_password
