@@ -133,25 +133,27 @@ li {
 }
 
 #sidebar .text {
-text-transform: capitalize;
+	text-transform: capitalize;
 }
 
 /* SIDEBAR */
-#sort{
+#sort {
 	background-color: #F1D2D8;
 }
 
 .table td {
 	vertical-align: middle;
 }
-.table tbody th{
+
+.table tbody th {
 	width: 6rem;
 	text-align: center;
 }
-.fixed-td{
+
+.fixed-td {
 	width: 20rem;
-	white-space: nowrap; 
-	overflow: hidden; 
+	white-space: nowrap;
+	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
@@ -166,27 +168,32 @@ text-transform: capitalize;
 	.mobile_brand {
 		display: block !important;
 	}
-  .logout-mob{
-    display: block !important;
-    
-  }
+
+	.logout-mob {
+		display: block !important;
+
+	}
 
 	.navbar {
 
 		justify-content: center;
 	}
-  .top-content{
-    justify-content: space-between !important;
-  }
+
+	.top-content {
+		justify-content: space-between !important;
+	}
 
 }
-.logout-mob{
-  display: none;
+
+.logout-mob {
+	display: none;
 
 }
+
 .mobile_brand {
 	display: none;
 }
+
 .btn-download {
 	height: 36px;
 	padding: 0 16px;
@@ -206,9 +213,11 @@ text-transform: capitalize;
 	grid-gap: 24px;
 	margin-top: 36px;
 }
-.box-info{
-  padding-left: 0;
+
+.box-info {
+	padding-left: 0;
 }
+
 .box-info li {
 	padding: 24px;
 	background: var(--light);
@@ -217,6 +226,7 @@ text-transform: capitalize;
 	align-items: center;
 	grid-gap: 24px;
 }
+
 .box-info li .bx {
 	width: 80px;
 	height: 80px;
@@ -226,23 +236,40 @@ text-transform: capitalize;
 	justify-content: center;
 	align-items: center;
 }
+
 .box-info li:nth-child(1) .bx {
 	background: var(--light-blue);
 	color: var(--blue);
 }
+
 .box-info li:nth-child(2) .bx {
 	background: var(--light-yellow);
 	color: var(--yellow);
 }
+
 .box-info li:nth-child(3) .bx {
 	background: var(--light-orange);
 	color: var(--orange);
 }
+
 .box-info li .text h3 {
 	font-size: 24px;
 	font-weight: 600;
 	color: var(--dark);
 }
+
 .box-info li .text p {
-	color: var(--dark);	
+	color: var(--dark);
+}
+
+.btn-close:focus {
+	color: var(--bs-body-color);
+	background-color: var(--bs-body-bg);
+	border-color: none;
+	outline: 0;
+	box-shadow: none;
+}
+
+.btn-dark {
+	--bs-btn-focus-shadow-rgb:none
 }

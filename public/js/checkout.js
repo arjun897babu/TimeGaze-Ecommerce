@@ -12,12 +12,10 @@ function makeAddressDefualt(selectedId) {
     success: function (response) {
       location.reload()
     },
-    error: function (error) {
-      if (xhr.status === 404) {
+    error: function (xhr, textStatus, errorThrown) {
+      if(xhr.status===404){
         window.location.href = '/login'
       }
-
-      console.error(error);
     }
 
   })

@@ -64,12 +64,6 @@
             <span class="text">Offer Management</span>
           </a>
         </li>
-        <!-- <li>
-          <a href="#">
-            <i class='bx bxs-edit-alt'></i>
-            <span class="text">banner management</span>
-          </a>
-        </li> -->
         <li>
           <a href="/adminCoupen">
             <i class='bx bxs-offer'></i>
@@ -114,10 +108,52 @@
 
         <div class="container-fluid mt-3 d-flex justify-content-end top-content">
 
-          <a href="/api/salesReport" class="btn-download">
-            <i class='bx bxs-cloud-download'></i>
-            <span class="text">Sales Report</span>
-          </a>
+          <div class="exportSalesReport">
+            <span class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#salesReportFormat">
+              <i class='bx bxs-cloud-download'></i>
+              Sales Report
+            </span>
+            <div class="modal fade " aria-hidden="true" id="salesReportFormat" tabindex="-1"
+              aria-labelledby="salesReportFormatLabel">
+              <div class="modal-dialog">
+                <div class="modal-content rounded-0">
+                  <div class="modal-header">
+                    <h5 id="salesReportFormatLabel" class="modal-title">Download Sales Report</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body salesReportModal ">
+                    <form action="/api/salesReport" method="get" id="salesReportForm">
+                      <div class="dateFilter d-flex justify-content-between">
+                        <div class="row p-1">
+                          <div class="col-6">
+                            <label for="startDate">
+                              From:
+                            </label><br>
+                            <input type="date" class="border border border-primary rounded-0 p-2" name="startDate" id="startDate">
+                          </div>
+                          <div class="col-6">
+                            <label for="endDate">To:</label><br>
+                            <input type="date" class="border border border-primary rounded-0 p-2" name="endDate" id="endDate">
+
+                          </div>
+                        </div>
+                      </div>
+                      <div class="modal-footer d-flex justify-content-end">
+                        <label for="fileExtension">File Format:</label>
+                        <select id="fileExtension" class="btn btn-dark rounded-0" style="font-size: 0.6rem;" name="fileExtension">
+                          <option value="excel" selected>Excel</option>
+                          <option value="pdf">PDF</option>
+                        </select>
+                        <button class="btn btn-primary rounded-0" type="submit" style="font-size: 0.6rem;">Download Report</button>
+                      </div>
+                    </form>
+
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
 
 
           <div class="logout-mob ms-2">
@@ -245,7 +281,7 @@
                 suggestedMin: 0,
                 suggestedMax: effectiveValue,
                 ticks: {
-                  stepSize:1
+                  stepSize: 1
                 }
 
               }
@@ -256,6 +292,21 @@
         myChart = new Chart(chardiv, config);
       }
     }
+
+    const currentDate = new Date().toISOString().split('T')[0];
+    const startDateField = document.getElementById('startDate');
+    const endDateField = document.getElementById('endDate');
+
+    startDateField.setAttribute('max', currentDate);
+    endDateField.setAttribute('max', currentDate);
+
+    startDateField.addEventListener('change', function () {
+      const selectedStartDate = this.value;
+      endDateField.setAttribute('min', selectedStartDate);
+      if (endDateField.value && endDateField.value < selectedStartDate) {
+        endDateField.value = selectedStartDate;
+      }
+    });
 
   </script>
 

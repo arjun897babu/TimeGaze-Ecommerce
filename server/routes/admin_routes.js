@@ -27,16 +27,12 @@ adminRoute.get('/adminCoupen',adminServices.coupen);//admin coupen management
 adminRoute.get('/adminOffer',adminMiddleWare.isAdmin,adminServices.offer)//admin offer management(product and category)
 adminRoute.get('/AddOffer',adminMiddleWare.isAdmin,adminServices.addOffer)//admin add offer(product and category)
 
-
-
 adminRoute.post('/api/adminLogin', adminControll.adminLogin);//for admin login 
 adminRoute.post('/api/adminLogout', adminControll.adminLogout);//for admin logout
-
 
 adminRoute.get('/api/users', adminControll.findAllUser);//to find the all users
 adminRoute.put('/api/blockUser/:userId', adminControll.blockUser);//to block the user
 adminRoute.put('/api/unblockUser/:userId', adminControll.unblockUser);//to unblock the user
-
 
 adminRoute.post('/api/addCategory', cateogryControll.addCategory);//to add category
 adminRoute.get('/api/categories', cateogryControll.findAllCategory);//to show the category
@@ -45,7 +41,6 @@ adminRoute.put('/api/deleteCategory/:categoryId', cateogryControll.deleteCategor
 adminRoute.put('/api/restoreCategory/:categoryId', cateogryControll.restoreCategory);//to restore category
 adminRoute.get('/api/singleEditCategory', cateogryControll.singleCategory);//to render the editcategory page with deatails
 adminRoute.put('/api/updateCategory/:categoryId', cateogryControll.updateCategory);// to updateCategory
-
 
 adminRoute.post('/api/addProduct', imageUpload.upload.array('images', 4), productControll.addProducts);//to add product
 adminRoute.get('/api/allProducts', productControll.allProducts)//to show all the product
@@ -65,8 +60,6 @@ adminRoute.get('/api/salesReport',adminControll.salesReport);//get sales report 
 adminRoute.post('/api/addCoupen',coupenControll.CreateCoupen);//to add(create) a coupen
 
 adminRoute.post('/api/addOffer/',adminControll.addOffer);//add offer
-
-
 
 module.exports = adminRoute;
 

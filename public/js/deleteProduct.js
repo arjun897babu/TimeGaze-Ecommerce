@@ -41,8 +41,10 @@ $(document).ready(function () {
               location.reload();
             }, 1000);
           },
-          error: function (error) {
-            console.error(error.message)
+          error: function (xhr, textStatus, errorThrown) {
+            if(xhr.status===404){
+              window.location.href = '/adminHome'
+            }
           }
         })
       }

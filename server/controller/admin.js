@@ -42,7 +42,7 @@ exports.adminLogout = (req, res) => {
 }
 
 
-exports.findAllUser = async (req, res,next) => {
+exports.findAllUser = async (req, res, next) => {
   try {
 
     const { pageNumber, unblocked, search = '' } = req.query;
@@ -115,6 +115,27 @@ exports.unblockUser = async (req, res, next) => {
 
 exports.salesReport = async (req, res, next) => {
   try {
+    const { fileExtension, startDate, endDate } = req.query;
+
+    if (fileExtension !== 'pdf' && fileExtension !== 'excel') return res.status(400).redirect('/adminHome')
+    
+    let matchQuery = {};
+
+    if (startDate) {
+      matchQuery.orderDate = {
+        ...matchQuery.orderDate,
+        $gte: new Date(startDate)
+      };
+      matchQuery.orderDate.$gte.setUTCHours(0, 0, 0, 0); 
+
+    }
+    if (endDate) {
+      matchQuery.orderDate = {
+        ...matchQuery.orderDate,
+        $lte: new Date(endDate)
+      };
+      matchQuery.orderDate.$lte.setUTCHours(23, 59, 59, 999)
+    }
 
     const fields = ['orderId',
       'productName',
@@ -129,9 +150,15 @@ exports.salesReport = async (req, res, next) => {
       'coupon',
       'orderDate'
     ];
+
     const orderData = await Order.aggregate(
       [
+        {
+          $match: matchQuery
+        },
+
         { $unwind: '$orderItems' },
+
         {
           $project: {
             _id: 0,
@@ -157,7 +184,6 @@ exports.salesReport = async (req, res, next) => {
         }
       ]
     );
-
 
     //for calculating the total quanity,productamount,and order amount
     let totalQuantity = 0, totalProductTotal = 0, grandTotal = 0;

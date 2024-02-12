@@ -15,12 +15,10 @@
   <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
   <!-- My CSS -->
 
-  <link rel="stylesheet" href="/css/adminproducts.css">
+  <link rel="stylesheet" href="/css/adminhome.css">
 
   <title>AdminHub</title>
 </head>
-
-
 
 <body class="">
 
@@ -35,7 +33,7 @@
 
 
       <ul class="side-menu top">
-        <li>
+        <li class="">
           <a href="/adminHome">
             <i class='bx bxs-dashboard'></i>
             <span class="text">Dashboard</span>
@@ -60,13 +58,19 @@
             <span class="text">Orders</span>
           </a>
         </li>
+        <li class="active">
+          <a href="/salesReport">
+            <i class='bx bxs-edit-alt'></i>
+            <span class="text">Sales Report</span>
+          </a>
+        </li>
         <li class="">
           <a href="/adminOffer">
             <i class='bx bxs-offer'></i>
             <span class="text">Offer Management</span>
           </a>
         </li>
-        <li class="">
+        <li>
           <a href="/adminCoupen">
             <i class='bx bxs-offer'></i>
             <span class="text">coupon management</span>
@@ -78,9 +82,8 @@
             <span class="text">category management</span>
           </a>
         </li>
-
         <li>
-          <form action="/logout" method="post" class="py3 d-flex align-items-center justify-content-center">
+          <form action="/api/adminLogout" method="post" class="py3 d-flex align-items-center justify-content-center">
             <i class='bx bxs-log-out-circle text-danger'></i>
             <button type="submit" class="btn "><span class="text-danger">LOG OUT</span></button>
           </form>
@@ -106,68 +109,29 @@
           </div>
 
 
-
         </nav>
-
         <!-- NAVBAR -->
-        <nav aria-label="breadcrumb " class="p-4">
-          <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/adminHome">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">adminOffer</li>
-          </ol>
-        </nav>
-        <div class="container-fluid navigation-buttons-container">
-          <div class="container d-flex justify-content-end"><a href="/addOffer"><button type="submit"
-                class="btn btn-dark rounded-0 ">
-                Add Offer +
-              </button></a>
+
+        <div class="container-fluid mt-3 d-flex justify-content-end top-content">
+          <div class="logout-mob ms-2">
+            <form action="/logout" method="post" class="py3 d-flex align-items-center justify-content-center">
+              <i class='bx bxs-log-out-circle text-danger'></i>
+              <button type="submit" class="btn "><span class="text-danger">LOG OUT</span></button>
+            </form>
           </div>
         </div>
-        <div class="container-fluid mt-3">
-          <div class="table-responsive ">
-            <table class="table table-hover rounded offerTable">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th class="h6">OfferType</th>
-                  <th class="h6">Category/Product</th>
-                  <th class="h6">Discount </th>
-                  <!-- <th class="h6">MinAmount <br><small>(To purchase)</small></th> -->
-                  <th class="h6">expiry</th>
-                </tr>
-              </thead>
-              <tbody class="mb-2">
-                <% offers.forEach((item,index)=>{ %>
-                  <tr>
-                    <td>
-                      <%=index+1 %>
-                    </td>
-                    <td>
-                      <%=item.offerType %>
-                    </td>
-                    <td>
-                      <% name = item.productDetails?item.productDetails.productName:item.categoryDetails.categoryName %>
-                      <%=name %>
-                    </td>
-                    <td>
-                      <%=item.discount %>
-                    </td>
-                    <!-- <td></td> -->
-                    <td>
-                      <%= new Date(item.expiry).toLocaleString('en-GB',{timezon:'Asia/kolkata'}) %>
-                    </td>
-                  </tr>
-                  <% }) %>
-              </tbody>
-            </table>
-          </div>
+        <div class="container-fluid">
+          
+        </div>
+        <div class="container-fluid">
         </div>
 
-
-
-        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
-        <%- include('../include/adminfooter') %>
       </div>
+    </div>
+
+    <!-- CONTENT -->
+
+  </div>
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+  <%- include('../include/adminfooter') %>
