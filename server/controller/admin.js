@@ -6,7 +6,7 @@ const Json2csvParser = require('@json2csv/plainjs').Parser;
 const fs = require('fs');
 const Product = require('../model/productSchema');
 const Offer = require('../model/offerSchema')
-
+const pdfDocument = require('pdfkit')
 const adminDetails = {
   emailAddress: process.env.admin_email,
   password: process.env.admin_password
@@ -118,7 +118,7 @@ exports.salesReport = async (req, res, next) => {
     const { fileExtension, startDate, endDate } = req.query;
 
     if (fileExtension !== 'pdf' && fileExtension !== 'excel') return res.status(400).redirect('/adminHome')
-    
+
     let matchQuery = {};
 
     if (startDate) {
@@ -126,7 +126,7 @@ exports.salesReport = async (req, res, next) => {
         ...matchQuery.orderDate,
         $gte: new Date(startDate)
       };
-      matchQuery.orderDate.$gte.setUTCHours(0, 0, 0, 0); 
+      matchQuery.orderDate.$gte.setUTCHours(0, 0, 0, 0);
 
     }
     if (endDate) {
@@ -185,6 +185,11 @@ exports.salesReport = async (req, res, next) => {
       ]
     );
 
+    if(orderData.length<2) {
+      req.session.noOrder = 'No order Found';
+      return res.redirect('/adminHome');
+    }
+
     //for calculating the total quanity,productamount,and order amount
     let totalQuantity = 0, totalProductTotal = 0, grandTotal = 0;
     orderData.forEach(order => {
@@ -210,11 +215,15 @@ exports.salesReport = async (req, res, next) => {
     const parser = new Json2csvParser({ fields });
     const csv = parser.parse(orderData);
     // fs.writeFileSync("sales.csv", csv);
+    if (fileExtension === 'excel') {
+      res.setHeader('Content-type', 'text/csv')
+      res.setHeader('Content-disposition', 'attachment;filename = sales_report.csv')
+      return res.status(200).send(csv);
 
-    res.setHeader('Content-type', 'text/csv')
-    res.setHeader('Content-disposition', 'attachment;filename = sales_report.csv')
-
-    return res.status(200).send(csv)
+    } else {
+      
+     
+    }
 
   } catch (error) {
     next(error)
@@ -282,3 +291,4 @@ exports.addOffer = async (req, res, next) => {
     next(error)
   }
 }
+

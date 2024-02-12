@@ -14,19 +14,42 @@ module.exports = {
 
   adminLogin: (req, res) => {
 
-    res.render('admin/adminLogin', { errorMessage: req.session.errorMessage }, (error, html) => {
-      if (error) {
-        res.send(error)
-      }
-      delete req.session.errorMessage;
-      res.status(200).send(html)
-    });
+    res.render('admin/adminLogin',
+      {
+        errorMessage: req.session.errorMessage,
+      },
+      (error, html) => {
+        if (error) {
+          res.send(error)
+        }
+        delete req.session.errorMessage;
+        res.status(200).send(html)
+      });
   },
 
-  adminHome: async (req, res) => {
-    const user = await userHelper.userCount();
-    const order = await orderHelper.profitAndOrder();
-    res.render('admin/adminHome', { user: user, order: order })
+  adminHome: async (req, res, next) => {
+    try {
+      const user = await userHelper.userCount();
+      const order = await orderHelper.profitAndOrder();
+      res.render('admin/adminHome',
+        {
+          user: user,
+          order: order,
+          noOrder: req.session.noOrder
+        },
+        (error, html) => {
+          if (error) {
+            return next(error)
+          }
+          delete req.session.noOrder
+          res.send(html)
+        }
+      )
+    }
+    catch (error) {
+      next(error)
+    }
+
   },
 
   adminproducts: (req, res) => {
@@ -49,18 +72,18 @@ module.exports = {
     axios.get(`http://localhost:${process.env.PORT}/api/categories`)
       .then((response) => {
 
-        res.status(200).render('admin/addproduct', 
-        { 
-          categories: response.data,
-          errorMessage: req.session.errorMessage
-        },
-         (error, html) => {
-          if (error) {
-            res.send(error.message)
-          }
-          delete req.session.errorMessage;
-          res.status(200).send(html)
-        })
+        res.status(200).render('admin/addproduct',
+          {
+            categories: response.data,
+            errorMessage: req.session.errorMessage
+          },
+          (error, html) => {
+            if (error) {
+              res.send(error.message)
+            }
+            delete req.session.errorMessage;
+            res.status(200).send(html)
+          })
       })
       .catch((error) => {
         res.status(500).send(error)
@@ -169,8 +192,13 @@ module.exports = {
   },
   offer: async (req, res, next) => {
     try {
-     const offers = await OfferHelper.allOffer();
-      res.status(200).render('admin/adminOffer', { offers:offers, successMessage: req.session.successMessage }, (error, html) => {
+      const offers = await OfferHelper.allOffer();
+      res.status(200).render('admin/adminOffer',
+       {
+         offers: offers, 
+         successMessage: req.session.successMessage
+       },
+       (error, html) => {
         if (error) {
           return next(error)
         }
@@ -194,7 +222,7 @@ module.exports = {
           categories: categories,
           products: product,
           errorMessage: req.session.errorMessage,
-        }, 
+        },
         (error, html) => {
           if (error) {
             return next(error)

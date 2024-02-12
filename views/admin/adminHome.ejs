@@ -153,6 +153,9 @@
                 </div>
               </div>
             </div>
+            <% if (noOrder) { %>
+              <div id="orderMessage" data-message="<%= noOrder %>" style="display: none;"></div>
+          <% } %>
           </div>
 
 
@@ -215,6 +218,8 @@
   </div>
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <script>
     let myChart;
     let sortElement = document.getElementById('sort');
@@ -307,6 +312,23 @@
         endDateField.value = selectedStartDate;
       }
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+    const messageElement = document.getElementById('orderMessage');
+    if (messageElement && messageElement.dataset.message) {
+        const message = messageElement.dataset.message;
+        Swal.fire({
+            toast: true,
+            position: 'bottom',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            icon: 'warning',
+            title: message
+        });
+    }
+});
+
 
   </script>
 
