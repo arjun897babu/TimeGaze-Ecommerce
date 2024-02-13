@@ -23,3 +23,8 @@ const search = new URLSearchParams(window.location.search).get('search')
 if (search) {
   document.querySelector('input[name=search]').value = search
 }
+const currentPath = window.location.pathname;
+if (currentPath === '/productList') {
+  const categoryDropdown = document.querySelector('.categoryDropdown');
+  if (categoryDropdown) categoryDropdown.style.display = 'none';
+}

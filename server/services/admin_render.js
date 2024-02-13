@@ -52,19 +52,30 @@ module.exports = {
 
   },
 
-  adminproducts: (req, res) => {
+  adminproducts: async (req, res, next) => {
+    try {
 
-    const query = queryString.stringify(req.query);
-
-    axios.get(`http://localhost:${process.env.PORT}/api/allProducts?${query}`)
-      .then((productResponse) => {
-        const products = productResponse.data.products;
-        const totalPages = productResponse.data.totalPages;
-        res.status(200).render('admin/adminproducts', { products, totalPages })
-      })
-      .catch((error) => {
-        res.status(500).send(error.message)
-      })
+      const query = queryString.stringify(req.query);
+      const categories = await categoryHelper.allCategory()
+      axios.get(`http://localhost:${process.env.PORT}/api/allProducts?${query}`)
+        .then((productResponse) => {
+          const products = productResponse.data.products;
+          const totalPages = productResponse.data.totalPages;
+          res.status(200).render('admin/adminproducts',
+            {
+              products,
+              totalPages,
+              categories
+            }
+          )
+        })
+        .catch((error) => {
+          res.status(500).send(error.message)
+        })
+    }
+    catch (error) {
+      next(error)
+    }
   },
 
   adminaddproducts: (req, res) => {
@@ -92,7 +103,6 @@ module.exports = {
   },
 
   adminEditProduct: (req, res) => {
-    const { product } = req.query;
     const query = queryString.stringify(req.query);
 
     axios.all([
@@ -194,19 +204,19 @@ module.exports = {
     try {
       const offers = await OfferHelper.allOffer();
       res.status(200).render('admin/adminOffer',
-       {
-         offers: offers, 
-         successMessage: req.session.successMessage
-       },
-       (error, html) => {
-        if (error) {
-          return next(error)
-        }
+        {
+          offers: offers,
+          successMessage: req.session.successMessage
+        },
+        (error, html) => {
+          if (error) {
+            return next(error)
+          }
 
-        delete req.session.successMessage
-        res.status(200).send(html)
+          delete req.session.successMessage
+          res.status(200).send(html)
 
-      })
+        })
 
     } catch (error) {
       next(error)

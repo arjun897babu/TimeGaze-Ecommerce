@@ -31,7 +31,6 @@ li {
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
 }
 
 
@@ -87,6 +86,9 @@ footer h6 {
   footer .tex-centre {
     max-width: 100%;
   }
+  .large-ScreenBanner {
+    height: 30vh;
+  }
 
   p,
   a {
@@ -105,6 +107,9 @@ footer h6 {
 
   header input {
     margin: 1rem 0 !important;
+  }
+  .large-ScreenBanner {
+    height: 40vh; 
   }
 
   /* footer */
