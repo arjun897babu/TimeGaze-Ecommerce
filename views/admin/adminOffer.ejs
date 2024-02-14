@@ -124,6 +124,23 @@
           </div>
         </div>
         <div class="container-fluid mt-3">
+          <div class="row mb-2 d-flex justify-content-start">
+            <div class="col-6 col-md-4">
+              <form action="/adminOffer" method="get">
+                <input type="text" name="search" id="searchInput" value="<%=selected?.search||''  %>" class="form-control rounded-0"
+                  placeholder="Search...">
+              </form>
+            </div>
+            <div class="status-dropDownList col-3 bg-white">
+              <select class="btn btn-white col-12 text-start text-capitalize" name="status" id="statusDropdown">
+                <option value="" selected>All</option>
+                <option class="text-capitalize" value="active" <%=(selected?.status=='active')?'selected':''  %>>active</option>
+                <option class="text-capitalize" value="expired" <%=(selected?.status==='expired')?'selected':''  %>>expired</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid mt-3">
           <div class="table-responsive ">
             <table class="table table-hover rounded offerTable">
               <thead>
@@ -132,12 +149,14 @@
                   <th class="h6">OfferType</th>
                   <th class="h6">Category/Product</th>
                   <th class="h6">Discount </th>
-                  <!-- <th class="h6">MinAmount <br><small>(To purchase)</small></th> -->
                   <th class="h6">expiry</th>
+                  <th class="h6">Status</th>
+
                 </tr>
               </thead>
               <tbody class="mb-2">
                 <% offers.forEach((item,index)=>{ %>
+                  <% let expired = new Date(item.expiry)<Date.now() %>
                   <tr>
                     <td>
                       <%=index+1 %>
@@ -150,12 +169,13 @@
                       <%=name %>
                     </td>
                     <td>
-                      <%=item.discount %>
+                      <%=item.discount %> %
                     </td>
                     <!-- <td></td> -->
                     <td>
                       <%= new Date(item.expiry).toLocaleString('en-GB',{timezon:'Asia/kolkata'}) %>
                     </td>
+                    <td ><span class="text-capitalize btn rounded-0 <%= expired ? 'btn-danger' : 'btn-success'  %>" style="font-size: 0.6rem;"><%= expired ? 'expired' : 'Active' %></span></td>
                   </tr>
                   <% }) %>
               </tbody>
@@ -167,6 +187,36 @@
 
         <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+          const successMessage = '<%=successMessage%>'
+          if(successMessage){
+            const Toast = Swal.mixin({
+              toast: true,
+              position: "bottom",
+              showConfirmButton: false,
+              timer: 2000,
+              timerProgressBar: true,
+              didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+              }
+            });
+            Toast.fire({
+              icon: "success",
+              title: successMessage
+            });
+          }
+
+          const dropDown = document.getElementById('statusDropdown');
+          dropDown.addEventListener('change', function (event) {
+            event.preventDefault()
+            checkedValues = {};
+            checkedValues.status = dropDown.value;
+            let queryString = new URLSearchParams(checkedValues).toString();
+            window.location.href = '/adminOffer?' + queryString
+
+          })
+        </script>
 
 
         <%- include('../include/adminfooter') %>

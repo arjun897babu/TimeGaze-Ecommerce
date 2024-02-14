@@ -44,7 +44,7 @@ exports.adminLogout = (req, res) => {
 exports.findAllUser = async (req, res, next) => {
   try {
 
-    const { pageNumber, unblocked, search = '' } = req.query;
+    const { pageNumber, status, search = '' } = req.query;
 
 
 
@@ -235,12 +235,12 @@ exports.addOffer = async (req, res, next) => {
     console.log(req.body, category, product, discount, expiry);
 
     let errorMessage = {}
-    if (discount === '' || !discount || discount % 1 !== 0 || discount < 1 || discount > 80) {
-      errorMessage.discount = 'enter a valid disocunt'
+    if (discount === '' || !discount || discount % 1 !== 0 || discount < 1 || discount > 20) {
+      errorMessage.discount = 'enter a valid discount'
     }
     if (!expiry || new Date(expiry) < new Date()) {
 
-      errorMessage.expiry = 'choose a valid expiry dat'
+      errorMessage.expiry = 'choose a valid expiry date'
     }
     if (Object.keys(errorMessage).length > 0) {
       req.session.errorMessage = errorMessage;
@@ -254,9 +254,7 @@ exports.addOffer = async (req, res, next) => {
       discount: discount,
       expiry: expiry
     })
-    console.log(newOffer._id)
     const createdOffer = await newOffer.save()
-    console.log(createdOffer)
 
     if (offer === 'category') {
       await Product.updateMany(
@@ -284,7 +282,7 @@ exports.addOffer = async (req, res, next) => {
         }
       )
     }
-    req.session.successMessage = `New ${offer} offer is added`;
+    req.session.successMessage = `New ${offer} offer is added`
     return res.status(200).redirect('/adminOffer')
   } catch (error) {
     next(error)

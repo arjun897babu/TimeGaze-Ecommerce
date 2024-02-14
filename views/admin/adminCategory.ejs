@@ -124,6 +124,16 @@
           </div>
 
         </div>
+        <div class="container-fluid mt-3">
+          <div class="row mb-2 d-flex justify-content-start">
+            <div class="col-6 col-md-4">
+              <form action="/adminCategory" method="get">
+                <input type="text" name="search" id="searchInput" value="<%=selected?.search||''  %>" class="form-control rounded-0"
+                  placeholder="Search...">
+              </form>
+            </div>
+          </div>
+        </div>
         <!-- Table -->
         <div class="container-fluid mt-3">
           <div class="table-responsive ">
@@ -136,6 +146,7 @@
                 </tr>
               </thead>
               <tbody class="mb-2">
+                <% if(categories.length>0) {%>
                 <% for(x in categories ) { %>
                 <tr>
                   <th></th>
@@ -155,8 +166,29 @@
                   </td>
                 </tr>
                 <% } %>
+                <% } %>
               </tbody>
             </table>
+            <% if(totalPages.totalPages) {%>
+              <tfoot class="bg-white">
+                <nav aria-label="Page navigation example" class="d-flex justify-content-center mt-3">
+                  <ul class="pagination">
+                    <% for (let i=1; i <=totalPages.totalPages; i++) { %>
+                      <% if(totalPages.totalPages>1) {%>
+                        <li class="page-item <%= i.toString() == totalPages.pageNumber ? 'active' : '' %>">
+                          <a class="page-link"
+                            href="/adminCategory?<%= totalPages.path.replace(/(pageNumber=)[^&]*/, 'pageNumber=' + i) %>">
+                            <%= i %>
+                          </a>
+                        </li>
+                        <% } %>
+                          <% } %>
+
+
+                  </ul>
+                </nav>
+              </tfoot>
+              <% } %>
           </div>
         </div>
       </div>

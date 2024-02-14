@@ -212,7 +212,7 @@ exports.allProducts = async (req, res, next) => {
         matchQuery.$or = [
           {
             'category.categoryName': {
-              $regex: search.trim(),
+              $regex: `^${search.trim()}`,
               $options: 'i'
             }
           },
@@ -248,7 +248,6 @@ exports.allProducts = async (req, res, next) => {
       caseDiameterQuery,
       discountPrice,
       { $sort: { discountPrice: sort } }
-
 
     ];
     // return res.json(productQuery)

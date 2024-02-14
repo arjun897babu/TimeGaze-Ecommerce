@@ -130,101 +130,113 @@
         </div>
         <!-- Table -->
         <div class="container-fluid mt-3">
-          <div class="row mb-2 d-flex justify-content-end">
+          <div class="row mb-2 d-flex justify-content-start">
             <div class="col-6 col-md-4">
               <form action="/adminproducts" method="get">
-                <input type="text" name="search" id="searchInput" class="form-control rounded-0" placeholder="Search...">
+                <input type="text" name="search" value="<%=selected?.search||''  %>" id="searchInput" class="form-control rounded-0"
+                  placeholder="Search...">
               </form>
-            </div> 
+            </div>
+            <div class="category-dropDownList col-3 bg-white">
+              <select class="btn btn-white col-12 text-start" name="category" id="category">
+                <option value="" selected>All</option>
+                <% for (x of categories) {%>
+                  <option class="text-capitalize" value="<%=x.categoryName%>"
+                    <%=(selected.category&&selected.category.includes(x.categoryName.toString()))? 'selected' : '' %>>
+                    <%=x.categoryName%>
+                  </option>
+                  <% } %>
+              </select>
+            </div>
           </div>
           <div class="table-responsive ">
             <% if(products.length>0) {%>
-            <table class="table table-hover rounded ">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>Name</th>
-                  <th>QTY</th>
-                  <th>Category</th>
-                  <th></th>
-
-                </tr>
-              </thead>
-              <tbody class="mb-2">
-                <% for(x in products){ %>
+              <table class="table table-hover rounded ">
+                <thead>
                   <tr>
-                    <th>
-                      <img src="/uploads/<%= products[x].image[0] %>" style="width: 4rem;object-fit: cover;">
-                    </th>
-                    <td class="fixed-td text-capitalize">
-                      <h6>
-                        <%=products[x].productName%>
-                      </h6>
-                      <p class="card-text">
-                        <%=products[x].discountPrice%><del class="text-black-50">
-                            <%=products[x].price%>
-                          </del>
-                      </p>
-                    </td>
-                    <td>
-                      <%=products[x].quantity%>
-                    </td>
-                    <td class="text-capitalize">
-                      <%=products[x].category.categoryName%>
-                    </td>
-                    <td class="">
+                    <th></th>
+                    <th>Name</th>
+                    <th>QTY</th>
+                    <th>Category</th>
+                    <th></th>
 
-                      <div class="d-flex justify-content-center">
-                        <a class="icon-link icon-link-hover"
-                          href="/updateProduct?pid=<%=products[x]._id%>&product=<%=products[x].productName%>">
-                          <button class="btn">
-                            <i class="bi bi-pencil-square"></i>
-                          </button>
-                        </a>
-                        <button class="btn delete_product" data-id="<%=products[x]._id %>" type="submit">
-                          <i class="bi bi-trash-fill"></i>
-                        </button>
-                      </div>
-
-                    </td>
                   </tr>
-                  <% } %>
+                </thead>
+                <tbody class="mb-2">
+                  <% for(x in products){ %>
+                    <tr>
+                      <th>
+                        <img src="/uploads/<%= products[x].image[0] %>" style="width: 4rem;object-fit: cover;">
+                      </th>
+                      <td class="fixed-td text-capitalize">
+                        <h6>
+                          <%=products[x].productName%>
+                        </h6>
+                        <p class="card-text">
+                          <%=products[x].discountPrice%><del class="text-black-50">
+                              <%=products[x].price%>
+                            </del>
+                        </p>
+                      </td>
+                      <td>
+                        <%=products[x].quantity%>
+                      </td>
+                      <td class="text-capitalize">
+                        <%=products[x].category.categoryName%>
+                      </td>
+                      <td class="">
 
-              </tbody>
-
-            </table>
-            <% if(totalPages.totalPages) {%>
-              <tfoot class="bg-white">
-                <nav aria-label="Page navigation example" class="d-flex justify-content-center mt-3">
-                  <ul class="pagination">
-                    <% for (let i=1; i <=totalPages.totalPages; i++) { %>
-                      <% if(totalPages.totalPages>1) {%>
-                        <li class="page-item <%= i.toString() == totalPages.pageNumber ? 'active' : '' %>">
-                          <a class="page-link"
-                            href="/adminproducts?<%= totalPages.path.replace(/(pageNumber=)[^&]*/, 'pageNumber=' + i) %>">
-                            <%= i %>
+                        <div class="d-flex justify-content-center">
+                          <a class="icon-link icon-link-hover"
+                            href="/updateProduct?pid=<%=products[x]._id%>&product=<%=products[x].productName%>">
+                            <button class="btn">
+                              <i class="bi bi-pencil-square"></i>
+                            </button>
                           </a>
-                        </li>
-                        <% } %>
+                          <button class="btn delete_product" data-id="<%=products[x]._id %>" type="submit">
+                            <i class="bi bi-trash-fill"></i>
+                          </button>
+                        </div>
+
+                      </td>
+                    </tr>
+                    <% } %>
+
+                </tbody>
+
+              </table>
+              <% if(totalPages.totalPages) {%>
+                <tfoot class="bg-white">
+                  <nav aria-label="Page navigation example" class="d-flex justify-content-center mt-3">
+                    <ul class="pagination">
+                      <% for (let i=1; i <=totalPages.totalPages; i++) { %>
+                        <% if(totalPages.totalPages>1) {%>
+                          <li class="page-item <%= i.toString() == totalPages.pageNumber ? 'active' : '' %>">
+                            <a class="page-link"
+                              href="/adminproducts?<%= totalPages.path.replace(/(pageNumber=)[^&]*/, 'pageNumber=' + i) %>">
+                              <%= i %>
+                            </a>
+                          </li>
                           <% } %>
+                            <% } %>
 
 
-                  </ul>
-                </nav>
-              </tfoot>
-              <% }else{ %>
-                <div class="text-center">
-                  \(^Д^)/
-                  No Products.
-                </div>
-                <% } %>
-
+                    </ul>
+                  </nav>
+                </tfoot>
                 <% }else{ %>
                   <div class="text-center">
                     \(^Д^)/
                     No Products.
                   </div>
                   <% } %>
+
+                    <% }else{ %>
+                      <div class="text-center">
+                        \(^Д^)/
+                        No Products.
+                      </div>
+                      <% } %>
           </div>
         </div>
       </div>
@@ -238,3 +250,14 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/js/deleteProduct.js"></script>
+    <script>
+      const dropDown = document.getElementById('category');
+      dropDown.addEventListener('change', function (event) {
+        event.preventDefault()
+        checkedValues = {};
+        checkedValues.category = dropDown.value;
+        let queryString = new URLSearchParams(checkedValues).toString();
+        window.location.href = '/adminProducts?' + queryString
+
+      })
+    </script>

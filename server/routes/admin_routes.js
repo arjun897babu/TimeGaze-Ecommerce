@@ -23,7 +23,7 @@ adminRoute.get('/unlistedCategory', adminMiddleWare.isAdmin, adminServices.unlis
 adminRoute.get('/unlistedProducts', adminMiddleWare.isAdmin, adminServices.unlistedProducts);//unlsited products
 adminRoute.get('/updateProduct', adminMiddleWare.isAdmin,adminMiddleWare.isProduct, adminServices.adminEditProduct);//edit product
 adminRoute.get('/order',adminMiddleWare.isAdmin,adminServices.order);//admin order management
-adminRoute.get('/adminCoupen',adminServices.coupen);//admin coupen management
+adminRoute.get('/adminCoupen',adminMiddleWare.isAdmin,adminServices.coupen);//admin coupen management
 adminRoute.get('/adminOffer',adminMiddleWare.isAdmin,adminServices.offer)//admin offer management(product and category)
 adminRoute.get('/AddOffer',adminMiddleWare.isAdmin,adminServices.addOffer)//admin add offer(product and category)
 

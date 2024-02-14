@@ -113,19 +113,28 @@
             <li class="breadcrumb-item active" aria-current="page">orders</li>
           </ol>
         </nav>
-
-        <!-- <div class="container-fluid ">
-          <div class="container d-flex justify-content-end" ><a href="/addproducts"><button type="submit" class="btn btn-dark ">
-            add products +
-          </button></a>
-            
-            <a href="/unlistedProducts"><button type="submit" class="btn btn-danger ms-2">
-              unlisted products
-            </button></a>
-            
+        <div class="container-fluid mt-3">
+          <div class="row mb-2 d-flex justify-content-start">
+            <div class="col-6 col-md-4">
+              <form action="/order" method="get">
+                <input type="text" name="search" id="searchInput" value="<%=selected?.search||''  %>" class="form-control rounded-0"
+                  placeholder="Search...">
+              </form>
+            </div>
+            <div class="category-dropDownList col-3 bg-white">
+              <select class="btn btn-white col-12 text-start" name="status" id="categoryDropdown">
+                <option value="" selected>All</option>
+                <option class="text-capitalize" value="placed" <%=(selected?.status==='placed')?'selected':''  %>>placed</option>
+                <option class="text-capitalize" value="pending" <%=(selected?.status==='pending')?'selected':''  %>>pending</option>
+                <option class="text-capitalize" value="shipped"  <%=(selected?.status==='shipped')?'selected':''  %>>shipped</option>
+                <option class="text-capitalize" value="canceled"  <%=(selected?.status==='canceled')?'selected':''  %>>canceled</option>
+                <option class="text-capitalize" value="delivered"  <%=(selected?.status==='delivered')?'selected':''  %>>delivered</option>
+                <option class="text-capitalize" value="returned"  <%=(selected?.status==='returned')?'selected':''  %>>returned</option>
+              </select>
+            </div>
           </div>
-          
-        </div> -->
+        </div>
+        
         <!-- Table -->
         <div class="container-fluid mt-3">
           <div class="table-responsive ">
@@ -149,7 +158,7 @@
                         <img src="/uploads/<%=order.orderItems.image[0]  %>" style="width: 4rem;object-fit: cover;">
                       </td>
                       <td class="fixed-td">
-                        <%=order.orderItems._id %>
+                        <%=order.orderId %>
                       </td>
                       <td class="fixed-td text-capitalize">
                         <h6>
@@ -194,6 +203,26 @@
                 <% } %>
               </tbody>
             </table>
+            <% if(totalPages.totalPages) {%>
+              <tfoot class="bg-white">
+                <nav aria-label="Page navigation example" class="d-flex justify-content-center mt-3">
+                  <ul class="pagination">
+                    <% for (let i=1; i <=totalPages.totalPages; i++) { %>
+                      <% if(totalPages.totalPages>1) {%>
+                        <li class="page-item <%= i.toString() == totalPages.pageNumber ? 'active' : '' %>">
+                          <a class="page-link"
+                            href="/order?<%= totalPages.path.replace(/(pageNumber=)[^&]*/, 'pageNumber=' + i) %>">
+                            <%= i %>
+                          </a>
+                        </li>
+                        <% } %>
+                          <% } %>
+
+
+                  </ul>
+                </nav>
+              </tfoot>
+              <% } %>
           </div>
         </div>
       </div>
@@ -226,7 +255,16 @@
             title: `Order ${message} `
           });
           localStorage.removeItem('message')
-        }
+        };
+        const dropDown = document.getElementById('categoryDropdown');
+          dropDown.addEventListener('change', function (event) {
+            event.preventDefault()
+            checkedValues = {};
+            checkedValues.status = dropDown.value;
+            let queryString = new URLSearchParams(checkedValues).toString();
+            window.location.href = '/order?' + queryString
+
+          })
     </script>
     
-            <%- include('../include/adminfooter') %>
+   <%- include('../include/adminfooter') %>

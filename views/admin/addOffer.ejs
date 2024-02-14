@@ -129,18 +129,16 @@
                   <!-- option for catgory -->
                   <select name="category" id="categoryList">
                     <option value="" disabled selected>Select ...</option>
-                    <% for(x of categories) {%>
+                    <% for(category of categories) {%>
                       
-                    <option value="<%=x._id  %>" class="text-capitalize"> <%=x.categoryName  %> </option>
+                    <option value="<%=category._id  %>" class="text-capitalize"> <%=category.categoryName  %> </option>
                     <% } %>
                   </select>
                   <!-- option for product -->
                   <select name="product" id="productList" style="display: none;">
-                    
-                   
                       <option value="" disabled selected>Select ...</option>
-                      <% for(x of products) {%>
-                      <option value="<%=x._id  %>" class="text-capitalize"> <%=x.productName  %> </option>
+                      <% for(product of products) {%>
+                      <option value="<%=product._id  %>" class="text-capitalize"> <%=product.productName  %> </option>
                       <% } %>
                   
                   </select>

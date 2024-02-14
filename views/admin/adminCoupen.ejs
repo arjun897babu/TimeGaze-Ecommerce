@@ -189,6 +189,23 @@
 
           </div>
           <div class="container-fluid mt-3">
+            <div class="row mb-2 d-flex justify-content-start">
+              <div class="col-6 col-md-4">
+                <form action="/adminCoupen" method="get">
+                  <input type="text" name="search" id="searchInput" value="<%=selected?.search||''  %>" class="form-control rounded-0"
+                    placeholder="Search...">
+                </form>
+              </div>
+              <div class="status-dropDownList col-3 bg-white">
+                <select class="btn btn-white col-12 text-start text-capitalize" name="status" id="statusDropdown">
+                  <option value="" selected>All</option>
+                  <option class="text-capitalize" value="active" <%=(selected?.status=='active')?'selected':''  %>>active</option>
+                  <option class="text-capitalize" value="expired" <%=(selected?.status==='expired')?'selected':''  %>>expired</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="container-fluid mt-3">
             <div class="table-responsive ">
               <table class="table table-hover rounded couponTable ">
                 <thead>
@@ -203,9 +220,9 @@
                   </tr>
                 </thead>
                 <tbody class="mb-2">
-                  
+                  <% if(coupon.length>0) {%>
                     <% coupon.forEach((x, index) => { %>
-                      <% let expired = x.expiry<Date.now() %>
+                      <% let expired = new Date(x.expiry)<Date.now() %>
                       <tr>
                         <td><%= index + 1 %></td>
                         <td><%= x.code %></td>
@@ -218,9 +235,30 @@
                         <td ><span class="text-capitalize btn rounded-0 <%= expired ? 'btn-danger' : 'btn-success'  %>" style="font-size: 0.6rem;"><%= expired ? 'expired' : 'Active' %></span></td>
                       </tr>
                     <% }); %>
+                    <% } %>
                   
                 </tbody>
               </table>
+              <% if(totalPages.totalPages) {%>
+                <tfoot class="bg-white">
+                  <nav aria-label="Page navigation example" class="d-flex justify-content-center mt-3">
+                    <ul class="pagination">
+                      <% for (let i=1; i <=totalPages.totalPages; i++) { %>
+                        <% if(totalPages.totalPages>1) {%>
+                          <li class="page-item <%= i.toString() == totalPages.pageNumber ? 'active' : '' %>">
+                            <a class="page-link"
+                              href="/adminCoupen?<%= totalPages.path.replace(/(pageNumber=)[^&]*/, 'pageNumber=' + i) %>">
+                              <%= i %>
+                            </a>
+                          </li>
+                          <% } %>
+                            <% } %>
+  
+  
+                    </ul>
+                  </nav>
+                </tfoot>
+                <% } %>
             </div>
           </div>
 
@@ -258,18 +296,6 @@
 
           let numberRegex = /^(?:[1-9]\d{0,2}|[1-4]\d{3}|5000)$/
           
-          // function toggleLimit() {
-          //   let limitLabel = document.getElementById('limitdiv');
-
-          //   if (document.getElementById('oneTime').checked) {
-          //     limitLabel.style.display = 'none'
-
-          //   } else {
-          //     limitLabel.style.display = 'block'
-
-          //   }
-          // }
-
           function setDiscount() {
             let maxDiscount = document.querySelector('.maxDiscountDiv')
             if (document.getElementById('percentage').checked) {
@@ -467,5 +493,15 @@
             element.classList.remove('is-invalid')
             element.classList.add('is-valid');
           }
+
+          const dropDown = document.getElementById('statusDropdown');
+          dropDown.addEventListener('change', function (event) {
+            event.preventDefault()
+            checkedValues = {};
+            checkedValues.status = dropDown.value;
+            let queryString = new URLSearchParams(checkedValues).toString();
+            window.location.href = '/adminCoupen?' + queryString
+
+          })
         </script>
             <%- include('../include/adminfooter') %>

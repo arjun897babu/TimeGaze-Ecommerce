@@ -61,11 +61,13 @@ module.exports = {
         .then((productResponse) => {
           const products = productResponse.data.products;
           const totalPages = productResponse.data.totalPages;
+          const selected = productResponse.data.selected;
           res.status(200).render('admin/adminproducts',
             {
               products,
               totalPages,
-              categories
+              categories,
+              selected
             }
           )
         })
@@ -121,24 +123,41 @@ module.exports = {
       });
   },
 
-  adminusers: (req, res) => {
-    axios.get(`http://localhost:${process.env.PORT}/api/users`)
-      .then((response) => {
-        res.status(200).render('admin/adminusers', { users: response.data })
-      }).catch((error) => {
-        res.status(500).send(error)
-      })
+  adminusers: async (req, res, next) => {
+    try {
+      const {
+        users, totalPages, selected
+      } = await userHelper.findAlluser(req)
+
+      res.status(200).render('admin/adminusers',
+        {
+          users,
+          totalPages,
+          selected
+        }
+      )
+    } catch (error) {
+      next(error)
+    }
+   
   },
 
-  adminCategory: (req, res) => {
-    axios.get(`http://localhost:${process.env.PORT}/api/categories`)
-      .then((response) => {
-        res.status(200).render('admin/adminCategory', { categories: response.data })
-      })
-      .catch((error) => {
-        res.status(500).send(error)
-      })
-
+  adminCategory: async (req, res, next) => {
+    try {
+      const {
+        categories, totalPages, selected
+      } = await categoryHelper.categoriesWithPagination(req);
+      console.log(categories, totalPages, selected)
+      res.status(200).render('admin/adminCategory',
+        {
+          categories,
+          totalPages,
+          selected
+        }
+      )
+    } catch (error) {
+      next(error);
+    }
 
   },
 
@@ -186,10 +205,20 @@ module.exports = {
       })
   },
   order: (req, res) => {
-    axios.get(`http://localhost:${process.env.PORT}/api/getAllOrder`)
+    const query = queryString.stringify(req.query)
+    axios.get(`http://localhost:${process.env.PORT}/api/getAllOrder?${query}`)
       .then((response) => {
-        const order = response.data;
-        res.status(200).render('admin/adminOrder', { orders: order })
+
+        const {
+          orders, totalPages, selected
+        } = response.data;
+        res.status(200).render('admin/adminOrder',
+          {
+            orders,
+            totalPages,
+            selected
+          }
+        )
       })
       .catch(error => {
         res.send(error.message)
@@ -197,15 +226,32 @@ module.exports = {
 
   },
   coupen: async (req, res, next) => {
-    const coupen = await coupenHelper.getAllCoupon();
-    res.status(200).render('admin/adminCoupen', { coupon: coupen })
+    try {
+      const {
+        coupon, totalPages, selected
+      } = await coupenHelper.couponWithPagination(req);
+      res.status(200).render('admin/adminCoupen',
+        {
+          coupon,
+          totalPages,
+          selected
+        }
+      )
+    } catch (error) {
+      next(error)
+    }
   },
   offer: async (req, res, next) => {
     try {
-      const offers = await OfferHelper.allOffer();
+      const {
+        offers, totalPages, selected
+      } = await OfferHelper.offerWithPagination(req);
+
       res.status(200).render('admin/adminOffer',
         {
-          offers: offers,
+          offers,
+          totalPages,
+          selected,
           successMessage: req.session.successMessage
         },
         (error, html) => {

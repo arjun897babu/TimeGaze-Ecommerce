@@ -120,14 +120,14 @@
           <div class="row mb-2 d-flex justify-content-end">
             <div class="col-6 col-md-4">
               <form action="/adminusers" method="get">
-              <input type="text" id="searchInput" class="form-control rounded-0" placeholder="Search...">
+              <input type="text" id="searchInput" name= 'search' class="form-control rounded-0" value="<%=selected?.search||''  %>" placeholder="Search...">
             </form>
             </div>
-            <div class="col-6 col-md-3">
-              <select id="statusFilter" class="form-control rounded-0">
-                <option value="all">All</option>
-                <option value="blocked">Blocked</option>
-                <option value="unblocked">Unblocked</option>
+            <div class="status-dropDownList col-3 bg-white">
+              <select class="btn btn-white col-12 text-start text-capitalize" name="status" id="statusDropdown">
+                <option value="" selected>All</option>
+                <option class="text-capitalize" value="active" <%=(selected?.status=='active')?'selected':''  %> >active</option>
+                <option class="text-capitalize" value="blocked" <%=(selected?.status=='blocked')?'selected':''  %> >Blocked</option>
               </select>
             </div>
           </div>
@@ -143,6 +143,7 @@
                 </tr>
               </thead>
               <tbody>
+                <% if(users.length>0) {%>
                 <%for (let x in users) {%>
                   <tr>
                     <td class="fixed-td text-capitalize">
@@ -176,8 +177,29 @@
                     </td>
                   </tr>
                   <%}%>
+                  <% } %>
               </tbody>
             </table>
+            <% if(totalPages.totalPages) {%>
+              <tfoot class="bg-white">
+                <nav aria-label="Page navigation example" class="d-flex justify-content-center mt-3">
+                  <ul class="pagination">
+                    <% for (let i=1; i <=totalPages.totalPages; i++) { %>
+                      <% if(totalPages.totalPages>1) {%>
+                        <li class="page-item <%= i.toString() == totalPages.pageNumber ? 'active' : '' %>">
+                          <a class="page-link"
+                            href="/adminusers?<%= totalPages.path.replace(/(pageNumber=)[^&]*/, 'pageNumber=' + i) %>">
+                            <%= i %>
+                          </a>
+                        </li>
+                        <% } %>
+                          <% } %>
+
+
+                  </ul>
+                </nav>
+              </tfoot>
+              <% } %>
           </div>
         </div>
         <!-- Table -->
@@ -194,5 +216,16 @@
 
   <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
   <script src='/js/block_unblock_user.js'>
+  </script>
+  <script>
+     const dropDown = document.getElementById('statusDropdown');
+          dropDown.addEventListener('change', function (event) {
+            event.preventDefault()
+            checkedValues = {};
+            checkedValues.status = dropDown.value;
+            let queryString = new URLSearchParams(checkedValues).toString();
+            window.location.href = '/adminusers?' + queryString
+
+          })
   </script>
   <%- include('../include/adminfooter') %>
