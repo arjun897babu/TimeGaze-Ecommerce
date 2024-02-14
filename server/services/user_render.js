@@ -168,32 +168,32 @@ module.exports = {
     )
 
   },
-  editAddress: async (req, res ,next) => {
-    try{
-    const addressId = req.session.addressId;
-    const { selected } = req.query
-    const categories = await categoryHelper.allCategory()
-    const allStates = await statesHelper.allStates();
-    axios.all([
-      axios.get(`http://localhost:${process.env.PORT}/api/userEditAddress/${addressId}?selected=${selected}`)
-    ])
-      .then(axios.spread((addressResponse) => {
-        const address = addressResponse.data;
-        res.status(200).render('user/userEditAddress',
-          {
-            logged: req.session.isUserAuth,
-            categories: categories,
-            address: address,
-            allStates: allStates
-          }
-        )
+  editAddress: async (req, res, next) => {
+    try {
+      const addressId = req.session.addressId;
+      const { selected } = req.query
+      const categories = await categoryHelper.allCategory()
+      const allStates = await statesHelper.allStates();
+      axios.all([
+        axios.get(`http://localhost:${process.env.PORT}/api/userEditAddress/${addressId}?selected=${selected}`)
+      ])
+        .then(axios.spread((addressResponse) => {
+          const address = addressResponse.data;
+          res.status(200).render('user/userEditAddress',
+            {
+              logged: req.session.isUserAuth,
+              categories: categories,
+              address: address,
+              allStates: allStates
+            }
+          )
 
 
-      }))
-      .catch(error => {
-        res.status(500).send(error.message)
-      })
-    }catch(error){
+        }))
+        .catch(error => {
+          res.status(500).send(error.message)
+        })
+    } catch (error) {
       next(error)
     }
   },
@@ -277,22 +277,26 @@ module.exports = {
       })
 
   },
-  orderHistory: (req, res) => {
-    const { userId } = req.session
-    axios.all([
-      axios.get(`http://localhost:${process.env.PORT}/api/categories`),
-      axios.get(`http://localhost:${process.env.PORT}/api/getUserOrder/${userId}`)
-    ])
-      .then(axios.spread((categoryResponse, orderResponse) => {
-
-        const categories = categoryResponse.data;
-        const orders = orderResponse.data;
-        res.status(200).render('user/orderHistory', { logged: req.session.isUserAuth, order: orders, categories: categories })
-      }))
-      .catch((error) => {
-        res.status(500).send(error.message)
-      })
+  orderHistory: async (req, res, next) => {
+    try {
+      const query = queryString.stringify(req.query);
+      const { userId } = req.session;
+      const categories = categoryHelper.allCategory()
+ 
+      const orderResponse= await axios.get(`http://localhost:${process.env.PORT}/api/getUserOrder/${userId}?${query}`)
+      const { orders, totalPages, selected } = orderResponse.data;
+      res.status(200).render('user/orderHistory', {
+        logged: req.session.isUserAuth,
+        orders,
+        categories,
+        totalPages,
+        selected,
+      });
+    } catch (error) {
+      next(error);
+    }
   },
+
   ordersingle: async (req, res, next) => {
     try {
       const { soid } = req.query;

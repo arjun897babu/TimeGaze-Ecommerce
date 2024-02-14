@@ -281,11 +281,49 @@ exports.getOrderDetails = async (req, res, next) => {
   try {
     const { userId } = req.params
 
-    if (!userId) return res.send('user not logged in')
+    if (!userId) return res.send('user not logged in');
+    let { pageNumber } = req.query;
 
-    const getOrderDetails = await Order.aggregate(
+    if (!req.query.hasOwnProperty('pageNumber') || req.query.pageNumber === '' || req.query.pageNumber < 1) {
+      req.query.pageNumber = 1;
+      pageNumber = 1
+    }
+
+    const perPage = 10;
+    const startIndex = Math.ceil((pageNumber - 1) * perPage);
+    const endIndex = Math.ceil(startIndex + perPage);
+    let searchQuery = {};
+    let statusQuery = {};
+    let selected = {};
+    for ([key, value] of Object.entries(req.query)) {
+
+      if (key === 'search' && value.trim() !== '') {
+        searchQuery = {
+          $or: [
+            {
+              'orderItems.productName': {
+                $regex: value.trim(),
+                $options: 'i'
+              }
+            }
+          ]
+
+        };
+        selected[key] = value
+      } if (key === 'status' && value.trim() !== '') {
+        statusQuery = {
+          'orderItems.orderStatus': {
+            $regex: `^${value.trim()}$`,
+            $options: 'i'
+          }
+        };
+        selected[key] = value
+      }
+    }
+    const orderQuery =
       [
-
+        { $match: { ...searchQuery } },
+        { $match: { ...statusQuery } },
         { $unwind: '$orderItems' }
         ,
         {
@@ -295,6 +333,14 @@ exports.getOrderDetails = async (req, res, next) => {
           }
         }
         ,
+        { $sort: { orderDate: -1, _id: -1 } },
+      ];
+
+    const orders = await Order.aggregate(
+      [
+        ...orderQuery,
+        { $skip: startIndex },
+        { $limit: perPage },
         {
           $project: {
             'orderItems._id': 1,
@@ -306,15 +352,32 @@ exports.getOrderDetails = async (req, res, next) => {
             orderDate: 1
           }
         },
-        { $sort: { orderDate: -1, _id: -1 } },
+      ])
+
+    const [count] = await Order.aggregate([...orderQuery, { $count: 'totalCount' }]);
+    const totalPages = Math.ceil((count?.totalCount || 0) / perPage);
+    const path = queryString.stringify(req.query);
+
+    return res.status(200).json(
+      {
+        orders,
+        totalPages: {
+          totalPages,
+          startIndex,
+          endIndex,
+          pageNumber,
+          path
+        },
+        selected
+      }
+    )
+
+    const getOrderDetails = await Order.aggregate(
+      [
+
+
       ]
     );
-
-    if (getOrderDetails.length > 0) {
-      res.status(200).send(getOrderDetails)
-    } else {
-      res.send(null)
-    }
 
   } catch (error) {
     next(error)
@@ -377,7 +440,7 @@ exports.getAllOrderDetails = async (req, res, next) => {
         ,
         { $sort: { orderDate: -1, _id: -1 } },
       ];
-      
+
     const orders = await Order.aggregate([...orderQuery,
     { $skip: startIndex },
     { $limit: perPage },

@@ -99,6 +99,14 @@
       overflow-y: auto;
       max-height: 440px;
     }
+    .active>.page-link,
+    .page-link.active {
+      background-color: black !important;
+      border-color: azure !important;
+    }
+    .page-link {
+      color: black;
+    }
   </style>
 
 </head>
@@ -182,10 +190,32 @@
 
           </div>
         </div>
-
+        
         <div class="col-md-9 cart-container">
-          <% if(order.length>0) {%>
-            <% for(items of order) {%>
+          
+          <% if(orders.length>0) {%>
+            <div class="container-fluid ">
+              <div class="row mb-2 d-flex justify-content-start">
+                <div class="col-6 col-md-4 p-0">
+                  <form action="/orderHistory" method="get">
+                    <input type="text" name="search" id="searchInput" value="<%=selected?.search||''  %>"  class="form-control rounded-0"
+                      placeholder="Search...">
+                  </form>
+                </div>
+                <div class="category-dropDownList col-3 bg-white">
+                  <select class="btn btn-white col-12 text-start" name="status" id="orderStatusDropdown">
+                    <option value="" selected>All</option>
+                    <option class="text-capitalize" value="placed" <%=(selected?.status==='placed')?'selected':''  %>  >placed</option>
+                    <option class="text-capitalize" value="pending" <%=(selected?.status==='pending')?'selected':''  %> >pending</option>
+                    <option class="text-capitalize" value="shipped" <%=(selected?.status==='selected')?'selected':''  %>  >shipped</option>
+                    <option class="text-capitalize" value="canceled" <%=(selected?.status==='canceled')?'selected':''  %>>canceled</option>
+                    <option class="text-capitalize" value="delivered" <%=(selected?.status==='delivered')?'selected':''  %> >delivered</option>
+                    <option class="text-capitalize" value="returned" <%=(selected?.status==='returned')?'selected':''  %>>returned</option>
+                  </select>
+                </div>        
+              </div>      
+            </div>
+            <% for(items of orders) {%>
               <div class="card mb-3 rounded-0 border p-2">
                 <div class="row">
                   <div class="col-md-6">
@@ -225,6 +255,26 @@
                 </div>
               </div>
               <% } %>
+              <% if(totalPages.totalPages) {%>
+                <tfoot class="bg-white">
+                  <nav aria-label="Page navigation example" class="d-flex justify-content-center mt-3">
+                    <ul class="pagination">
+                      <% for (let i=1; i <=totalPages.totalPages; i++) { %>
+                        <% if(totalPages.totalPages>1) {%>
+                          <li class="page-item <%= i.toString() == totalPages.pageNumber ? 'active' : '' %>">
+                            <a class="page-link"
+                              href="/orderHistory?<%= totalPages.path.replace(/(pageNumber=)[^&]*/, 'pageNumber=' + i) %>">
+                              <%= i %>
+                            </a>
+                          </li>
+                          <% } %>
+                            <% } %>
+  
+  
+                    </ul>
+                  </nav>
+                </tfoot>
+                <% } %>
                 <% }else{ %>
                   <div class="text-center">
                     \(^Д^)/<br>
@@ -239,6 +289,17 @@
       <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
       <script src="/js/orderStatus.js"></script>
+      <script>
+        const dropDown = document.getElementById('orderStatusDropdown');
+          dropDown.addEventListener('change', function (event) {
+            event.preventDefault()
+            checkedValues = {};
+            checkedValues.status = dropDown.value;
+            let queryString = new URLSearchParams(checkedValues).toString();
+            window.location.href = '/orderHistory?' + queryString
+
+          })
+      </script>
 </body>
 
 </html>
