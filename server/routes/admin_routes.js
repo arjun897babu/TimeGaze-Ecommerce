@@ -30,7 +30,6 @@ adminRoute.get('/AddOffer',adminMiddleWare.isAdmin,adminServices.addOffer)//admi
 adminRoute.post('/api/adminLogin', adminControll.adminLogin);//for admin login 
 adminRoute.post('/api/adminLogout', adminControll.adminLogout);//for admin logout
 
-adminRoute.get('/api/users', adminControll.findAllUser);//to find the all users
 adminRoute.put('/api/blockUser/:userId', adminControll.blockUser);//to block the user
 adminRoute.put('/api/unblockUser/:userId', adminControll.unblockUser);//to unblock the user
 

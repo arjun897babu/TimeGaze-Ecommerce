@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+      <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        #dailyTable {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h4 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        #dataTable {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #dataTable th,
+        #dataTable td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+
+        #dataTable th {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        #dataTable tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        #dataTable tbody tr:hover {
+            background-color: #d4edda;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="dailyTable" >
+        <h4>SALES REPORT</h4>
+        <table id="dataTable" class="table table-hover mt-3">
+            <thead>
+            <tr>
+                <th>No</th>
+                <th>Order Id</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Payment</th>
+                <th>Date</th>
+            </tr>
+            </thead>
+            <tbody>
+          
+              <% orderData.forEach((order, index) => { %>
+
+                <tr>
+                  <td><b><%= index+1%></b></td>
+                  <td><b><%= order.orderId %></b></td>
+                  <td><b><%= order.productName %></b></td>
+                  <td><b><%= order.quantity %></b></td>
+                  <td><b><%= order.productTotal %></b></td>
+                  <td><b><%= order.paymentMethod %></b> </td>
+                  <td><b><%= order.orderDate%></b></td>
+              </tr>
+
+              <% }) %>
+
+            </tbody>
+        </table>
+    
+
+    </div>
+    
+  </div>
+    
+    
+
+</body>
+</html>

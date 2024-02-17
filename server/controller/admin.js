@@ -1,11 +1,12 @@
 const { response } = require('express');
 const User = require('../model/userModelSchema');
-const { default: mongoose } = require('mongoose');
 const Order = require('../model/orderSchema');
 const Json2csvParser = require('@json2csv/plainjs').Parser;
-const fs = require('fs');
 const Product = require('../model/productSchema');
-const Offer = require('../model/offerSchema')
+const Offer = require('../model/offerSchema');
+const puppeteer = require('puppeteer')
+const path = require('path');
+const { renderFile } = require('ejs')
 const adminDetails = {
   emailAddress: process.env.admin_email,
   password: process.env.admin_password
@@ -39,30 +40,6 @@ exports.adminLogout = (req, res) => {
   req.session.destroy();
   res.status(200).redirect('/adminLogin');
 }
-
-
-exports.findAllUser = async (req, res, next) => {
-  try {
-
-    const { pageNumber, status, search = '' } = req.query;
-
-
-
-    const users = await User.find({});
-    if (!users) {
-      res.send('no user')
-    } else {
-      res.send(users)
-    }
-  }
-  catch (error) {
-    next(error)
-  }
-}
-
-
-//blocking and unblocking the user
-
 
 //block user
 exports.blockUser = async (req, res) => {
@@ -183,12 +160,14 @@ exports.salesReport = async (req, res, next) => {
         }
       ]
     );
-
-    if(orderData.length<2) {
+    
+    if (orderData.length < 1) {
       req.session.noOrder = 'No order Found';
       return res.redirect('/adminHome');
     }
 
+    if (fileExtension === 'excel') {
+      
     //for calculating the total quanity,productamount,and order amount
     let totalQuantity = 0, totalProductTotal = 0, grandTotal = 0;
     orderData.forEach(order => {
@@ -214,14 +193,38 @@ exports.salesReport = async (req, res, next) => {
     const parser = new Json2csvParser({ fields });
     const csv = parser.parse(orderData);
     // fs.writeFileSync("sales.csv", csv);
-    if (fileExtension === 'excel') {
       res.setHeader('Content-type', 'text/csv')
       res.setHeader('Content-disposition', 'attachment;filename = sales_report.csv')
       return res.status(200).send(csv);
 
-    } else {
+    } else if (fileExtension === 'pdf') {
       
-     
+      // Render the EJS template with salesData
+      const templatePath = path.join(__dirname, '../../views/admin/salesReportPdfTemplate.ejs');
+      const htmlContent = await renderFile(templatePath, { orderData });
+
+      // Launch Puppeteer
+      const browser = await puppeteer.launch();
+      const page = await browser.newPage();
+
+      // Set the HTML content
+      await page.setContent(htmlContent, {
+        waitUntil: 'networkidle0',
+      });
+      const { PassThrough } = require('stream');
+      const stream = new PassThrough();
+  
+      const pdfBuffer = await page.pdf({ format: 'A4' });
+      stream.end(pdfBuffer);
+  
+      await browser.close();
+  
+      res.setHeader('Content-Disposition', 'attachment; filename=sales-report.pdf');
+      res.setHeader('Content-Type', 'application/pdf');
+  
+    
+      stream.pipe(res);
+
     }
 
   } catch (error) {

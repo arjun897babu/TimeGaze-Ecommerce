@@ -69,20 +69,22 @@ exports.applyCoupen = async (req, res, next) => {
         }
       ]
     )
-
-    if (!availableCoupen) return res.status(400).json(
-      {
-        status: 'error',
-        message: 'Invalid Coupon'
-      }
-    )
-    if (availableCoupen.expiry < Date.now()) return res.status(400).json(
-      {
-        status: 'error',
-        message: 'Coupon expired'
-      }
-    )
-
+    if (!availableCoupen) {
+      return res.status(400).json(
+        {
+          status: 'error',
+          message: 'Invalid Coupon'
+        }
+      )
+    }
+    if (new Date(availableCoupen.expiry) < new Date() ) {
+      return res.status(400).json(
+        {
+          status: 'error',
+          message: 'Coupon expired'
+        }
+      )
+    }
     const lastPrice = await offerHelper.calulateLastPrice(userId);
 
     if (lastPrice < availableCoupen.minAmount) return res.status(400).json(
@@ -97,6 +99,7 @@ exports.applyCoupen = async (req, res, next) => {
         {
           $match:
           {
+            userId: new mongoose.Types.ObjectId(userId),
             coupon: code
           }
         },
@@ -109,8 +112,8 @@ exports.applyCoupen = async (req, res, next) => {
 
       ]
     );
-
-    if (!appliedCoupon || appliedCoupon.usedCount < availableCoupen.limit) {
+    
+    if ((appliedCoupon?.usedCount||0 ) < availableCoupen.limit) {
       //calculated discount amount
 
       const discountPrice = coupenHelper.calculateDiscount(availableCoupen, lastPrice);
@@ -127,7 +130,7 @@ exports.applyCoupen = async (req, res, next) => {
     else {
       res.status(400).json({
         status: 'error',
-        message: 'Coupon Expired'
+        message: 'Coupon Limit Exceeded'
       })
     }
 
