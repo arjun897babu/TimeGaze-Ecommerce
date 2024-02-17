@@ -204,7 +204,9 @@ exports.salesReport = async (req, res, next) => {
       const htmlContent = await renderFile(templatePath, { orderData });
 
       // Launch Puppeteer
-      const browser = await puppeteer.launch();
+      const browser = await puppeteer.launch({
+        executablePath: '/snap/bin/chromium'
+      });
       const page = await browser.newPage();
 
       // Set the HTML content
