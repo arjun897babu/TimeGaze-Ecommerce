@@ -4,7 +4,7 @@ const Order = require('../model/orderSchema');
 const Json2csvParser = require('@json2csv/plainjs').Parser;
 const Product = require('../model/productSchema');
 const Offer = require('../model/offerSchema');
-const puppeteer = require('puppeteer')
+const puppeteer = require('puppeteer-core')
 const path = require('path');
 const { renderFile } = require('ejs')
 const adminDetails = {
@@ -205,8 +205,8 @@ exports.salesReport = async (req, res, next) => {
 
       // Launch Puppeteer
       const browser = await puppeteer.launch({
-        executablePath: '/snap/bin/chromium'
-      });
+        headless: "new",
+        executablePath: '/snap/bin/chromium'});
       const page = await browser.newPage();
 
       // Set the HTML content
