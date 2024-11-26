@@ -26,7 +26,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: timgaze-image:latest
+          tags: arjunkan22/timgaze-image:latest
   
   deploy:
     needs: build
@@ -43,9 +43,9 @@ jobs:
           ssh -i "timegaze.pem" -o StrictHostKeyChecking=no ubuntu@ec2-13-232-247-163.ap-south-1.compute.amazonaws.com << 'EOF'
             sudo docker stop timegaze || true
             sudo docker rm timegaze || true
-            sudo docker rmi timgaze-image:latest || true
-            sudo docker pull timgaze-image:latest
-            sudo docker run -d --name timgaze -p 4000:4000 -v ${PWD}/public/uploads:/src/public/uploads --env-file .env timgaze-image
+            sudo docker rmi arjunkan22/timgaze-image:latest || true
+            sudo docker pull arjunkan22/timgaze-image:latest
+            sudo docker run -d --name timgaze -p 4000:4000 -v ${PWD}/public/uploads:/src/public/uploads --env-file .env arjunkan22/timgaze-image
           EOF
       
       - name: Cleanup PEM file
