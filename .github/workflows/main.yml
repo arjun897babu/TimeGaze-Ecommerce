@@ -36,7 +36,7 @@ jobs:
         run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > timegaze.pem
 
       - name: Set permissions for PEM file
-        run: chmod 600 cinepass-server.pem
+        run: chmod 600 timegaze.pem
         
       - name: Pull Docker image and run container
         run: |
