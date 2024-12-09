@@ -45,7 +45,7 @@ jobs:
             sudo docker rm timegaze || true
             sudo docker rmi arjunkan22/timgaze-image:latest || true
             sudo docker pull arjunkan22/timgaze-image:latest
-            sudo docker run -d --name timgaze -p 4000:4000 -v ${PWD}/public/uploads:/src/public/uploads --env-file .env arjunkan22/timgaze-image
+            sudo docker run -d --name timegaze -p 4000:4000 -v ${PWD}/public/uploads:/src/public/uploads --env-file .env arjunkan22/timgaze-image
           EOF
       
       - name: Cleanup PEM file
