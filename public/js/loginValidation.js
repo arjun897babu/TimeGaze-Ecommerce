@@ -32,7 +32,7 @@
 
 //function for checking the input field values
 function checkInputValidity(form, element) {
-  let emailRegex = /^[A-Za-z0-9_\-\.]+@gmail+\.[A-Za-z]{3}$/;
+  let emailRegex =  /^(?=.{11,100}$)([a-zA-Z\d]+([.-_]?[a-zA-Z\d]+)*)\@[a-zA-Z\d-]{2,}\.[a-zA-z]{2,}$/
   let emailInput = form.elements['validationCustomerEmail'];
   let passwordInput = form.elements['validationPassword'];
   let emailInputValue = emailInput.value;

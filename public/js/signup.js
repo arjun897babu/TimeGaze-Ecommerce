@@ -34,10 +34,11 @@
 
 
     function checkInputValidity(form, element) {
-      let emailRegex = /^[A-Za-z0-9_\-\.]+@gmail+\.[A-Za-z]{3}$/;
+      let emailRegex =  /^(?=.{11,100}$)([a-zA-Z\d]+([.-_]?[a-zA-Z\d]+)*)\@[a-zA-Z\d-]{2,}\.[a-zA-z]{2,}$/;
       let nameRegex = /^[a-zA-Z]+ [a-zA-Z]+$/;
-      let passwordRegex = /^.{4,20}$/;
-      let numberRegex = /^[0-9]\d{9}$/;
+      let passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-/`~!#*$@_%+=.,^&(){}\[\]|;:”<>?\\]).{6,20}$/
+
+      let numberRegex = /^[6-9]\d{9}$/;
 
       //input field
       let nameInput = form.elements['validateCustomerName']
@@ -69,7 +70,7 @@
         },
         validationPassword: {
           required: 'Passoword is required',
-          invalid: 'Password must be 4-20 characters long'
+          invalid: 'use a strong password'
         },
         validationPassword2: {
           required: '',
@@ -168,9 +169,8 @@
         passwordInput2.classList.remove('is-valid');
         passwordInput2.classList.add('is-invalid');
        }
-      else if(passwordInputValue2===passwordInputValue){
+      else if(passwordCriteria(passwordInputValue2)){
         clearMessage(passwordInput2);
-        
         passwordInput2.classList.add('is-valid');
         passwordInput2.classList.remove('is-invalid');
       }else{
@@ -219,8 +219,6 @@
         document.querySelector('.navigation-mobile-list').classList.remove('active');
       }
     })
-
-
 
 
 
