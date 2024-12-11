@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
 const Product = require('../model/productSchema');
-const category = require('../model/categorySchema');
+const Wallet = require('../model/walletSchema');
+const { generateUUID } = require('./random-id-generator');
 
 exports.allProduct = async () => {
-  return Product.aggregate([
+   return Product.aggregate([
     {
       $lookup: {
         from: 'categories',

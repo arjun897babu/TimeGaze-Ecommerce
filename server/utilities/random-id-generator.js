@@ -5,5 +5,5 @@ const translator = shortUUID();
 
 exports.generateUUID = () => {
     const UUID = randomUUID(); 
-    return translator.fromUUID(UUID);
+    return `order_${translator.fromUUID(UUID)}`;
 }

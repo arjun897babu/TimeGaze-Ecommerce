@@ -4,6 +4,8 @@ const Product = require('../model/productSchema');
 const Cart = require('../model/cartSchema');
 const queryString = require('querystring');
 const fs = require('fs');
+const Wallet = require('../model/walletSchema');
+const { generateUUID } = require('../utilities/random-id-generator');
 
 //to add products
 exports.addProducts = async (req, res, next) => {
@@ -486,8 +488,7 @@ exports.delteImage = async (req, res, next) => {
 exports.productListOnUser = async (req, res, next) => {
   try {
     const categoryId = req.query.categoryId;
-  
-
+   
     const existingCateogry = await category.findOne({ _id: categoryId, unlisted: false });
 
     if (existingCateogry === null) {

@@ -188,7 +188,7 @@
                 style="font-size: 2rem;">
                 <div><i class="bi bi-wallet"></i> wallet</div>
                 <div>
-                  <%= (wallet)?wallet.balance.toFixed(2):'0.00' %>
+                  ₹ <%= (wallet)?wallet.balance.toFixed(2):'0.00' %>
                 </div>
               </div>
               <div class="card-body">
@@ -197,8 +197,8 @@
                   <div class="table-responsive ">
                     <table class="table table-hover rounded ">
                       <thead>
-                        <tr>
-                          <th>No</th>
+                        <tr class="text-left text-capitalize ">
+                          <th > Transaction id</th>
                           <th>date</th>
                           <th>amount</th>
                         </tr>
@@ -208,15 +208,15 @@
 
                           <tr>
                             <td>
-                              <%=index+1 %>
+                              <%=transaction.transactionId %>
                             </td>
                             <td class="fixed-td">
-                              <%=new Date(transaction.transactionDate).toLocaleDateString('en-GB', {day: "numeric" ,
-                                month: "numeric" , year: "numeric" , timeZone:'Asia/kolkata'} ) %>
+                              <%=new Date(transaction.transactionDate).toLocaleDateString('en-IN', {day: "2-digit" ,
+                                month: "long" , year: "numeric" } ) %>
                             </td>
-                            <td class="<%=(transaction.transactionType==='Debit')?'text-danger':'text-success'  %> me-1">
-                              <%=transaction.amount%> <i 
-                                  class=" <%=(transaction.transactionType==='Debit')?'text-danger bi bi-arrow-down-circle':'text-success bi bi-arrow-up-circle'  %>"></i>
+                            <td class="<%=(transaction.transactionType==='Debit')?'text-danger':'text-success'  %> me-1 text-left">
+                              <i class=" <%=(transaction.transactionType==='Debit')?'text-danger bi bi-arrow-down-circle':'text-success bi bi-arrow-up-circle'  %>"></i>
+                              <%=transaction.amount%>
                             </td>
 
 

@@ -36,8 +36,9 @@
         #dataTable th,
         #dataTable td {
             border: 1px solid #dee2e6;
-            padding: 5px;
+            padding: 3px;
             text-align: center;
+            font-size: 0.5rem;
         }
 
         #dataTable th {
@@ -57,7 +58,7 @@
                 <th>No</th>
                 <th>Order Id</th>
                 <th>Product Name</th>
-                <th>Quantity</th>
+                <th>QTY</th>
                 <th>Price</th>
                 <th>Payment</th>
                 <th>Date</th>
@@ -68,16 +69,24 @@
           
               <% orderData.forEach((order, index) => { %>
 
-              <tr>
-                  <td><%= index+1%></td>
+                <tr>
+                  <% 
+                    let paymentMethod = order.paymentMethod === 'wallet' 
+                      ? 'Wallet' 
+                      : order.paymentMethod === 'online' 
+                      ? 'Razor Pay' 
+                      : 'COD'; 
+                  %>
+                  <td><%= index + 1 %></td>
                   <td><%= order.orderId %></td>
                   <td><%= order.productName %></td>
                   <td><%= order.quantity %></td>
                   <td><%= order.productTotal %></td>
-                  <td><%= order.paymentMethod %> </td>
-                  <td><%= order.orderDate%></td>
-                  <td><%= order.orderStatus%></td>
-              </tr>
+                  <td><%= paymentMethod %></td>
+                  <td><%= order.orderDate %></td>
+                  <td><%= order.orderStatus %></td>
+                </tr>
+                
 
               <% }) %>
 
@@ -133,9 +142,10 @@
                   <div class="col-6">
                     <h5 class="card-header text-capitalize  text-center font-weight-bold"> profit by payment method </h5>
                     <% salesSummary.profitByPurchase.forEach(method => { %>
+                      <% let percentage = Math.round(method.percentage) %>
                       <p class="text-capitalize font-weight-bold mt-2"><%= method.paymentMethod %></p>
                       <div class="progress" style="height: 14px;">
-                        <div class="progress-bar bg-primary" role="progressbar" style="width: <%= Math.round(method.percentage) %>%" aria-valuenow=" <%= Math.round(method.percentage) %>%" aria-valuemin="0" aria-valuemax="100"> <%= Math.round(method.percentage) %>%</div>
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: <%= percentage %>%" aria-valuenow=" <%= percentage %>%" aria-valuemin="0" aria-valuemax="100"> <%= percentage %>%</div>
                       </div>
                     <% }) %>
                   </div>

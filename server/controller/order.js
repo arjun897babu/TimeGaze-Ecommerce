@@ -13,6 +13,7 @@ const Coupen = require('../model/coupenSchema');
 const offerHelper = require('../utilities/offer')
 const walletHelper = require('../utilities/wallet');
 const queryString = require('querystring');
+const { generateUUID } = require('../utilities/random-id-generator');
 
 const instance = new Razorpay(
   {
@@ -165,7 +166,7 @@ exports.createOrder = async (req, res, next) => {
     //creating new order
     const newOrder = new Order({
       userId: userId,
-      orderId: orderID,
+      orderId: generateUUID(),
       orderItems: cartItems,
       address: billingAddress,
       paymentMethod: PaymentOption,

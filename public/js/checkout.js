@@ -233,8 +233,9 @@ $('.payment').submit(function (event) {
     formValue.forEach((value) => {
       data[value.name] = value.value;
     })
-   
-    makePurchase(selectedAddressId, data);
+    const submitButton = $(this).find('input[type="submit"]'); // Find the submit button
+    submitButton.prop('disabled', true);
+    makePurchase(selectedAddressId, data,submitButton);
   } else if (!selectedAddressId) {
     displayErrorMessage(element
       , 'Please provide a delivery address to continue');
@@ -247,7 +248,7 @@ $('.payment').submit(function (event) {
 
 })
 
-function makePurchase(selectedAddressId, PaymentOption) {
+function makePurchase(selectedAddressId, PaymentOption,submitButton) {
 
   $.ajax({
     url: `/api/createOrder/${selectedAddressId}`,
@@ -284,7 +285,7 @@ function makePurchase(selectedAddressId, PaymentOption) {
           const rzp1 = new Razorpay(options);
 
           rzp1.open();
-
+          submitButton.prop('disabled', false);
         }
       }
 
@@ -298,7 +299,8 @@ function makePurchase(selectedAddressId, PaymentOption) {
         let { message,redirectUrl } = JSON.parse(xhr.responseText);
         window.location.href = redirectUrl;
       }
-    }
+    },
+    
 
   })
 }
