@@ -129,22 +129,26 @@
                             <label for="startDate">
                               From:
                             </label><br>
-                            <input type="date" class="border border border-primary rounded-0 p-2" name="startDate" id="startDate">
+                            <input type="date" class="border border border-primary rounded-0 p-2" name="startDate"
+                              id="startDate">
                           </div>
                           <div class="col-6">
                             <label for="endDate">To:</label><br>
-                            <input type="date" class="border border border-primary rounded-0 p-2" name="endDate" id="endDate">
+                            <input type="date" class="border border border-primary rounded-0 p-2" name="endDate"
+                              id="endDate">
 
                           </div>
                         </div>
                       </div>
                       <div class="modal-footer d-flex justify-content-end">
                         <label for="fileExtension">File Format:</label>
-                        <select id="fileExtension" class="btn btn-dark rounded-0" style="font-size: 0.6rem;" name="fileExtension">
+                        <select id="fileExtension" class="btn btn-dark rounded-0" style="font-size: 0.6rem;"
+                          name="fileExtension">
                           <option value="excel" selected>Excel</option>
                           <option value="pdf">PDF</option>
                         </select>
-                        <button class="btn btn-primary rounded-0" type="submit" style="font-size: 0.6rem;">Download Report</button>
+                        <button class="btn btn-primary rounded-0" id="report-download" type="submit"
+                          style="font-size: 0.6rem;">Download Report</button>
                       </div>
                     </form>
 
@@ -155,7 +159,7 @@
             </div>
             <% if (noOrder) { %>
               <div id="orderMessage" data-message="<%= noOrder %>" style="display: none;"></div>
-          <% } %>
+              <% } %>
           </div>
 
 
@@ -314,22 +318,20 @@
     });
 
     document.addEventListener('DOMContentLoaded', function () {
-    const messageElement = document.getElementById('orderMessage');
-    if (messageElement && messageElement.dataset.message) {
+      const messageElement = document.getElementById('orderMessage');
+      if (messageElement && messageElement.dataset.message) {
         const message = messageElement.dataset.message;
         Swal.fire({
-            toast: true,
-            position: 'bottom',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            icon: 'warning',
-            title: message
+          toast: true,
+          position: 'bottom',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          icon: 'warning',
+          title: message
         });
-    }
-});
-
-
+      }
+    });
   </script>
 
   <%- include('../include/adminfooter') %>

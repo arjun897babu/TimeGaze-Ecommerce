@@ -14,7 +14,6 @@ const offerHelper = require('../utilities/offer')
 const walletHelper = require('../utilities/wallet');
 const queryString = require('querystring');
 
-
 const instance = new Razorpay(
   {
     key_id: process.env.rzp_key,

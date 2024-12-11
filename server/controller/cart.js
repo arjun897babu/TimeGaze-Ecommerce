@@ -37,7 +37,7 @@ exports.addToCart = async (req, res, next) => {
             ]
           }
         }
-      ]
+      ] 
     )
 
     const availableProduct = availableProducts[0]
@@ -69,7 +69,6 @@ exports.addToCart = async (req, res, next) => {
     res.status(200).redirect(`/singleProduct?pid=${availableProduct._id}&product=${availableProduct.productName}`);
 
   } catch (error) {
-    console.error(error.message)
     next(error)
   }
 }

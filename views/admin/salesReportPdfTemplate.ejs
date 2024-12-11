@@ -4,22 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <!-- boostrap css cdn link -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+<!-- bootstrap icon cdn link -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
       <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
             margin: 0;
             padding: 0;
         }
 
         #dailyTable {
             max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #ffffff;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         h4 {
@@ -37,8 +36,8 @@
         #dataTable th,
         #dataTable td {
             border: 1px solid #dee2e6;
-            padding: 12px;
-            text-align: left;
+            padding: 5px;
+            text-align: center;
         }
 
         #dataTable th {
@@ -46,20 +45,13 @@
             color: #fff;
         }
 
-        #dataTable tbody tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        #dataTable tbody tr:hover {
-            background-color: #d4edda;
-        }
     </style>
 </head>
 <body>
 
     <div id="dailyTable" >
         <h4>SALES REPORT</h4>
-        <table id="dataTable" class="table table-hover mt-3">
+        <table id="dataTable" class="table mt-3">
             <thead>
             <tr>
                 <th>No</th>
@@ -69,33 +61,90 @@
                 <th>Price</th>
                 <th>Payment</th>
                 <th>Date</th>
+                <th>status</th>
             </tr>
             </thead>
             <tbody>
           
               <% orderData.forEach((order, index) => { %>
 
-                <tr>
-                  <td><b><%= index+1%></b></td>
-                  <td><b><%= order.orderId %></b></td>
-                  <td><b><%= order.productName %></b></td>
-                  <td><b><%= order.quantity %></b></td>
-                  <td><b><%= order.productTotal %></b></td>
-                  <td><b><%= order.paymentMethod %></b> </td>
-                  <td><b><%= order.orderDate%></b></td>
+              <tr>
+                  <td><%= index+1%></td>
+                  <td><%= order.orderId %></td>
+                  <td><%= order.productName %></td>
+                  <td><%= order.quantity %></td>
+                  <td><%= order.productTotal %></td>
+                  <td><%= order.paymentMethod %> </td>
+                  <td><%= order.orderDate%></td>
+                  <td><%= order.orderStatus%></td>
               </tr>
 
               <% }) %>
 
             </tbody>
         </table>
-    
-
     </div>
+
+    <div class="container-fluid sales-summary w-100" style="page-break-inside: avoid;">
+        <div class="w-100">
+          <div class="card m-b-30">
+            <div class="card-header text-center">
+              <h5 class="text-capitalize font-italic">sales summary</h5>
+              <h6 class="card-subtitle mb-2 text-body-secondary text-capitalize ">from <i class="font-weight-bold"><%= new Date(salesSummary?.reportDate?.startDate).toLocaleDateString("en-IN", { 
+                month: "long", 
+                year: "numeric", 
+                day: "2-digit" 
+              }) %>
+              </i>  to  <i class="font-weight-bold"><%= new Date(salesSummary?.reportDate?.endDate).toLocaleDateString("en-IN", { 
+                month: "long", 
+                year: "numeric", 
+                day: "2-digit" 
+              }) %></i> </h6>
+            </div>
+              <div class="card-body">
+                <div class="row w-100">
+                    <div class="row gap-4 justify-content-center w-100">
+                      <div class="col-5  border border-primary rounded text-center py-3 mb-3">
+                        <h5 class="card-title text-primary mb-1"><%= salesSummary.totalSales %></h5>
+                        <p class="text-primary mb-0">Total Sales</p>
+                      </div>
+                      <div class="col-5  border border-success rounded text-center py-3 mb-3">
+                        <h5 class="card-title text-success mb-1">₹<%= salesSummary.totalRevenue %></h5>
+                        <p class="text-success mb-0">Revenue</p>
+                      </div>
+                      <div class="col-5  border border-primary rounded text-center py-3 mb-3">
+                        <h5 class="card-title text-primary mb-1"><%= salesSummary.canceledOrders %></h5>
+                        <p class="text-primary mb-0">Canceled orderes</p>
+                      </div>
+                      <div class="col-5  border border-primary rounded text-center py-3 mb-3">
+                        <h5 class="card-title text-primary mb-1"><%= salesSummary.returnedOrder %></h5>
+                        <p class="text-primary mb-0">Returned Orders</p>
+                      </div>
+                    </div>
+                   <div class="col-6">
+                    <h5 class="card-header text-capitalize  text-center font-weight-bold"> profit by Product </h5>
+                    <% salesSummary.profitBySales.forEach(product => { %>
+                      <p class="text-capitalize font-weight-bold mt-2"><%= product.productName %></p>
+                      <div class="progress" style="height: 14px;">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: <%= Math.round(product.percentage) %>%" aria-valuenow=" <%= Math.round(product.percentage) %>%" aria-valuemin="0" aria-valuemax="100"> <%= Math.round(product.percentage) %>%</div>
+                      </div>
+                    <% }) %>
+                  </div>
+                  <div class="col-6">
+                    <h5 class="card-header text-capitalize  text-center font-weight-bold"> profit by payment method </h5>
+                    <% salesSummary.profitByPurchase.forEach(method => { %>
+                      <p class="text-capitalize font-weight-bold mt-2"><%= method.paymentMethod %></p>
+                      <div class="progress" style="height: 14px;">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: <%= Math.round(method.percentage) %>%" aria-valuenow=" <%= Math.round(method.percentage) %>%" aria-valuemin="0" aria-valuemax="100"> <%= Math.round(method.percentage) %>%</div>
+                      </div>
+                    <% }) %>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+      </div>
     
   </div>
     
-    
-
-</body>
-</html>
+  <%- include('../include/adminfooter') %>

@@ -4,9 +4,7 @@ const session = require('express-session');
 const cors = require('cors')
 const morgan = require('morgan');
 const path = require('path');
-
 require('dotenv').config();
-
 const connectDB = require('./server/database/connection');
 //session
 app.use(session({ 

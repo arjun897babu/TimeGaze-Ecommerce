@@ -270,9 +270,9 @@
                     </a>
                     <% } else{ %>
                       <% if(products.quantity>0) {%>
-                        <form action='/api/addToCart/<%=products._id%>' method="post"
+                        <form action='/api/addToCart/<%=products._id%>' method="post" id="addToCartForm"
                           class="p-0 btn btn-dark shadow-0 col-8">
-                          <button class="btn btn-dark card-img-bottom my-1" type="submit">
+                          <button class="btn btn-dark card-img-bottom my-1" id="addToCart" type="submit">
                             ADD TO CART
                           </button>
                         </form>
@@ -550,6 +550,17 @@
               }
             })
           }
+
+          const addToCartBtn = document.getElementById('addToCart')
+          const form = document.getElementById('addToCartForm')
+
+          addToCartBtn.addEventListener('click',function(e){
+            e.preventDefault()
+            addToCartBtn.disabled = true
+            addToCartBtn.innerText = 'Adding to cart....'
+            form.submit()
+          })
+
         </script>
 
 </body>

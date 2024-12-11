@@ -129,7 +129,6 @@ module.exports = {
 
       }))
       .catch((error) => {
-        console.error('Error in userproduct pag:', error.message);
         res.status(500).send('Internal Server Error');
       });
 
@@ -208,7 +207,6 @@ module.exports = {
       .then(axios.spread((categoryResponse, cartResponse) => {
         const categories = categoryResponse.data;
         const cart = cartResponse.data;
-        console.log(cart)
         res.status(200).render('user/cart', { categories: categories, cart: cart, logged: req.session.isUserAuth })
       }))
 

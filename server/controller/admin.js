@@ -1,4 +1,3 @@
-const { response } = require("express");
 const User = require("../model/userModelSchema");
 const Order = require("../model/orderSchema");
 const Json2csvParser = require("@json2csv/plainjs").Parser;
@@ -7,6 +6,8 @@ const Offer = require("../model/offerSchema");
 const puppeteer = require("puppeteer");
 const path = require("path");
 const { renderFile } = require("ejs");
+const { generatePDFSalesSummaryData } = require("../utilities/order");
+const { writeFile } = require("fs");
 const adminDetails = {
   emailAddress: process.env.admin_email,
   password: process.env.admin_password,
@@ -86,6 +87,8 @@ exports.salesReport = async (req, res, next) => {
   try {
     const { fileExtension, startDate, endDate } = req.query;
 
+    const fileName = `Sales_Report_${startDate}_to_${endDate}`
+
     if (fileExtension !== "pdf" && fileExtension !== "excel")
       return res.status(400).redirect("/adminHome");
 
@@ -160,12 +163,14 @@ exports.salesReport = async (req, res, next) => {
 
     if (fileExtension === "excel") {
       //for calculating the total quanity,productamount,and order amount
-      let totalQuantity = 0,
-        totalProductTotal = 0,
-        grandTotal = 0;
+      let totalQuantity = 0
+      let  totalProductTotal = 0
+
       orderData.forEach((order) => {
         totalQuantity += order.quantity;
-        totalProductTotal += order.productTotal;
+        if(order.orderStatus==='delivered'){
+          totalProductTotal += order.productTotal;
+        }
       });
 
       //for adding a line at the end of the summary
@@ -189,7 +194,7 @@ exports.salesReport = async (req, res, next) => {
       res.setHeader("Content-type", "text/csv");
       res.setHeader(
         "Content-disposition",
-        "attachment;filename = sales_report.csv"
+        `attachment;filename = ${fileName}.csv`
       );
       return res.status(200).send(csv);
     } else if (fileExtension === "pdf") {
@@ -198,7 +203,14 @@ exports.salesReport = async (req, res, next) => {
         __dirname,
         "../../views/admin/salesReportPdfTemplate.ejs"
       );
-      const htmlContent = await renderFile(templatePath, { orderData });
+      const salesSummary = generatePDFSalesSummaryData(orderData);
+
+      salesSummary.reportDate = {
+        startDate,
+        endDate
+      };
+
+      const htmlContent = await renderFile(templatePath, { orderData,salesSummary});
 
       // Launch Puppeteer
       const browser = await puppeteer.launch({
@@ -210,25 +222,35 @@ exports.salesReport = async (req, res, next) => {
       
       const page = await browser.newPage();
 
-      // Set the HTML content
+      // Setting the HTML content
       await page.setContent(htmlContent, {
-        waitUntil: "networkidle0",
+        waitUntil: 'load',
       });
+
+      await page.waitForSelector(".progress-bar", { visible: true });
+
+      await page.evaluate(() => {
+        document.querySelectorAll('.progress-bar').forEach(bar => {
+          const percentage = bar.getAttribute('aria-valuenow');
+          bar.style.width = `${percentage}%`;
+        });
+      });
+    
       const { PassThrough } = require("stream");
       const stream = new PassThrough();
 
-      const pdfBuffer = await page.pdf({ format: "A4" });
+      const pdfBuffer = await page.pdf({ format: "A4", printBackground: true ,margin:{ top: "10mm", bottom: "10mm", left: "10mm", right: "10mm"}  });
       stream.end(pdfBuffer);
 
       await browser.close();
 
       res.setHeader(
         "Content-Disposition",
-        "attachment; filename=sales-report.pdf"
+        `inline; ${fileName}.pdf`
       );
-      res.setHeader("Content-Type", "application/pdf");
 
-      stream.pipe(res);
+      res.setHeader("Content-Type", "application/pdf");
+      res.send(pdfBuffer);
     }
   } catch (error) {
     next(error);
@@ -238,7 +260,6 @@ exports.salesReport = async (req, res, next) => {
 exports.addOffer = async (req, res, next) => {
   try {
     const { offer, category, product, discount, expiry } = req.body;
-    console.log(req.body, category, product, discount, expiry);
 
     let errorMessage = {};
     if (
@@ -265,7 +286,8 @@ exports.addOffer = async (req, res, next) => {
       discount: discount,
       expiry: expiry,
     });
-    const createdOffer = await newOffer.save();
+
+   await newOffer.save();
 
     if (offer === "category") {
       await Product.updateMany(
