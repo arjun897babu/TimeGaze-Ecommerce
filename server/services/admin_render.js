@@ -147,7 +147,6 @@ module.exports = {
       const {
         categories, totalPages, selected
       } = await categoryHelper.categoriesWithPagination(req);
-      console.log(categories, totalPages, selected)
       res.status(200).render('admin/adminCategory',
         {
           categories,
@@ -256,7 +255,7 @@ module.exports = {
         },
         (error, html) => {
           if (error) {
-            return next(error)
+            throw error
           }
 
           delete req.session.successMessage

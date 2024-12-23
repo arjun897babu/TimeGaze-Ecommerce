@@ -56,7 +56,7 @@ exports.categoriesWithPagination = async (req) => {
       },
 
     ];
-    console.log(aggregationPipeline)
+
     const categories = await Category.aggregate([...aggregationPipeline, { $skip: startIndex }, { $limit: perpage }]);
 
     const [count] = await Category.aggregate([...aggregationPipeline, { $count: 'totalCount' }]);

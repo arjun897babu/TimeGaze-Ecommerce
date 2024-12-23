@@ -3,8 +3,8 @@ const Coupen = require('../model/coupenSchema');
 const queryString = require('querystring');
 
 //calculate discout
-exports. calculateDiscount = (coupon, cartTotal)=> {
- if(!coupon) return undefined
+exports.calculateDiscount = (coupon, cartTotal) => {
+  if (!coupon) return undefined
   let discountPrice = coupon.isPercentage
     ? Math.min((cartTotal * coupon.discount) / 100, coupon.maxDiscount)
     : coupon.discount;
@@ -12,15 +12,15 @@ exports. calculateDiscount = (coupon, cartTotal)=> {
 
 }
 
-exports.getAllCoupon = async ()=>{
-  try{
-    return await Coupen.aggregate([{$match:{}}]);
-  }catch(error){
+exports.getAllCoupon = async () => {
+  try {
+    return await Coupen.aggregate([{ $sort: { createdAt: -1 } }]);
+  } catch (error) {
     throw error
   }
 }
-exports.couponWithPagination = async(req)=>{
-  try{
+exports.couponWithPagination = async (req) => {
+  try {
     let { pageNumber } = req.query;
 
     if (!req.query.hasOwnProperty('pageNumber') || req.query.pageNumber === '' || req.query.pageNumber < 1) {
@@ -48,39 +48,39 @@ exports.couponWithPagination = async(req)=>{
         };
         selected[key] = value
       } if (key === 'status' && value.trim() !== '') {
-        if(value.trim()==='expired'){
-          statusQuery = {expiry: {$lt:new Date()}};
-        }else if(value.trim()==='active'){
-          statusQuery = {expiry: {$gt:new Date()} };
+        if (value.trim() === 'expired') {
+          statusQuery = { expiry: { $lt: new Date() } };
+        } else if (value.trim() === 'active') {
+          statusQuery = { expiry: { $gt: new Date() } };
         }
         selected[key] = value
       }
     };
 
-    const aggregationPipleLine=[
-      {$match:searchQuery},
-      {$match:statusQuery},
+    const aggregationPipleLine = [
+      { $match: searchQuery },
+      { $match: statusQuery },
     ]
 
-    const coupon = await Coupen.aggregate([...aggregationPipleLine,{$skip:startIndex},{$limit:perPage}])
-    const [count] = await Coupen.aggregate([...aggregationPipleLine,{$count:'totalCount'}]);
+    const coupon = await Coupen.aggregate([...aggregationPipleLine, { $skip: startIndex },{$sort:{createdAt:-1}}, { $limit: perPage }])
+    const [count] = await Coupen.aggregate([...aggregationPipleLine, { $count: 'totalCount' }]);
     const totalPages = Math.ceil((count?.totalCount || 0) / perPage);
     const path = queryString.stringify(req.query);
 
     return {
-        coupon,
-        totalPages: {
-          totalPages,
-          startIndex,
-          endIndex,
-          pageNumber,
-          path
-        },
-        selected
-      }
-    
+      coupon,
+      totalPages: {
+        totalPages,
+        startIndex,
+        endIndex,
+        pageNumber,
+        path
+      },
+      selected
+    }
 
-  }catch(error){
+
+  } catch (error) {
     throw error
   }
 }

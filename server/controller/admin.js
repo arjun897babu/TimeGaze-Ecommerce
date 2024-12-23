@@ -18,19 +18,15 @@ exports.adminLogin = (req, res, next) => {
 
   if (!email && !password) {
     req.session.errorMessage = "All fields are required";
-    console.log("all fields are required");
-    res.status(401).redirect("/adminLogin");
+     res.status(401).redirect("/adminLogin");
   } else if (email != adminDetails.emailAddress) {
     req.session.errorMessage = "Invalid email";
-    console.log("Invalid email");
-    res.status(401).redirect("/adminLogin");
+     res.status(401).redirect("/adminLogin");
   } else if (password != adminDetails.password) {
     req.session.errorMessage = "Invalid password";
-    console.log("Invalid password");
-    res.status(401).redirect("/adminLogin");
+     res.status(401).redirect("/adminLogin");
   } else {
-    console.log("verified");
-    req.session.isAuthed = true;
+       req.session.isAuthed = true;
     res.status(200).redirect("/adminHome");
   }
 };
@@ -269,15 +265,17 @@ exports.addOffer = async (req, res, next) => {
       discount < 1 ||
       discount > 20
     ) {
-      errorMessage.discount = "enter a valid discount";
+      errorMessage.discount = "enter a valid discount (1 to 20)";
     }
     if (!expiry || new Date(expiry) < new Date()) {
       errorMessage.expiry = "choose a valid expiry date";
     }
+    if((offer==='category'&&!category)||(offer==='product'&&!product)){
+      errorMessage.offerType = 'chooose a item'
+    }
     if (Object.keys(errorMessage).length > 0) {
       req.session.errorMessage = errorMessage;
-      console.log(req.session.errorMessage);
-      return res.status(400).redirect("/addOffer");
+       return res.status(400).redirect("/addOffer");
     }
 
     const newOffer = new Offer({

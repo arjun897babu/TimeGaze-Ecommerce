@@ -165,7 +165,7 @@
                       <%=item.offerType %>
                     </td>
                     <td>
-                      <% name = item.productDetails?item.productDetails.productName:item.categoryDetails.categoryName %>
+                      <% name = item.productDetails?item?.productDetails?.productName:item?.categoryDetails?.categoryName %>
                       <%=name %>
                     </td>
                     <td>

@@ -121,27 +121,34 @@
               <div class="col-md-6 d-flex justify-content-between">
                 <div class="col-md-6 ">
                   <select class="text-capitalize" name="offer" id="offerType">
-                    <option  value="category">category</option>
-                    <option  value="product">product</option>
+                    <option value="category">category</option>
+                    <option value="product">product</option>
                   </select>
                 </div>
-                <div class="col-md-6 ">
+                <div class="col-md-6 position-relative ">
                   <!-- option for catgory -->
                   <select name="category" id="categoryList">
                     <option value="" disabled selected>Select ...</option>
                     <% for(category of categories) {%>
-                      
-                    <option value="<%=category._id  %>" class="text-capitalize"> <%=category.categoryName  %> </option>
-                    <% } %>
+
+                      <option value="<%=category._id  %>" class="text-capitalize">
+                        <%=category.categoryName %>
+                      </option>
+                      <% } %>
                   </select>
                   <!-- option for product -->
                   <select name="product" id="productList" style="display: none;">
-                      <option value="" disabled selected>Select ...</option>
-                      <% for(product of products) {%>
-                      <option value="<%=product._id  %>" class="text-capitalize"> <%=product.productName  %> </option>
+                    <option value="" disabled selected>Select ...</option>
+                    <% for(product of products) {%>
+                      <option value="<%=product._id  %>" class="text-capitalize">
+                        <%=product.productName %>
+                      </option>
                       <% } %>
-                  
+
                   </select>
+                  <small class="text-danger">
+                    <%=(errorMessage&&errorMessage?.offerType)?errorMessage?.offerType:'' %>
+                  </small>
                 </div>
 
               </div>
@@ -152,14 +159,18 @@
                 <label for="discount" class="form-label">Discount</label>
                 <input type="Number" name="discount" class="form-control rounded-0" id="discount"
                   placeholder="Enter discount" required>
-                <small class="text-danger"><%=(errorMessage&&errorMessage.discount)?errorMessage.discount:''  %></small>
+                <small class="text-danger">
+                  <%=(errorMessage&&errorMessage.discount)?errorMessage.discount:'' %>
+                </small>
               </div>
             </div>
             <div class="mb-1">
               <div class="col-md-6 ">
                 <label for="expiry" class="form-label">Expiry Date</label>
                 <input name="expiry" type="datetime-local" class="form-control rounded-0" id="expiry" required>
-                <small class="text-danger"><%=(errorMessage&&errorMessage.expiry)?errorMessage.expiry:''  %></small>
+                <small class="text-danger">
+                  <%=(errorMessage&&errorMessage.expiry)?errorMessage.expiry:'' %>
+                </small>
               </div>
             </div>
             <div class="mb-1">
@@ -188,6 +199,14 @@
           categoryDropdown.selectedIndex = '0'
           productDropdown.selectedIndex = '0'
         })
+
+        document.addEventListener("DOMContentLoaded", function (e) {
+          const expiryInput = document.getElementById('expiry');
+          const now = new Date();
+          const formattedDate = now.toISOString().slice(0, 16);
+          expiryInput.min = formattedDate;
+        });
+
 
       </script>
 

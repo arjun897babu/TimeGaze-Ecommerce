@@ -18,6 +18,14 @@ exports.CreateCoupen = async (req, res, next) => {
         }
       );
     }
+    if (!expiry || new Date(expiry) < new Date()) {
+      return res.status(400).json(
+        {
+          status: 'failed',
+          message: 'choose a valid date'
+        }
+      );
+    }
 
     const existingCoupen = await Coupen.exists({ code: code });
     if (existingCoupen) {

@@ -16,8 +16,6 @@ exports.invoice = async (req, res, next) => {
     )
 
     const [orderDetails] = await Order.aggregate([{ $match: { _id: new mongoose.Types.ObjectId(orderId) } }]);
-    console.log(orderDetails.orderId);
-    console.log(new Date(orderDetails.orderDate).toLocaleDateString('en-Us'))
 
     var data = {
       "images": {

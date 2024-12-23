@@ -242,8 +242,7 @@ module.exports = {
 
 
         const cartItems = cartResponse.data;
-        console.log('cartItems', cartItems)
-
+ 
         res.status(200).render('user/checkout',
           {
             categories: categories,
@@ -261,7 +260,6 @@ module.exports = {
           (error, html) => {
 
             if (error) {
-              console.log(error)
               return res.send(error)
             }
             delete req.session.coupon;
@@ -350,7 +348,6 @@ module.exports = {
         })
       }))
       .catch((error) => {
-        console.log(error)
         res.status(500).send(error.message)
       })
 

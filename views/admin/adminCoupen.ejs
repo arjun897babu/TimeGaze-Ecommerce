@@ -192,15 +192,17 @@
             <div class="row mb-2 d-flex justify-content-start">
               <div class="col-6 col-md-4">
                 <form action="/adminCoupen" method="get">
-                  <input type="text" name="search" id="searchInput" value="<%=selected?.search||''  %>" class="form-control rounded-0"
-                    placeholder="Search...">
+                  <input type="text" name="search" id="searchInput" value="<%=selected?.search||''  %>"
+                    class="form-control rounded-0" placeholder="Search...">
                 </form>
               </div>
               <div class="status-dropDownList col-3 bg-white">
                 <select class="btn btn-white col-12 text-start text-capitalize" name="status" id="statusDropdown">
                   <option value="" selected>All</option>
-                  <option class="text-capitalize" value="active" <%=(selected?.status=='active')?'selected':''  %>>active</option>
-                  <option class="text-capitalize" value="expired" <%=(selected?.status==='expired')?'selected':''  %>>expired</option>
+                  <option class="text-capitalize" value="active" <%=(selected?.status=='active' )?'selected':'' %>
+                    >active</option>
+                  <option class="text-capitalize" value="expired" <%=(selected?.status==='expired' )?'selected':'' %>
+                    >expired</option>
                 </select>
               </div>
             </div>
@@ -221,22 +223,34 @@
                 </thead>
                 <tbody class="mb-2">
                   <% if(coupon.length>0) {%>
-                    <% coupon.forEach((x, index) => { %>
-                      <% let expired = new Date(x.expiry)<Date.now() %>
-                      <tr>
-                        <td><%= index + 1 %></td>
-                        <td><%= x.code %></td>
-                        <td>
-                          <%= !x.isPercentage ? '₹' + x.discount : x.discount + '%' %>
-                        </td>
-                         <td>₹<%= x.minAmount %></td>
-                        <td><%= new Date(x.expiry).toLocaleString('en-US',{timezon:'Asia/kolkata'}) %></td>
-                        <td><%= x.limit %> (times)</td>
-                        <td ><span class="text-capitalize btn rounded-0 <%= expired ? 'btn-danger' : 'btn-success'  %>" style="font-size: 0.6rem;"><%= expired ? 'expired' : 'Active' %></span></td>
-                      </tr>
-                    <% }); %>
-                    <% } %>
-                  
+                    <% coupon.forEach((x, index)=> { %>
+                      <% let expired=new Date(x.expiry)<Date.now() %>
+                        <tr>
+                          <td>
+                            <%= index + 1 %>
+                          </td>
+                          <td>
+                            <%= x.code %>
+                          </td>
+                          <td>
+                            <%= !x.isPercentage ? '₹' + x.discount : x.discount + '%' %>
+                          </td>
+                          <td>₹<%= x.minAmount %>
+                          </td>
+                          <td>
+                            <%= new Date(x.expiry).toLocaleString('en-US',{timezon:'Asia/kolkata'}) %>
+                          </td>
+                          <td>
+                            <%= x.limit %> (times)
+                          </td>
+                          <td><span class="text-capitalize btn rounded-0 <%= expired ? 'btn-danger' : 'btn-success'  %>"
+                              style="font-size: 0.6rem;">
+                              <%= expired ? 'expired' : 'Active' %>
+                            </span></td>
+                        </tr>
+                        <% }); %>
+                          <% } %>
+
                 </tbody>
               </table>
               <% if(totalPages.totalPages) {%>
@@ -253,8 +267,8 @@
                           </li>
                           <% } %>
                             <% } %>
-  
-  
+
+
                     </ul>
                   </nav>
                 </tfoot>
@@ -263,245 +277,254 @@
           </div>
 
         </div>
-        
+
       </div>
 
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>
-  window.onload = function () {
-    let toast = localStorage.getItem('coupen');
-    if (toast) {
-      const Toast = Swal.mixin({
-        toast: true,
-        position: "bottom",
-        showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                  toast.onmouseenter = Swal.stopTimer;
-                  toast.onmouseleave = Swal.resumeTimer;
-                }
-              });
-              Toast.fire({
-                icon: "success",
-                title: "Coupon created successfully"
-              });
-              localStorage.removeItem('coupen');
-            }
-          }
-
-
-
-          let numberRegex = /^(?:[1-9]\d{0,2}|[1-4]\d{3}|5000)$/
-          
-          function setDiscount() {
-            let maxDiscount = document.querySelector('.maxDiscountDiv')
-            if (document.getElementById('percentage').checked) {
-              numberRegex = /^(?:[1-9]\d?|100)$/;
-              maxDiscount.style.display = 'block'
-            } else {
-              numberRegex = /^(?:[1-9]\d{0,2}|[1-4]\d{3}|5000)$/
-
-              maxDiscount.style.display = 'none'
-            }
-          }
-          const form = document.querySelector('.requires-validation')
-
-
-          form.addEventListener('submit', function (event) {
-            event.preventDefault();
-            let isValidate = Array.from(form.elements).every(function (element) {
-              return checkInputValidity(form, element)
+      <script>
+        document.addEventListener("DOMContentLoaded", function (e) {
+          const expiryInput = document.getElementById('expiry');
+          const now = new Date();
+          const formattedDate = now.toISOString().slice(0, 16);
+          expiryInput.min = formattedDate;
+        });
+        window.onload = function () {
+          let toast = localStorage.getItem('coupen');
+          if (toast) {
+            const Toast = Swal.mixin({
+              toast: true,
+              position: "bottom",
+              showConfirmButton: false,
+              timer: 3000,
+              timerProgressBar: true,
+              didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+              }
             });
-            if (isValidate) {
-              const formData = $(form).serializeArray();
-              const data = {};
-              formData.forEach((element) => {
-                data[element.name] = element.value;
-              })
+            Toast.fire({
+              icon: "success",
+              title: "Coupon created successfully"
+            });
+            localStorage.removeItem('coupen');
+          }
+        }
 
-              createCoupen(data, form);
 
+
+        let numberRegex = /^(?:[1-9]\d{0,2}|[1-4]\d{3}|5000)$/
+
+        function setDiscount() {
+          let maxDiscount = document.querySelector('.maxDiscountDiv')
+          if (document.getElementById('percentage').checked) {
+            numberRegex = /^(?:[1-9]\d?|100)$/;
+            maxDiscount.style.display = 'block'
+          } else {
+            numberRegex = /^(?:[1-9]\d{0,2}|[1-4]\d{3}|5000)$/
+
+            maxDiscount.style.display = 'none'
+          }
+        }
+        const form = document.querySelector('.requires-validation')
+
+
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+          let isValidate = Array.from(form.elements).every(function (element) {
+            return checkInputValidity(form, element)
+          });
+          if (isValidate) {
+            const formData = $(form).serializeArray();
+            const data = {};
+            formData.forEach((element) => {
+              data[element.name] = element.value;
+            })
+
+            createCoupen(data, form);
+
+          }
+        })
+
+        function checkInputValidity(form, elements) {
+
+          const errorMessage = {
+            common: {
+              required: 'all fields are required'
+            },
+            code: {
+              error1: 'Enter a vaid code (5 to 15 including alphets and number)'
+            },
+            discount: {
+              error1: 'discount must between 1 to 100',
+              error2: 'enter a amount upto 5000'
+            },
+            limit: {
+              error1: 'enter upto five'
+            },
+            minPurchase: {
+              error1: 'must be greater than discount price'
             }
-          })
-          
-          function checkInputValidity(form, elements) {
+          }
 
-            const errorMessage = {
-              common: {
-                required: 'all fields are required'
-              },
-              code: {
-                error1: 'Enter a vaid code (5 to 15 including alphets and number)'
-              },
-              discount: {
-                error1: 'discount must between 1 to 100',
-                error2: 'enter a amount upto 5000'
-              },
-              limit: {
-                error1: 'enter upto five'
-              },
-              minPurchase: {
-                error1: 'must be greater than discount price'
-              }
-            }
+          let coupenRegex = /^[a-zA-Z0-9]{5,15}$/
+          let isValid = true
+          let [codeInput, isPercentageInput, maxDiscountInput, discountInput, expiryInput, minAmountInput, limitInput] =
+            ['code', 'isPercentage', 'maxDiscount', 'discount', 'expiry', 'minAmount', 'limit']
+              .map(inputName => form.elements[inputName]);
 
-            let coupenRegex = /^[a-zA-Z0-9]{5,15}$/
-            let isValid = true
-            let [codeInput, isPercentageInput, maxDiscountInput, discountInput, expiryInput, minAmountInput, limitInput] =
-              ['code', 'isPercentage', 'maxDiscount', 'discount', 'expiry', 'minAmount', 'limit']
-                .map(inputName => form.elements[inputName]);
+          //check for codevalue
+          if (codeInput.value.trim() === '') {
+            displayError(codeInput, errorMessage.common.required);
+            isValid = false
+          }
+          else if (!coupenRegex.test(codeInput.value)) {
+            displayError(codeInput, errorMessage.code.error1)
+            isValid = false
 
-            //check for codevalue
-            if (codeInput.value.trim() === '') {
-              displayError(codeInput, errorMessage.common.required);
+          } else {
+            clearError(codeInput)
+          }
+
+          //check for maxDiscount
+          if (isPercentageInput.checked) {
+            if (maxDiscountInput.value.trim() === '') {
+              displayError(maxDiscountInput, errorMessage.common.required);
               isValid = false
-            }
-            else if (!coupenRegex.test(codeInput.value)) {
-              displayError(codeInput, errorMessage.code.error1)
+            } else if (!(/^(?:[1-9]\d{0,2}|[1-4]\d{3}|5000)$/).test(maxDiscountInput.value)) {
+              displayError(maxDiscountInput, 'enter a valid input');
               isValid = false
-
             } else {
-              clearError(codeInput)
+              clearError(maxDiscountInput)
             }
+          }
 
-            //check for maxDiscount
-            if (isPercentageInput.checked) {
-              if (maxDiscountInput.value.trim() === '') {
-                displayError(maxDiscountInput, errorMessage.common.required);
-                isValid = false
-              } else if (!(/^(?:[1-9]\d{0,2}|[1-4]\d{3}|5000)$/).test(maxDiscountInput.value)) {
-                displayError(maxDiscountInput, 'enter a valid input');
-                isValid = false
-              } else {
-                clearError(maxDiscountInput)
-              }
-            }
-            
-            //check for discount
-            if (discountInput.value.trim() === '') {
-              displayError(discountInput, errorMessage.common.required);
+          //check for discount
+          if (discountInput.value.trim() === '') {
+            displayError(discountInput, errorMessage.common.required);
+            isValid = false
+
+          } else if (!numberRegex.test(discountInput.value)) {
+            displayError(discountInput, isPercentageInput.checked ? errorMessage.discount.error1 : errorMessage.discount.error2);
+            isValid = false
+
+          } else {
+            clearError(discountInput)
+          }
+
+          //check for date
+
+          if (expiryInput.value === '') {
+            displayError(expiryInput, errorMessage.common.required);
+            isValid = false
+          } else {
+            clearError(expiryInput)
+          }
+
+          //check for mininput
+
+
+          if (minAmountInput.value === '') {
+            displayError(minAmountInput, errorMessage.common.required);
+            isValid = false;
+          } else if (!(/^(?:[1-9]\d{0,2}|[1-4]\d{3}|5000)$/).test(minAmountInput.value)) {
+
+            displayError(minAmountInput, errorMessage.discount.error2);
+            isValid = false;
+          }
+          else {
+            clearError(minAmountInput)
+          }
+
+          //check for limit 
+
+          if (limitInput.value.trim() === '') {
+            displayError(limitInput, errorMessage.common.required);
+            isValid = false
+          } else if (!(limitInput.value % 1 === 0) || !(limitInput.value <= 5) || !(limitInput.value >= 1)) {
+            displayError(limitInput, 'maximum limit is 5');
+            isValid = false
+          } else {
+            clearError(limitInput)
+          }
+
+
+          if (!(isPercentageInput.checked)) {
+            if (parseInt(minAmountInput.value) <= parseInt(discountInput.value) || minAmountInput.value.trim() === '') {
+              displayError(minAmountInput, errorMessage.minPurchase.error1);
               isValid = false
-              
-            } else if (!numberRegex.test(discountInput.value)) {
-              displayError(discountInput, isPercentageInput.checked ? errorMessage.discount.error1 : errorMessage.discount.error2);
-              isValid = false
-              
             } else {
-              clearError(discountInput)
-            }
-
-            //check for date
-            
-            if (expiryInput.value === '') {
-              displayError(expiryInput, errorMessage.common.required);
-              isValid = false
-            } else {
-              clearError(expiryInput)
-            }
-
-            //check for mininput
-
-
-            if (minAmountInput.value === '') {
-              displayError(minAmountInput, errorMessage.common.required);
-              isValid = false;
-            } else if (!(/^(?:[1-9]\d{0,2}|[1-4]\d{3}|5000)$/).test(minAmountInput.value)) {
-
-              displayError(minAmountInput, errorMessage.discount.error2);
-              isValid = false;
-            }
-            else {
               clearError(minAmountInput)
             }
-
-            //check for limit 
-            
-            if (limitInput.value.trim() === '') {
-              displayError(limitInput, errorMessage.common.required);
-              isValid = false
-            } else if (!(limitInput.value % 1 === 0) || !(limitInput.value <= 5) || !(limitInput.value >= 1)) {
-              displayError(limitInput, 'maximum limit is 5');
-              isValid = false
-            } else {
-              clearError(limitInput)
-            }
+          }
 
 
-            if (!(isPercentageInput.checked)) {
-              if (parseInt(minAmountInput.value) <= parseInt(discountInput.value) || minAmountInput.value.trim() === '') {
-                displayError(minAmountInput, errorMessage.minPurchase.error1);
-                isValid = false
-              } else {
-                clearError(minAmountInput)
+          return isValid
+        }
+
+
+        function createCoupen(data, form) {
+          console.log('callled');
+          $.ajax({
+            url: `/api/addCoupen`,
+            type: 'post',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function (data, textStatus, xhr) {
+              if (xhr.status === 200) {
+                let { message } = JSON.parse(xhr.responseText)
+                localStorage.setItem("coupen", message);
+                location.reload();
+              }
+            },
+            error: function (xhr, textStatus, errorThrown) {              
+              if (xhr.status === 404) {
+                window.location.href = '/adminlogin'
+              }
+              if (xhr.status === 409) {
+                let { message } = JSON.parse(xhr.responseText);
+                displayError(form.elements['code'], message);
+              }
+              if (xhr.status === 400) {
+                let { message } = JSON.parse(xhr.responseText);
+                displayError(form.elements['expiry'], message);
               }
             }
-            
-
-            return isValid
-          }
-
-
-          function createCoupen(data, form) {
-            console.log('callled');
-            $.ajax({
-              url: `/api/addCoupon`,
-              type: 'post',
-              contentType: 'application/json',
-              data: JSON.stringify(data),
-              success: function (data, textStatus, xhr) {
-                if (xhr.status === 200) {
-                  let { message } = JSON.parse(xhr.responseText)
-                  localStorage.setItem("coupen", message);
-                  location.reload();
-                }
-              },
-              error: function (xhr, textStatus, errorThrown) {
-
-                if (xhr.status === 404) {
-                  window.location.href = '/adminlogin'
-                }
-                if (xhr.status === 409) {
-                  let { message } = JSON.parse(xhr.responseText);
-                  displayError(form.elements['code'], message);
-                }
-              }
-            })
-          }
-          
-
-          $('#addCoupon').on('hidden.bs.modal', function () {
-            $('#addCoupon input').val('').removeClass('is-valid is-invalid');
-            $('#addCoupon small').text('');
-            $('#addCoupon input[type="checkbox"]').prop('checked', false);
-          });
-
-          function displayError(element, message) {
-            let errorMessageElement = element.parentElement.querySelector('small');
-
-            errorMessageElement.innerHTML = message;
-
-            element.classList.remove('is-valid');
-            element.classList.add('is-invalid');
-          }
-          function clearError(element) {
-            let errorMessageElement = element.parentElement.querySelector('small');
-            errorMessageElement.innerHTML = '';
-
-            element.classList.remove('is-invalid')
-            element.classList.add('is-valid');
-          }
-
-          const dropDown = document.getElementById('statusDropdown');
-          dropDown.addEventListener('change', function (event) {
-            event.preventDefault()
-            checkedValues = {};
-            checkedValues.status = dropDown.value;
-            let queryString = new URLSearchParams(checkedValues).toString();
-            window.location.href = '/adminCoupen?' + queryString
-
           })
-        </script>
-            <%- include('../include/adminfooter') %>
+        }
+
+
+        $('#addCoupon').on('hidden.bs.modal', function () {
+          $('#addCoupon input').val('').removeClass('is-valid is-invalid');
+          $('#addCoupon small').text('');
+          $('#addCoupon input[type="checkbox"]').prop('checked', false);
+        });
+
+        function displayError(element, message) {
+          let errorMessageElement = element.parentElement.querySelector('small');
+
+          errorMessageElement.innerHTML = message;
+
+          element.classList.remove('is-valid');
+          element.classList.add('is-invalid');
+        }
+        function clearError(element) {
+          let errorMessageElement = element.parentElement.querySelector('small');
+          errorMessageElement.innerHTML = '';
+
+          element.classList.remove('is-invalid')
+          element.classList.add('is-valid');
+        }
+
+        const dropDown = document.getElementById('statusDropdown');
+        dropDown.addEventListener('change', function (event) {
+          event.preventDefault()
+          checkedValues = {};
+          checkedValues.status = dropDown.value;
+          let queryString = new URLSearchParams(checkedValues).toString();
+          window.location.href = '/adminCoupen?' + queryString
+
+        })
+      </script>
+      <%- include('../include/adminfooter') %>

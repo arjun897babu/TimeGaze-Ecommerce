@@ -21,7 +21,6 @@ exports.addCategory = async (req, res, next) => {
     });
 
     const saved = await newCategory.save();
-    console.log(saved);
 
     res.status(200).redirect('/adminCategory')
 
@@ -54,7 +53,6 @@ exports.findAllCategory = async (req, res, next) => {
 exports.findUnlistedCategory = async (req, res, next) => {
   try {
     const Category = await category.find({ unlisted: true });
-    console.log(Category);
     if (!Category) {
       res.send('no categories');
 
@@ -77,7 +75,6 @@ exports.deleteCategory = async (req, res, next) => {
     const existingCateogry = await category.findByIdAndUpdate(categoryId, { unlisted: true }, { new: true });
 
     if (existingCateogry) {
-      console.log(existingCateogry);
       res.status(200).send('delted')
 
     } else {
