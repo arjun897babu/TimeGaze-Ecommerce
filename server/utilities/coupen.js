@@ -62,11 +62,10 @@ exports.couponWithPagination = async (req) => {
       { $match: statusQuery },
     ]
 
-    const coupon = await Coupen.aggregate([...aggregationPipleLine, { $skip: startIndex },{$sort:{createdAt:-1}}, { $limit: perPage }])
+    const coupon = await Coupen.aggregate([...aggregationPipleLine,{$sort:{createdAt:-1}}, { $skip: startIndex },{ $limit: perPage }, ])
     const [count] = await Coupen.aggregate([...aggregationPipleLine, { $count: 'totalCount' }]);
     const totalPages = Math.ceil((count?.totalCount || 0) / perPage);
     const path = queryString.stringify(req.query);
-
     return {
       coupon,
       totalPages: {
