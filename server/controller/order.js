@@ -85,7 +85,7 @@ exports.createOrder = async (req, res, next) => {
     const isValid = valid.every(bolean => bolean);
     if (existingAddress.length === 0 || !isValid) {
 
-      return res.status(400).json({ status: 'failed', message: 'some product is outOf stock', redirectUrl: `${envConfig.BASE_URL}/cart` })
+      return res.status(400).json({ status: 'failed', message: 'some product is outOf stock', redirectUrl: baseURLSafeParse(BASE_URL, '/cart') })
     }
 
     //creating billing address
@@ -182,7 +182,7 @@ exports.createOrder = async (req, res, next) => {
         {
           message: 'Insufficient amount',
           status: 'failed',
-          redirectUrl: `${envConfig.BASE_URL}/cart`
+          redirectUrl: baseURLSafeParse(BASE_URL, '/cart')
         }
       )
       await newOrder.save();
@@ -221,7 +221,7 @@ exports.createOrder = async (req, res, next) => {
           paymentMethod: PaymentOption,
           message: 'order placed successFully',
           status: 'success',
-          redirectUrl: `${envConfig.BASE_URL}/orderSuccess`
+          redirectUrl:  baseURLSafeParse(BASE_URL, '/orderSuccess')
         }
       )
     }
@@ -251,7 +251,7 @@ exports.createOrder = async (req, res, next) => {
           paymentMethod: PaymentOption,
           message: 'order placed successFully',
           status: 'success',
-          redirectUrl: `${envConfig.BASE_URL}/orderSuccess'`
+          redirectUrl:  baseURLSafeParse(BASE_URL, '/orderSuccess')
         }
       )
     }

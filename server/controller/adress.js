@@ -2,7 +2,9 @@ const mongoose = require('mongoose');
 const Address = require('../model/addressSchema');
 const User = require('../model/userModelSchema');
 const address = require('../model/addressSchema');
-const axios = require('axios')
+const axios = require('axios');
+const { baseURLSafeParse } = require('../utilities/helper');
+const { BASE_URL } = require('../utilities/env');
 
 exports.createAdress = async (req, res, next) => {
 
@@ -78,7 +80,7 @@ exports.createAdress = async (req, res, next) => {
       );
 
       const addedNewAddress = await newNestedAdress.save();
-      req.session.addressId=addedNewAddress._id;
+      req.session.addressId = addedNewAddress._id;
       existingUser.adress = addedNewAddress._id;
       await existingUser.save();
       if (source === 'checkout') {
@@ -101,10 +103,10 @@ exports.getAllAdress = async (req, res, next) => {
 
   try {
 
-    const {userEmail} = req.query
+    const { userEmail } = req.query
 
     const user = await User.findOne({ email: userEmail }, { _id: 0, adress: 1 });
-    const {data} = await axios.post(`https://countriesnow.space/api/v0.1/countries/states`, {
+    const { data } = await axios.post(`https://countriesnow.space/api/v0.1/countries/states`, {
       country: 'India'
     });
 
@@ -136,7 +138,7 @@ exports.getAllAdress = async (req, res, next) => {
 }
 
 
-exports.deleteAddress = async (req, res,next) => {
+exports.deleteAddress = async (req, res, next) => {
   try {
 
     const { addressId } = req.params;
@@ -233,7 +235,7 @@ exports.editAddress = async (req, res) => {
 }
 
 // update a address
-exports.updateAddress = async (req, res,next) => {
+exports.updateAddress = async (req, res, next) => {
   try {
 
     const newData = { ...req.body };
@@ -269,12 +271,12 @@ exports.updateAddress = async (req, res,next) => {
         if (source === 'address') {
           res.status(200).json({
             message: 'Updated',
-            redirectUrl: `${envConfig.BASE_URL}/address`
+            redirectUrl: baseURLSafeParse(BASE_URL, '/address')
           });
         } else if (source === 'checkout') {
           res.status(200).json({
             message: 'Updated',
-            redirectUrl: `${envConfig.BASE_URL}/checkout`
+            redirectUrl: baseURLSafeParse(BASE_URL, '/checkout') 
           });
         }
       }
