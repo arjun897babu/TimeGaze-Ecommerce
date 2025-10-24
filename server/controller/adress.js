@@ -269,12 +269,12 @@ exports.updateAddress = async (req, res,next) => {
         if (source === 'address') {
           res.status(200).json({
             message: 'Updated',
-            redirectUrl: '/address'
+            redirectUrl: `${envConfig.BASE_URL}/address`
           });
         } else if (source === 'checkout') {
           res.status(200).json({
             message: 'Updated',
-            redirectUrl: '/checkout'
+            redirectUrl: `${envConfig.BASE_URL}/checkout`
           });
         }
       }

@@ -212,7 +212,7 @@ exports.salesReport = async (req, res, next) => {
       const browser = await puppeteer.launch({
         headless: true,
         defaultViewport: null,
-        executablePath: "/usr/bin/google-chrome",
+        // executablePath: "/usr/bin/google-chrome",
         args: ["--no-sandbox"],
       });
       

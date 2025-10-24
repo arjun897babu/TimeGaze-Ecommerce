@@ -5,13 +5,15 @@ const cors = require('cors')
 const morgan = require('morgan');
 const path = require('path');
 require('dotenv').config();
+const envConfig = require('./server/utilities/env')
+
 const connectDB = require('./server/database/connection');
 //session
 app.use(session({ 
   secret:'key',
   resave: true,  
   saveUninitialized: true 
-}));
+})); 
 
 //clear cache
 app.use((req, res, next) => {
@@ -20,7 +22,7 @@ app.use((req, res, next) => {
   res.setHeader("Expires", "0");
   next(); 
 });
-
+app.locals.baseUrl = envConfig.BASE_URL
 // Parsing the incoming request payloads
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -42,11 +44,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 //loading userroutes
-app.use('/',require('./server/routes/user_routes'));
+app.use(envConfig.BASE_URL,require('./server/routes/user_routes'));
 
 //loading admin routes
 
-app.use('/',require('./server/routes/admin_routes'));
+app.use(envConfig.BASE_URL,require('./server/routes/admin_routes'));
 
 app.use((err, req, res, next) => {
   console.log('error middle ware')

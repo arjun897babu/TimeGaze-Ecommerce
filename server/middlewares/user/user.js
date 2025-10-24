@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const User = require('../../model/userModelSchema');
 const Cart = require('../../model/cartSchema');
 const Product = require('../../model/productSchema');
+const { BASE_URL } = require('../../utilities/env');
 //user verified or not for new regirstered usr
 exports.isUserTrue = async (req, res, next) => {
   try {
@@ -36,7 +37,7 @@ exports.isUser = (req, res, next) => {
 
   if (req.session.isUserAuth) {
 
-    return res.redirect(req.session.redirectUrl || '/');
+    return res.redirect(req.session.redirectUrl || BASE_URL);
   } else {
     next();
   }
