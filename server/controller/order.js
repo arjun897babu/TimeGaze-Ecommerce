@@ -18,8 +18,8 @@ const envConfig = require('../utilities/env');
 
 const instance = new Razorpay(
   {
-    key_id: process.env.rzp_key,
-    key_secret: process.env.rzp_secret
+    key_id: envConfig.RZP_KEY,
+    key_secret:envConfig.RZP_SECRET
   }
 );
 
@@ -267,7 +267,7 @@ exports.createOrder = async (req, res, next) => {
       res.json({
         order,
         payMethode: "onlinePayment",
-        razorKey: process.env.rzp_key,
+        razorKey: envConfig.RZP_KEY,
 
       });
     }
@@ -644,7 +644,7 @@ exports.payOnline = async (req, res, next) => {
   try {
 
     const { userId } = req.session
-    const hmac = crypto.createHmac("sha256", process.env.rzp_secret);
+    const hmac = crypto.createHmac("sha256", envConfig.RZP_SECRET);
     hmac.update(
       req.body.razorpay_order_id + "|" + req.body.razorpay_payment_id
     );

@@ -8,9 +8,10 @@ const path = require("path");
 const { renderFile } = require("ejs");
 const { generatePDFSalesSummaryData } = require("../utilities/order");
 const { writeFile } = require("fs");
+const envConfig = require("../utilities/env");
 const adminDetails = {
-  emailAddress: process.env.admin_email,
-  password: process.env.admin_password,
+  emailAddress: envConfig.ADMIN_EMAIL,
+  password: envConfig.ADMIN_PASSWORD,
 };
 
 exports.adminLogin = (req, res, next) => {
@@ -212,7 +213,7 @@ exports.salesReport = async (req, res, next) => {
       const browser = await puppeteer.launch({
         headless: true,
         defaultViewport: null,
-        // executablePath: "/usr/bin/google-chrome",
+        executablePath: envConfig.EXC_PATH,
         args: ["--no-sandbox"],
       });
       

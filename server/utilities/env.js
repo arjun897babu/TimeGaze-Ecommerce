@@ -11,7 +11,8 @@ const envConfig = {
     AUTH_EMAIL: process.env.AUTH_EMAIL,
     AUTH_PASS: process.env.AUTH_PASS,
     BROWSER_CLOUD_TOKEN: process.env.BROWSER_CLOUD_TOKEN,
-    BASE_URL: process.env.BASE_URL || '/'
+    BASE_URL: process.env.BASE_URL ?? '/',
+    EXC_PATH:process.env.EXC_PATH
 };
 
 module.exports = envConfig;

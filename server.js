@@ -6,7 +6,7 @@ const morgan = require('morgan');
 const path = require('path');
 require('dotenv').config();
 const envConfig = require('./server/utilities/env')
-
+console.log(envConfig)
 const connectDB = require('./server/database/connection');
 //session
 app.use(session({ 
@@ -28,7 +28,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 //morgan
-// app.use(morgan('tiny'));
+app.use(morgan('tiny'));
 app.use(cors())
  
 // Connecting database
